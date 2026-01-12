@@ -9,11 +9,12 @@ function Skills({ isDarkMode }) {
     { name: 'Python', icon: 'bx bxl-python' },
     { name: 'Java', icon: 'bx bxl-java' },
     { name: 'MongoDB', icon: 'bx bxl-mongodb' },
-    { name: 'SQL', icon: 'bx bxs-data' },
+    { name: 'MYSQL', icon: 'bx bxs-data' },
     { name: 'HTML/CSS', icon: 'bx bxl-html5' },
     { name: 'Tailwind', icon: 'bx bxl-tailwind-css' },
     { name: 'Git', icon: 'bx bxl-git' },
-    { name: 'Vercel', icon: 'bx bx-cloud' }
+    { name: 'Vercel', icon: 'bx bx-cloud' },
+    { name: 'PLSQL', icon: 'bx bx-cloud' }
   ];
 
   return (

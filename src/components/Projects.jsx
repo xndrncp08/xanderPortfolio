@@ -3,11 +3,25 @@
 function Projects({ isDarkMode }) {
   const projects = [
     {
+      title: 'Basketbol',
+      tech: 'Next.js',
+      description: 'Basketbol is a web app that displays NBA games, teams, and player information in a clean, responsive interface. It pulls data from multiple sports APIs, handles loading and fallback states gracefully, and presents stats and news in a way that feels stable and production-ready even with API limitations.',
+      image: 'https://i.postimg.cc/d0dX1VGs/image.png',
+      tags: ['React', 'Next.js', 'JavaScript', 'ESPN API', 'BallDontLie API']
+    },    
+    {
+      title: 'YYC Track',
+      tech: 'MERN Stack',
+      description: 'YYC Track is a ongoing capstone project; a platform that helps Calgary Transit riders view stations on an interactive map, submit feedback, and see real-time station ratings through a Commuter Experience Index, giving both commuters and transit managers clear insights into service quality.',
+      image: 'https://i.postimg.cc/1zpCSYZ0/image.png',
+      tags: ['React', 'Node.js', 'MongoDB', 'Express']
+    },
+    {
       title: 'Gym Management System',
       tech: '.NET MAUI Blazor Hybrid',
       description: 'Cross-platform gym management application with secure authentication, membership tracking, scheduling, and database integration.',
       image: 'https://i.postimg.cc/t4trHsnd/FitZone.png',
-      tags: ['C#', 'Blazor', 'SQL']
+      tags: ['C#', '.NET MAUI Blazor', 'MariaDB']
     },
     {
       title: 'NV Closet',
@@ -15,13 +29,6 @@ function Projects({ isDarkMode }) {
       description: 'Digital wardrobe management app with AI-powered outfit recommendations. Modern, intuitive interface focused on user experience.',
       image: 'https://i.postimg.cc/Kj2kF8ML/NV.png',
       tags: ['Figma', 'UI/UX', 'Design']
-    },
-    {
-      title: 'YYC Track',
-      tech: 'MERN Stack',
-      description: 'YYC Track is a platform that helps Calgary Transit riders view stations on an interactive map, submit feedback, and see real-time station ratings through a Commuter Experience Index, giving both commuters and transit managers clear insights into service quality.',
-      image: 'https://your-image-url.com/image.png',
-      tags: ['React', 'Node.js', 'MongoDB', 'Express']
     },
     {
       title: 'Punch Music',
