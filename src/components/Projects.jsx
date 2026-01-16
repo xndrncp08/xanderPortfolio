@@ -12,7 +12,7 @@ function Projects({ isDarkMode }) {
     {
       title: 'YYC Track',
       tech: 'MERN Stack',
-      description: 'YYC Track is a ongoing capstone project; a platform that helps Calgary Transit riders view stations on an interactive map, submit feedback, and see real-time station ratings through a Commuter Experience Index, giving both commuters and transit managers clear insights into service quality.',
+      description: 'YYC Track is an ongoing capstone project; a platform that helps Calgary Transit riders view stations on an interactive map, submit feedback, and see real-time station ratings through a Commuter Experience Index, giving both commuters and transit managers clear insights into service quality.',
       image: 'https://i.postimg.cc/1zpCSYZ0/image.png',
       tags: ['React', 'Node.js', 'MongoDB', 'Express']
     },
@@ -32,9 +32,9 @@ function Projects({ isDarkMode }) {
     },
     {
       title: 'Punch Music',
-      tech: 'React Native, Android Studio',
-      description: 'Music Swipe App is a team-built music discovery app that integrates the Spotify API, allowing users to swipe through songs with smooth gesture controls. It focuses on an intuitive UI, real-time playback, and seamless front-end/back-end communication to create an engaging, easy-to-use listening experience.',
-      image: 'https://your-image-url.com/image.png',
+      tech: 'React Native',
+      description: 'Punch Music is a team-built music discovery app that integrates the Spotify API, allowing users to swipe through songs with smooth gesture controls. It focuses on an intuitive UI, real-time playback, and seamless front-end/back-end communication to create an engaging, easy-to-use listening experience.',
+      image: 'https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=800&q=80',
       tags: ['React.js', 'Supabase', 'Spotify API']
     }
   ];
@@ -50,28 +50,32 @@ function Projects({ isDarkMode }) {
           {projects.map((project, index) => (
             <div
               key={index}
-              className={`${isDarkMode ? 'bg-slate-900' : 'bg-slate-50'} rounded-2xl overflow-hidden transition-all hover:scale-[1.02] border ${isDarkMode ? 'border-slate-700' : 'border-slate-200'}`}
+              className={`group ${isDarkMode ? 'bg-slate-900' : 'bg-slate-50'} rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] border ${isDarkMode ? 'border-slate-700 hover:border-blue-500' : 'border-slate-200 hover:border-blue-600'} hover:shadow-2xl cursor-pointer`}
             >
-              <img 
-                src={project.image} 
-                alt={project.title}
-                className="w-full h-64 object-cover"
-              />
+              <div className="relative overflow-hidden">
+                <img 
+                  src={project.image} 
+                  alt={project.title}
+                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className={`absolute inset-0 ${isDarkMode ? 'bg-gradient-to-t from-slate-900' : 'bg-gradient-to-t from-slate-50'} opacity-60`} />
+              </div>
+              
               <div className="p-6">
                 <div className={`text-sm font-medium mb-2 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                   {project.tech}
                 </div>
-                <h3 className={`text-2xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                <h3 className={`text-2xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'} group-hover:text-blue-500 transition-colors`}>
                   {project.title}
                 </h3>
-                <p className={`mb-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                <p className={`mb-4 leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                   {project.description}
                 </p>
                 <div className="flex gap-2 flex-wrap">
                   {project.tags.map((tag) => (
                     <span
                       key={tag}
-                      className={`px-3 py-1 text-sm rounded-full ${isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700'}`}
+                      className={`px-3 py-1 text-sm rounded-full transition-colors ${isDarkMode ? 'bg-slate-800 text-slate-300 group-hover:bg-slate-700' : 'bg-slate-200 text-slate-700 group-hover:bg-slate-300'}`}
                     >
                       {tag}
                     </span>

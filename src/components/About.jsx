@@ -1,28 +1,67 @@
-'use client';
+"use client";
 
 function About({ isDarkMode }) {
   return (
-    <section id="about" className={`py-20 px-6 ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+    <section
+      id="about"
+      className={`py-20 px-6 ${isDarkMode ? "bg-slate-800" : "bg-white"}`}
+    >
       <div className="max-w-4xl mx-auto">
-        <h2 className={`text-4xl font-bold mb-12 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+        <h2
+          className={`text-4xl font-bold mb-12 ${
+            isDarkMode ? "text-white" : "text-slate-900"
+          }`}
+        >
           About Me
         </h2>
-        
-        <div className={`space-y-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'} leading-relaxed`}>
+
+        <div
+          className={`space-y-6 ${
+            isDarkMode ? "text-slate-300" : "text-slate-700"
+          } leading-relaxed text-lg`}
+        >
           <p>
-            I'm <strong>Xander Rancap</strong>, a passionate software developer pursuing Software Development at the Southern Alberta Institute of Technology with a 3.4 GPA. I specialize in creating elegant, user-centered solutions that bridge design and functionality.
+            I'm{" "}
+            <strong className={isDarkMode ? "text-white" : "text-slate-900"}>
+              Xander Rancap
+            </strong>
+            , I'm a software developer currently studying Software Development
+            at SAIT, maintaining a 3.4 GPA. I enjoy building things that are
+            clean, practical, and easy to use—where good design and solid
+            functionality meet.
           </p>
 
           <p>
-            In February 2024, I did immersion at <strong>Eduspec Holdings Berhad</strong> in Metro Manila, working with educational robotics platforms including Arduino, SAM Labs, and VEX Robotics. This experience strengthened my ability to merge hardware with software and refine my leadership skills through collaborative circuit design and programming.
+            I did immersion at{" "}
+            <strong className={isDarkMode ? "text-white" : "text-slate-900"}>
+              Eduspec Holdings Berhad
+            </strong>{" "}
+            in Metro Manila. I worked hands-on with educational robotics
+            platforms like Arduino, SAM Labs, and VEX Robotics, building and
+            testing robots and circuits. That experience helped me better
+            understand how hardware and software work together and gave me
+            plenty of practice collaborating and taking initiative in a team
+            setting.
           </p>
 
           <p>
-            I've led multiple group projects implementing object-oriented principles, including a cross-platform gym management application using <strong>.NET MAUI Blazor Hybrid</strong>. These experiences taught me not just technical excellence, but also effective team management and scalable architecture design.
+            During my studies, I've worked on and led several group projects
+            using object-oriented programming and scalable design principles.
+            One of my favorite projects was a cross-platform gym management app
+            built with{" "}
+            <strong className={isDarkMode ? "text-white" : "text-slate-900"}>
+              .NET MAUI Blazor Hybrid
+            </strong>
+            , where I focused on usability, clean architecture, and keeping the
+            team organized.
           </p>
 
           <p>
-            My toolkit includes C#, Python, JavaScript, SQL, and modern frameworks like React, Node.js, and Tailwind CSS. I'm constantly expanding my knowledge in Java, MongoDB, and mobile development to stay at the forefront of technology.
+            Tech-wise, I work with C#, Python, JavaScript, and SQL, and I'm
+            comfortable using tools like React, Node.js, and Tailwind CSS. I'm
+            always learning—currently diving into Java, MongoDB, and mobile
+            development—and I like staying curious and experimenting with new
+            tech.
           </p>
         </div>
       </div>
