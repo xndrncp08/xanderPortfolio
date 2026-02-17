@@ -66,10 +66,10 @@ export default function About({ isDarkMode: dark }) {
   ];
 
   const highlights = [
-    { icon: '⚙️', title: 'Full-Stack Focus',    desc: 'React, Node.js, .NET — across web and mobile.' },
-    { icon: '🤝', title: 'Team Leadership',     desc: 'Led group projects with clean architecture and OOP.' },
-    { icon: '🔌', title: 'Hardware + Software', desc: 'Robotics immersion at Eduspec, Metro Manila.' },
-    { icon: '📚', title: 'Always Learning',     desc: 'Diving into Java, MongoDB, and mobile dev.' },
+    {title: 'Full-Stack Focus',    desc: 'React, Node.js, .NET — across web and mobile.' },
+    {title: 'Team Leadership',     desc: 'Led group projects with clean architecture and OOP.' },
+    {title: 'Hardware + Software', desc: 'Robotics immersion at Eduspec, Metro Manila.' },
+    {title: 'Always Learning',     desc: 'Diving into Java, CI/CD pipelines, and Mobile Development.' },
   ];
 
   const paragraphs = [

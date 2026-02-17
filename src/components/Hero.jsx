@@ -75,10 +75,14 @@ const CSS = `
       display: flex;
       justify-content: center;
     }
-    .xtr-hero-badge { justify-content: center; }
-    .xtr-hero-role  { justify-content: center; }
-    .xtr-hero-btns  { justify-content: center; }
+    .xtr-hero-badge   { justify-content: center; }
+    .xtr-hero-role    { justify-content: center; }
+    .xtr-hero-btns    { justify-content: center; }
     .xtr-hero-socials { justify-content: center; }
+    .xtr-hero-bio     { margin-left: auto !important; margin-right: auto !important; text-align: center; }
+    .xtr-hero-name    { font-size: clamp(2rem, 10vw, 3.4rem) !important; letter-spacing: -1px !important; }
+    .xtr-role-line    { display: none; }
+    .xtr-hero-role    { justify-content: center; gap: 8px; }
   }
 `;
 
@@ -121,24 +125,9 @@ export default function Hero({ isDarkMode: dark }) {
           <div className="xtr-hero-grid">
             {/* Left */}
             <div>
-              {/* Status badge */}
-              <div className="xtr-fade-up xtr-hero-badge" style={{
-                animationDelay: '0ms',
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '6px 14px', borderRadius: 99,
-                border: `1px solid ${border}`,
-                background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
-                marginBottom: 28,
-              }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 8px #4ade80' }}/>
-                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 12, color: muted, letterSpacing: '0.06em', fontWeight: 500 }}>
-                  OPEN TO OPPORTUNITIES
-                </span>
-              </div>
-
               {/* Heading */}
               <h1
-                className={`xtr-fade-up ${dark ? 'xtr-shimmer-dark' : 'xtr-shimmer-light'}`}
+                className={`xtr-fade-up xtr-hero-name ${dark ? 'xtr-shimmer-dark' : 'xtr-shimmer-light'}`}
                 style={{
                   animationDelay: '80ms',
                   fontFamily: "'Syne',sans-serif", fontWeight: 800,
@@ -150,18 +139,18 @@ export default function Hero({ isDarkMode: dark }) {
 
               {/* Role */}
               <div className="xtr-fade-up xtr-hero-role" style={{
-                animationDelay: '140ms',
+                animationDelay: '120ms',
                 display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
               }}>
-                <div style={{ height: 1, width: 36, background: `linear-gradient(90deg,transparent,${accentHi})` }}/>
+                <div className="xtr-role-line" style={{ height: 1, width: 36, background: `linear-gradient(90deg,transparent,${accentHi})` }}/>
                 <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 16, color: accent, fontWeight: 500, letterSpacing: '0.04em' }}>
                   Software Developer
                 </span>
               </div>
 
               {/* Bio */}
-              <p className="xtr-fade-up" style={{
-                animationDelay: '200ms',
+              <p className="xtr-fade-up xtr-hero-bio" style={{
+                animationDelay: '160ms',
                 fontFamily: "'DM Sans',sans-serif", fontSize: 17, lineHeight: 1.8,
                 color: muted, maxWidth: 500, margin: '0 auto 36px',
               }}>
@@ -215,7 +204,7 @@ export default function Hero({ isDarkMode: dark }) {
                   border: '2px solid rgba(99,102,241,.4)',
                 }}/>
                 <img
-                  src="https://i.postimg.cc/L4qbCckk/Gemini-Generated-Image-wygjawygjawygjaw.png"
+                  src="https://i.postimg.cc/9XZ3Yb9d/4f02800d-1c87-4bcd-aaa7-513405cf2e63.png"
                   alt="Xander Rancap"
                   style={{
                     position: 'relative', display: 'block',
