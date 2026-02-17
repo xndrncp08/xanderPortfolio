@@ -41,14 +41,35 @@ const CSS = `
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     animation: xtr-shimmer 4s linear infinite;
   }
+
+  .xtr-proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  @media (max-width: 480px) {
+    .xtr-proj-grid {
+      grid-template-columns: 1fr;
+    }
+    .xtr-proj-card:hover { transform: none; }
+  }
 `;
 
 const PROJECTS = [
+    {
+    title: 'F1Dash',
+    tech: 'Next.js',
+    description: 'A full-stack Formula 1 analytics app built with Next.js and TypeScript, pulling live driver stats, race calendars, and lap telemetry from real F1 APIs with a fast UI built for the sport.',
+    image: 'https://i.postimg.cc/RFx66GfX/image.png',
+    tags: ['React', 'Next.js', 'TypeScript', 'JopicaAPI', 'OpenF1 API'],
+    accent: '#FF1E00',
+  },
   {
     title: 'Basketbol',
     tech: 'Next.js',
     description: 'A web app displaying NBA games, teams, and player info in a clean, responsive interface. Pulls data from multiple sports APIs with graceful loading and fallback states.',
-    image: 'https://i.postimg.cc/d0dX1VGs/image.png',
+    image: 'https://i.postimg.cc/cL8LRwdT/image.png',
     tags: ['React', 'Next.js', 'JavaScript', 'ESPN API', 'BallDontLie API'],
     accent: '#61DAFB',
   },
@@ -104,24 +125,19 @@ export default function Projects({ isDarkMode: dark }) {
     <>
       <style>{CSS}</style>
       <section id="projects" style={{
-        padding: '120px 28px',
-        background: dark
-          ? 'linear-gradient(180deg,#060812 0%,#0d1117 100%)'
-          : 'linear-gradient(180deg,#f8fafc 0%,#ffffff 100%)',
+        padding: 'clamp(60px,10vw,120px) 24px',
+        background: dark ? 'linear-gradient(180deg,#060812 0%,#0d1117 100%)' : 'linear-gradient(180deg,#f8fafc 0%,#ffffff 100%)',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-
           {/* Header */}
-          <div style={{ marginBottom: 56, textAlign: 'center' }}>
+          <div style={{ marginBottom: 48, textAlign: 'center' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
               <div style={{ width: 28, height: 3, borderRadius: 99, background: 'linear-gradient(90deg,#6366f1,#a78bfa)' }}/>
-              <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '.10em', textTransform: 'uppercase', color: accent }}>
-                Portfolio
-              </span>
+              <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '.10em', textTransform: 'uppercase', color: accent }}>Portfolio</span>
               <div style={{ width: 28, height: 3, borderRadius: 99, background: 'linear-gradient(90deg,#a78bfa,#6366f1)' }}/>
             </div>
             <h2 className={`xtr-shimmer-${dark ? 'dark' : 'light'}`}
-              style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 'clamp(2rem,4vw,3rem)', margin: '0 0 12px', letterSpacing: '-1px' }}>
+              style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,4vw,3rem)', margin: '0 0 12px', letterSpacing: '-1px' }}>
               Featured Projects
             </h2>
             <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 16, color: muted, maxWidth: 480, margin: '0 auto' }}>
@@ -129,18 +145,9 @@ export default function Projects({ isDarkMode: dark }) {
             </p>
           </div>
 
-          {/* Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap: 24,
-          }}>
+          <div className="xtr-proj-grid">
             {PROJECTS.map((p, i) => (
-              <ProjectCard
-                key={p.title} project={p} index={i}
-                dark={dark} cardBg={cardBg} border={border}
-                text={text} bold={bold} muted={muted} tagBg={tagBg}
-              />
+              <ProjectCard key={p.title} project={p} index={i} dark={dark} cardBg={cardBg} border={border} text={text} bold={bold} muted={muted} tagBg={tagBg}/>
             ))}
           </div>
         </div>
@@ -160,55 +167,40 @@ function ProjectCard({ project: p, index: i, dark, cardBg, border, text, bold, m
       onMouseLeave={() => setHov(false)}
       style={{
         animationDelay: `${i * 80}ms`,
-        borderRadius: 20,
-        background: cardBg,
+        borderRadius: 20, background: cardBg,
         border: `1px solid ${hov ? `rgba(${rgb},.35)` : border}`,
         boxShadow: hov
           ? `0 20px 60px -10px rgba(${rgb},.3), 0 4px 20px rgba(0,0,0,${dark ? '.4' : '.08'})`
           : `0 4px 20px rgba(0,0,0,${dark ? '.3' : '.06'})`,
         cursor: 'pointer',
-      }}
-    >
+      }}>
       {/* Image */}
       <div style={{ overflow: 'hidden', position: 'relative', borderRadius: '20px 20px 0 0' }}>
         <img src={p.image} alt={p.title} className="xtr-proj-img"/>
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: `linear-gradient(to top, ${cardBg} 0%, transparent 60%)`,
-          opacity: 0.7,
-        }}/>
+        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to top, ${cardBg} 0%, transparent 60%)`, opacity: 0.7 }}/>
         <div style={{
           position: 'absolute', top: 14, right: 14,
-          fontFamily: "'DM Sans',sans-serif",
-          fontSize: 11, fontWeight: 600, letterSpacing: '0.06em',
+          fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '0.06em',
           padding: '5px 12px', borderRadius: 99,
-          background: `rgba(${rgb},.18)`,
-          border: `1px solid rgba(${rgb},.35)`,
-          color: p.accent,
-          backdropFilter: 'blur(8px)',
+          background: `rgba(${rgb},.18)`, border: `1px solid rgba(${rgb},.35)`,
+          color: p.accent, backdropFilter: 'blur(8px)',
         }}>{p.tech}</div>
       </div>
 
       {/* Content */}
-      <div style={{ padding: '22px 24px 24px' }}>
+      <div style={{ padding: '20px 22px 22px' }}>
         <h3 style={{
           fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20,
           margin: '0 0 10px', letterSpacing: '-0.3px',
-          color: hov ? p.accent : bold,
-          transition: 'color .3s',
+          color: hov ? p.accent : bold, transition: 'color .3s',
         }}>{p.title}</h3>
-
-        <p style={{
-          fontFamily: "'DM Sans',sans-serif",
-          fontSize: 14, lineHeight: 1.75, color: text,
-          margin: '0 0 18px',
-        }}>{p.description}</p>
-
+        <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 14, lineHeight: 1.75, color: text, margin: '0 0 16px' }}>
+          {p.description}
+        </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
           {p.tags.map(tag => (
             <span key={tag} className="xtr-tag" style={{
-              fontFamily: "'DM Sans',sans-serif",
-              fontSize: 11, fontWeight: 500, letterSpacing: '0.03em',
+              fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.03em',
               padding: '4px 11px', borderRadius: 99,
               background: hov ? `rgba(${rgb},.10)` : tagBg,
               border: `1px solid ${hov ? `rgba(${rgb},.25)` : 'transparent'}`,
