@@ -1,72 +1,149 @@
-"use client";
+'use client';
 
-function About({ isDarkMode }) {
+import { useState } from 'react';
+
+const CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  @keyframes xtr-fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .xtr-about-fade { animation: xtr-fade-up .6s ease both; }
+`;
+
+export default function About({ isDarkMode: dark }) {
+  const muted   = dark ? '#64748b' : '#94a3b8';
+  const bold    = dark ? '#ffffff' : '#0f172a';
+  const accent  = dark ? '#818cf8' : '#4f46e5';
+  const surface = dark ? '#0d1117' : '#ffffff';
+  const border  = dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
+  const bg      = dark
+    ? 'linear-gradient(180deg,#060812 0%,#0d1117 100%)'
+    : 'linear-gradient(180deg,#f8fafc 0%,#ffffff 100%)';
+
+  const stats = [
+    { value: '3.4', label: 'GPA at SAIT' },
+    { value: '5+',  label: 'Projects Built' },
+  ];
+
+  const highlights = [
+    {title: 'Full-Stack Focus',    desc: 'React, Node.js, .NET — across web and mobile.' },
+    {title: 'Team Leadership',     desc: 'Led group projects with clean architecture and OOP.' },
+    {title: 'Hardware + Software', desc: 'Robotics immersion at Eduspec, Metro Manila.' },
+    {title: 'Always Learning',     desc: 'Diving into Java, MongoDB, and Mobile Development.' },
+  ];
+
+  const paragraphs = [
+    <span key={0}>I'm <Hl bold={bold}>Xander Rancap</Hl>, a software developer at SAIT (3.4 GPA). I build things that are clean, practical, and enjoyable to use — where good design meets solid engineering.</span>,
+    <span key={1}>My immersion at <Hl bold={bold}>Eduspec Holdings Berhad</Hl> in Metro Manila had me working hands-on with Arduino, SAM Labs, and VEX Robotics — deepening my appreciation for how hardware and software intersect.</span>,
+    <span key={2}>I've led group projects applying OOP and scalable design. My favourite was a cross-platform gym app in <Hl bold={bold}>.NET MAUI Blazor Hybrid</Hl>, focused on clean architecture, usability, and keeping the team aligned.</span>,
+    <span key={3}>I work across C#, Python, JavaScript, and SQL, and I'm comfortable with React, Node.js, and Tailwind. Always curious — currently exploring Java, MongoDB, and mobile development.</span>,
+  ];
+
   return (
-    <section
-      id="about"
-      className={`py-20 px-6 ${isDarkMode ? "bg-slate-800" : "bg-white"}`}
-    >
-      <div className="max-w-4xl mx-auto">
-        <h2
-          className={`text-4xl font-bold mb-12 ${
-            isDarkMode ? "text-white" : "text-slate-900"
-          }`}
-        >
-          About Me
-        </h2>
+    <>
+      <style>{CSS}</style>
+      <section id="about" style={{ padding: '120px 28px', background: bg }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
 
-        <div
-          className={`space-y-6 ${
-            isDarkMode ? "text-slate-300" : "text-slate-700"
-          } leading-relaxed text-lg`}
-        >
-          <p>
-            I'm{" "}
-            <strong className={isDarkMode ? "text-white" : "text-slate-900"}>
-              Xander Rancap
-            </strong>
-            , I'm a software developer currently studying Software Development
-            at SAIT, maintaining a 3.4 GPA. I enjoy building things that are
-            clean, practical, and easy to use—where good design and solid
-            functionality meet.
-          </p>
+          {/* Section label */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 48 }}>
+            <div style={{ width: 28, height: 3, borderRadius: 99, background: 'linear-gradient(90deg,#6366f1,#a78bfa)' }}/>
+            <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '.10em', textTransform: 'uppercase', color: accent }}>
+              About Me
+            </span>
+          </div>
 
-          <p>
-            I did immersion at{" "}
-            <strong className={isDarkMode ? "text-white" : "text-slate-900"}>
-              Eduspec Holdings Berhad
-            </strong>{" "}
-            in Metro Manila. I worked hands-on with educational robotics
-            platforms like Arduino, SAM Labs, and VEX Robotics, building and
-            testing robots and circuits. That experience helped me better
-            understand how hardware and software work together and gave me
-            plenty of practice collaborating and taking initiative in a team
-            setting.
-          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'start' }}>
+            {/* Left — prose + stats */}
+            <div>
+              {paragraphs.map((para, i) => (
+                <p key={i} className="xtr-about-fade" style={{
+                  animationDelay: `${i * 80}ms`,
+                  fontFamily: "'DM Sans',sans-serif",
+                  fontSize: 16, lineHeight: 1.85, color: muted, margin: '0 0 20px',
+                }}>{para}</p>
+              ))}
 
-          <p>
-            During my studies, I've worked on and led several group projects
-            using object-oriented programming and scalable design principles.
-            One of my favorite projects was a cross-platform gym management app
-            built with{" "}
-            <strong className={isDarkMode ? "text-white" : "text-slate-900"}>
-              .NET MAUI Blazor Hybrid
-            </strong>
-            , where I focused on usability, clean architecture, and keeping the
-            team organized.
-          </p>
+              <div style={{ display: 'flex', gap: 14, marginTop: 32, flexWrap: 'wrap' }}>
+                {stats.map((s, i) => (
+                  <StatCard key={s.label} s={s} dark={dark} border={border} muted={muted} delay={360 + i * 80}/>
+                ))}
+              </div>
+            </div>
 
-          <p>
-            Tech-wise, I work with C#, Python, JavaScript, and SQL, and I'm
-            comfortable using tools like React, Node.js, and Tailwind CSS. I'm
-            always learning—currently diving into Java, MongoDB, and mobile
-            development—and I like staying curious and experimenting with new
-            tech.
-          </p>
+            {/* Right — highlight cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              {highlights.map((h, i) => (
+                <HighlightCard
+                  key={h.title} dark={dark} surface={surface}
+                  border={border} bold={bold} muted={muted}
+                  delay={i * 80} {...h}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 
-export default About;
+function StatCard({ s, dark, border, muted, delay }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div
+      className="xtr-about-fade"
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{
+        animationDelay: `${delay}ms`,
+        flex: 1, minWidth: 90,
+        background: hov
+          ? dark ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)'
+          : dark ? 'rgba(255,255,255,0.04)' : 'rgba(99,102,241,0.04)',
+        border: `1px solid ${hov ? 'rgba(99,102,241,0.4)' : border}`,
+        borderRadius: 14, padding: '16px 14px', textAlign: 'center',
+        transition: 'all .3s ease',
+        transform: hov ? 'translateY(-4px)' : 'none',
+        boxShadow: hov ? '0 10px 28px rgba(99,102,241,0.18)' : 'none',
+      }}>
+      <div style={{
+        fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 26,
+        background: 'linear-gradient(135deg,#818cf8,#c4b5fd)',
+        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+      }}>{s.value}</div>
+      <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, color: muted, marginTop: 4, fontWeight: 500, letterSpacing: '0.04em' }}>
+        {s.label}
+      </div>
+    </div>
+  );
+}
+
+function HighlightCard({ icon, title, desc, dark, surface, border, bold, muted, delay }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div
+      className="xtr-about-fade"
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{
+        animationDelay: `${delay + 200}ms`,
+        background: hov
+          ? dark ? 'rgba(99,102,241,0.10)' : 'rgba(99,102,241,0.06)'
+          : dark ? 'rgba(255,255,255,0.03)' : surface,
+        border: `1px solid ${hov ? 'rgba(99,102,241,0.45)' : border}`,
+        borderRadius: 16, padding: '20px 18px',
+        cursor: 'default', transition: 'all .3s ease',
+        transform: hov ? 'translateY(-4px)' : 'none',
+        boxShadow: hov ? '0 12px 32px rgba(99,102,241,0.15)' : 'none',
+      }}>
+      <div style={{ fontSize: 22, marginBottom: 10 }}>{icon}</div>
+      <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 13, fontWeight: 700, color: bold, marginBottom: 6 }}>{title}</div>
+      <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: muted, lineHeight: 1.6 }}>{desc}</div>
+    </div>
+  );
+}
+
+function Hl({ children, bold }) {
+  return <strong style={{ color: bold, fontWeight: 600 }}>{children}</strong>;
+}
