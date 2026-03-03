@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
@@ -57,97 +57,196 @@ const CSS = `
 `;
 
 const PROJECTS = [
-    {
-    title: 'F1Dash',
-    tech: 'Next.js',
-    description: 'A full-stack Formula 1 analytics app built with Next.js and TypeScript, pulling live driver stats, race calendars, and lap telemetry from real F1 APIs with a fast UI built for the sport.',
-    image: 'https://i.postimg.cc/RFx66GfX/image.png',
-    tags: ['React', 'Next.js', 'TypeScript', 'JopicaAPI', 'OpenF1 API'],
-    accent: '#FF1E00',
+  {
+    title: "F1Dash",
+    tech: "Next.js",
+    description:
+      "A full-stack Formula 1 analytics app built with Next.js and TypeScript, pulling live driver stats, race calendars, and lap telemetry from real F1 APIs with a fast UI built for the sport.",
+    image: "https://i.postimg.cc/RFx66GfX/image.png",
+    tags: ["React", "Next.js", "TypeScript", "JopicaAPI", "OpenF1 API"],
+    accent: "#FF1E00",
   },
   {
-    title: 'Basketbol',
-    tech: 'Next.js',
-    description: 'A web app displaying NBA games, teams, and player info in a clean, responsive interface. Pulls data from multiple sports APIs with graceful loading and fallback states.',
-    image: 'https://i.postimg.cc/cL8LRwdT/image.png',
-    tags: ['React', 'Next.js', 'JavaScript', 'ESPN API', 'BallDontLie API'],
-    accent: '#61DAFB',
+    title: "Apex F1",
+    tech: "Next.js, TypeScript, Supabase, Python",
+    description:
+      "A full-stack Formula 1 prediction and analytics platform. Features REST APIs for driver and constructor data, machine learning-powered race predictions, and interactive dashboards for historical F1 statistics and telemetry.",
+    image: "https://i.postimg.cc/Y0tqJ2sF/image.png",
+    tags: [
+      "Next.js",
+      "TypeScript",
+      "Supabase",
+      "PostgreSQL",
+      "REST API",
+      "Machine Learning",
+    ],
+    accent: "	#FFBF00",
   },
   {
-    title: 'YYC Track',
-    tech: 'MERN Stack',
-    description: 'Capstone project helping Calgary Transit riders view stations on an interactive map, submit feedback, and track real-time station ratings via a Commuter Experience Index.',
-    image: 'https://i.postimg.cc/1zpCSYZ0/image.png',
-    tags: ['React', 'Node.js', 'MongoDB', 'Express'],
-    accent: '#68A063',
+    title: "BMR Pharmacy Sales Tracker",
+    tech: "React + Express",
+    description:
+      "A full-stack pharmacy sales tracking app built with React and Node.js, recording medicine transactions, generating monthly revenue reports, and displaying live dashboard analytics backed by a Supabase PostgreSQL database.",
+    image: "https://i.postimg.cc/7LbzW9TW/image.png",
+    tags: ["React", "Node.js", "Express", "Supabase", "Tailwind CSS"],
+    accent: "#16a34a",
   },
   {
-    title: 'Gym Management System',
-    tech: '.NET MAUI Blazor Hybrid',
-    description: 'Cross-platform gym management app with secure authentication, membership tracking, scheduling, and full database integration.',
-    image: 'https://i.postimg.cc/t4trHsnd/FitZone.png',
-    tags: ['C#', '.NET MAUI Blazor', 'MariaDB'],
-    accent: '#9B59B6',
+    title: "Basketbol",
+    tech: "Next.js",
+    description:
+      "A web app displaying NBA games, teams, and player info in a clean, responsive interface. Pulls data from multiple sports APIs with graceful loading and fallback states.",
+    image: "https://i.postimg.cc/cL8LRwdT/image.png",
+    tags: ["React", "Next.js", "JavaScript", "ESPN API", "BallDontLie API"],
+    accent: "#61DAFB",
   },
   {
-    title: 'NV Closet',
-    tech: 'UI/UX Design',
-    description: 'Digital wardrobe management app with AI-powered outfit recommendations — designed with a modern, intuitive interface focused on user experience.',
-    image: 'https://i.postimg.cc/Kj2kF8ML/NV.png',
-    tags: ['Figma', 'UI/UX', 'Design'],
-    accent: '#EC4899',
+    title: "YYC Track",
+    tech: "MERN Stack",
+    description:
+      "Capstone project helping Calgary Transit riders view stations on an interactive map, submit feedback, and track real-time station ratings via a Commuter Experience Index.",
+    image: "https://i.postimg.cc/1zpCSYZ0/image.png",
+    tags: ["React", "Node.js", "MongoDB", "Express"],
+    accent: "#68A063",
   },
   {
-    title: 'Punch Music',
-    tech: 'React Native',
-    description: 'Team-built music discovery app integrating the Spotify API — swipe through songs with smooth gesture controls, real-time playback, and a polished UI.',
-    image: 'https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=800&q=80',
-    tags: ['React.js', 'Supabase', 'Spotify API'],
-    accent: '#1DB954',
+    title: "Gym Management System",
+    tech: ".NET MAUI Blazor Hybrid",
+    description:
+      "Cross-platform gym management app with secure authentication, membership tracking, scheduling, and full database integration.",
+    image: "https://i.postimg.cc/t4trHsnd/FitZone.png",
+    tags: ["C#", ".NET MAUI Blazor", "MariaDB"],
+    accent: "#9B59B6",
+  },
+  {
+    title: "NV Closet",
+    tech: "UI/UX Design",
+    description:
+      "Digital wardrobe management app with AI-powered outfit recommendations — designed with a modern, intuitive interface focused on user experience.",
+    image: "https://i.postimg.cc/Kj2kF8ML/NV.png",
+    tags: ["Figma", "UI/UX", "Design"],
+    accent: "#EC4899",
+  },
+  {
+    title: "Punch Music",
+    tech: "React Native",
+    description:
+      "Team-built music discovery app integrating the Spotify API — swipe through songs with smooth gesture controls, real-time playback, and a polished UI.",
+    image:
+      "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=800&q=80",
+    tags: ["React.js", "Supabase", "Spotify API"],
+    accent: "#1DB954",
   },
 ];
 
 function hexToRgb(hex) {
   const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return r ? `${parseInt(r[1],16)},${parseInt(r[2],16)},${parseInt(r[3],16)}` : '99,102,241';
+  return r
+    ? `${parseInt(r[1], 16)},${parseInt(r[2], 16)},${parseInt(r[3], 16)}`
+    : "99,102,241";
 }
 
 export default function Projects({ isDarkMode: dark }) {
-  const muted  = dark ? '#64748b' : '#94a3b8';
-  const text   = dark ? '#94a3b8' : '#64748b';
-  const bold   = dark ? '#ffffff' : '#0f172a';
-  const accent = dark ? '#818cf8' : '#4f46e5';
-  const border = dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
-  const cardBg = dark ? '#0d1117' : '#ffffff';
-  const tagBg  = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+  const muted = dark ? "#64748b" : "#94a3b8";
+  const text = dark ? "#94a3b8" : "#64748b";
+  const bold = dark ? "#ffffff" : "#0f172a";
+  const accent = dark ? "#818cf8" : "#4f46e5";
+  const border = dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)";
+  const cardBg = dark ? "#0d1117" : "#ffffff";
+  const tagBg = dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)";
 
   return (
     <>
       <style>{CSS}</style>
-      <section id="projects" style={{
-        padding: 'clamp(60px,10vw,120px) 24px',
-        background: dark ? 'linear-gradient(180deg,#060812 0%,#0d1117 100%)' : 'linear-gradient(180deg,#f8fafc 0%,#ffffff 100%)',
-      }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+      <section
+        id="projects"
+        style={{
+          padding: "clamp(60px,10vw,120px) 24px",
+          background: dark
+            ? "linear-gradient(180deg,#060812 0%,#0d1117 100%)"
+            : "linear-gradient(180deg,#f8fafc 0%,#ffffff 100%)",
+        }}
+      >
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           {/* Header */}
-          <div style={{ marginBottom: 48, textAlign: 'center' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-              <div style={{ width: 28, height: 3, borderRadius: 99, background: 'linear-gradient(90deg,#6366f1,#a78bfa)' }}/>
-              <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '.10em', textTransform: 'uppercase', color: accent }}>Portfolio</span>
-              <div style={{ width: 28, height: 3, borderRadius: 99, background: 'linear-gradient(90deg,#a78bfa,#6366f1)' }}/>
+          <div style={{ marginBottom: 48, textAlign: "center" }}>
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 10,
+                marginBottom: 12,
+              }}
+            >
+              <div
+                style={{
+                  width: 28,
+                  height: 3,
+                  borderRadius: 99,
+                  background: "linear-gradient(90deg,#6366f1,#a78bfa)",
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: "'DM Sans',sans-serif",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: ".10em",
+                  textTransform: "uppercase",
+                  color: accent,
+                }}
+              >
+                Portfolio
+              </span>
+              <div
+                style={{
+                  width: 28,
+                  height: 3,
+                  borderRadius: 99,
+                  background: "linear-gradient(90deg,#a78bfa,#6366f1)",
+                }}
+              />
             </div>
-            <h2 className={`xtr-shimmer-${dark ? 'dark' : 'light'}`}
-              style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 'clamp(1.8rem,4vw,3rem)', margin: '0 0 12px', letterSpacing: '-1px' }}>
+            <h2
+              className={`xtr-shimmer-${dark ? "dark" : "light"}`}
+              style={{
+                fontFamily: "'Syne',sans-serif",
+                fontWeight: 800,
+                fontSize: "clamp(1.8rem,4vw,3rem)",
+                margin: "0 0 12px",
+                letterSpacing: "-1px",
+              }}
+            >
               Featured Projects
             </h2>
-            <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 16, color: muted, maxWidth: 480, margin: '0 auto' }}>
-              A selection of things I've built — from full-stack web apps to mobile experiences.
+            <p
+              style={{
+                fontFamily: "'DM Sans',sans-serif",
+                fontSize: 16,
+                color: muted,
+                maxWidth: 480,
+                margin: "0 auto",
+              }}
+            >
+              A selection of things I've built — from full-stack web apps to
+              mobile experiences.
             </p>
           </div>
 
           <div className="xtr-proj-grid">
             {PROJECTS.map((p, i) => (
-              <ProjectCard key={p.title} project={p} index={i} dark={dark} cardBg={cardBg} border={border} text={text} bold={bold} muted={muted} tagBg={tagBg}/>
+              <ProjectCard
+                key={p.title}
+                project={p}
+                index={i}
+                dark={dark}
+                cardBg={cardBg}
+                border={border}
+                text={text}
+                bold={bold}
+                muted={muted}
+                tagBg={tagBg}
+              />
             ))}
           </div>
         </div>
@@ -156,7 +255,17 @@ export default function Projects({ isDarkMode: dark }) {
   );
 }
 
-function ProjectCard({ project: p, index: i, dark, cardBg, border, text, bold, muted, tagBg }) {
+function ProjectCard({
+  project: p,
+  index: i,
+  dark,
+  cardBg,
+  border,
+  text,
+  bold,
+  muted,
+  tagBg,
+}) {
   const [hov, setHov] = useState(false);
   const rgb = hexToRgb(p.accent);
 
@@ -167,45 +276,98 @@ function ProjectCard({ project: p, index: i, dark, cardBg, border, text, bold, m
       onMouseLeave={() => setHov(false)}
       style={{
         animationDelay: `${i * 80}ms`,
-        borderRadius: 20, background: cardBg,
+        borderRadius: 20,
+        background: cardBg,
         border: `1px solid ${hov ? `rgba(${rgb},.35)` : border}`,
         boxShadow: hov
-          ? `0 20px 60px -10px rgba(${rgb},.3), 0 4px 20px rgba(0,0,0,${dark ? '.4' : '.08'})`
-          : `0 4px 20px rgba(0,0,0,${dark ? '.3' : '.06'})`,
-        cursor: 'pointer',
-      }}>
+          ? `0 20px 60px -10px rgba(${rgb},.3), 0 4px 20px rgba(0,0,0,${dark ? ".4" : ".08"})`
+          : `0 4px 20px rgba(0,0,0,${dark ? ".3" : ".06"})`,
+        cursor: "pointer",
+      }}
+    >
       {/* Image */}
-      <div style={{ overflow: 'hidden', position: 'relative', borderRadius: '20px 20px 0 0' }}>
-        <img src={p.image} alt={p.title} className="xtr-proj-img"/>
-        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to top, ${cardBg} 0%, transparent 60%)`, opacity: 0.7 }}/>
-        <div style={{
-          position: 'absolute', top: 14, right: 14,
-          fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '0.06em',
-          padding: '5px 12px', borderRadius: 99,
-          background: `rgba(${rgb},.18)`, border: `1px solid rgba(${rgb},.35)`,
-          color: p.accent, backdropFilter: 'blur(8px)',
-        }}>{p.tech}</div>
+      <div
+        style={{
+          overflow: "hidden",
+          position: "relative",
+          borderRadius: "20px 20px 0 0",
+        }}
+      >
+        <img src={p.image} alt={p.title} className="xtr-proj-img" />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `linear-gradient(to top, ${cardBg} 0%, transparent 60%)`,
+            opacity: 0.7,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 14,
+            right: 14,
+            fontFamily: "'DM Sans',sans-serif",
+            fontSize: 11,
+            fontWeight: 600,
+            letterSpacing: "0.06em",
+            padding: "5px 12px",
+            borderRadius: 99,
+            background: `rgba(${rgb},.18)`,
+            border: `1px solid rgba(${rgb},.35)`,
+            color: p.accent,
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          {p.tech}
+        </div>
       </div>
 
       {/* Content */}
-      <div style={{ padding: '20px 22px 22px' }}>
-        <h3 style={{
-          fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20,
-          margin: '0 0 10px', letterSpacing: '-0.3px',
-          color: hov ? p.accent : bold, transition: 'color .3s',
-        }}>{p.title}</h3>
-        <p style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 14, lineHeight: 1.75, color: text, margin: '0 0 16px' }}>
+      <div style={{ padding: "20px 22px 22px" }}>
+        <h3
+          style={{
+            fontFamily: "'Syne',sans-serif",
+            fontWeight: 800,
+            fontSize: 20,
+            margin: "0 0 10px",
+            letterSpacing: "-0.3px",
+            color: hov ? p.accent : bold,
+            transition: "color .3s",
+          }}
+        >
+          {p.title}
+        </h3>
+        <p
+          style={{
+            fontFamily: "'DM Sans',sans-serif",
+            fontSize: 14,
+            lineHeight: 1.75,
+            color: text,
+            margin: "0 0 16px",
+          }}
+        >
           {p.description}
         </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
-          {p.tags.map(tag => (
-            <span key={tag} className="xtr-tag" style={{
-              fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 500, letterSpacing: '0.03em',
-              padding: '4px 11px', borderRadius: 99,
-              background: hov ? `rgba(${rgb},.10)` : tagBg,
-              border: `1px solid ${hov ? `rgba(${rgb},.25)` : 'transparent'}`,
-              color: hov ? p.accent : muted,
-            }}>{tag}</span>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+          {p.tags.map((tag) => (
+            <span
+              key={tag}
+              className="xtr-tag"
+              style={{
+                fontFamily: "'DM Sans',sans-serif",
+                fontSize: 11,
+                fontWeight: 500,
+                letterSpacing: "0.03em",
+                padding: "4px 11px",
+                borderRadius: 99,
+                background: hov ? `rgba(${rgb},.10)` : tagBg,
+                border: `1px solid ${hov ? `rgba(${rgb},.25)` : "transparent"}`,
+                color: hov ? p.accent : muted,
+              }}
+            >
+              {tag}
+            </span>
           ))}
         </div>
       </div>
