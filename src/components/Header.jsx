@@ -1,70 +1,194 @@
 'use client';
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');
-
-  .xtr-nav-pill::after {
-    content: '';
-    position: absolute; bottom: -4px; left: 0; right: 0;
-    height: 2px; border-radius: 9px;
-    background: linear-gradient(90deg,#6366f1,#a78bfa);
-    transform-origin: left;
-    animation: xtr-grow .3s ease;
+  @keyframes nav-float {
+    0%,100% { transform: translateX(-50%) translateY(0px); }
+    50%      { transform: translateX(-50%) translateY(-3px); }
   }
-  @keyframes xtr-grow {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
+  @keyframes nav-glow-pulse {
+    0%,100% { box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(225,6,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08); }
+    50%      { box-shadow: 0 12px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(225,6,0,0.4), 0 0 30px rgba(225,6,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08); }
+  }
+  @keyframes indicator-slide {
+    from { opacity:0; transform:scaleX(0); }
+    to   { opacity:1; transform:scaleX(1); }
+  }
+  @keyframes drawer-in {
+    from { opacity:0; transform:translateY(-10px); }
+    to   { opacity:1; transform:translateY(0); }
   }
 
-  /* Mobile menu */
-  .xtr-mobile-menu {
+  .nav-pill {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    animation: nav-float 4s ease-in-out infinite, nav-glow-pulse 3s ease-in-out infinite;
+    transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .nav-pill-inner {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px 6px 12px;
+    border-radius: 999px;
+    background: rgba(8,8,12,0.85);
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid rgba(255,255,255,0.1);
+    white-space: nowrap;
+  }
+
+  .nav-logo-text {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    background: linear-gradient(135deg, #F2F2F2, #E10600);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-right: 8px;
+    padding-right: 12px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .nav-item {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 999px;
+    color: rgba(255,255,255,0.45);
+    transition: all 0.25s ease;
+  }
+  .nav-item:hover { color: rgba(255,255,255,0.9); }
+  .nav-item.active {
+    color: #fff;
+    background: rgba(225,6,0,0.15);
+    box-shadow: inset 0 0 0 1px rgba(225,6,0,0.3), 0 0 16px rgba(225,6,0,0.2);
+  }
+
+  .nav-hire {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #E10600, #FF3A2D);
+    color: #fff;
+    border: none;
+    cursor: none;
+    text-decoration: none;
+    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+    box-shadow: 0 0 20px rgba(225,6,0,0.35);
+  }
+  .nav-hire:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 32px rgba(225,6,0,0.6);
+  }
+
+  .nav-hamburger {
     display: none;
     flex-direction: column;
     gap: 4px;
     background: none;
     border: none;
-    cursor: pointer;
-    padding: 6px;
+    cursor: none;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
   }
-  .xtr-mobile-menu span {
+  .nav-hamburger span {
     display: block;
-    width: 22px;
-    height: 2px;
-    border-radius: 99px;
-    background: #818cf8;
-    transition: all .3s ease;
+    width: 18px; height: 1.5px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 1px;
+    transition: all 0.3s;
   }
-  .xtr-mobile-menu.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-  .xtr-mobile-menu.open span:nth-child(2) { opacity: 0; }
-  .xtr-mobile-menu.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); background: #E10600; }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); background: #E10600; }
 
-  .xtr-nav-links { display: flex; }
+  .nav-links-desktop { display: flex; align-items: center; gap: 2px; }
 
   @media (max-width: 640px) {
-    .xtr-nav-links { display: none !important; }
-    .xtr-mobile-menu { display: flex !important; }
+    .nav-links-desktop { display: none !important; }
+    .nav-hamburger { display: flex !important; }
+    .nav-hire-desktop { display: none !important; }
   }
 
-  .xtr-drawer {
+  .nav-drawer {
     position: fixed;
-    top: 64px; left: 0; right: 0;
-    z-index: 99;
-    padding: 16px 24px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    transition: all .3s ease;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+    animation: drawer-in 0.3s cubic-bezier(0.16,1,0.3,1);
+    min-width: 220px;
+  }
+  .nav-drawer-inner {
+    background: rgba(6,6,10,0.95);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 8px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(225,6,0,0.1);
+    overflow: hidden;
+  }
+  .nav-drawer-inner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(225,6,0,0.5), transparent);
+  }
+  .nav-drawer-item {
+    display: block; width: 100%;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 13px 20px;
+    background: none; border: none; cursor: none;
+    color: rgba(255,255,255,0.5);
+    text-align: left;
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .nav-drawer-item:hover, .nav-drawer-item.active { color: #fff; background: rgba(225,6,0,0.12); }
+
+  /* Red dot indicator */
+  .nav-status-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #E10600;
+    box-shadow: 0 0 8px #E10600;
+    animation: border-glow 2s ease-in-out infinite;
+    flex-shrink: 0;
+    margin-right: 2px;
   }
 `;
 
-export default function Header({ isDarkMode, toggleDarkMode, activeSection }) {
-  const [scrolled, setScrolled]   = useState(false);
-  const [menuOpen, setMenuOpen]   = useState(false);
+export default function Header({ activeSection }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 30);
+    const h = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', h);
     return () => window.removeEventListener('scroll', h);
   }, []);
@@ -73,111 +197,63 @@ export default function Header({ isDarkMode, toggleDarkMode, activeSection }) {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setMenuOpen(false);
   };
-
-  const muted   = isDarkMode ? '#64748b' : '#94a3b8';
-  const textHi  = isDarkMode ? '#e2e8f0' : '#1e293b';
-  const accent  = '#a5b4fc';
-  const border  = isDarkMode ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
-  const bg      = isDarkMode ? 'rgba(6,8,18,0.97)' : 'rgba(248,250,252,0.97)';
+  const NAV = ['About', 'Skills', 'Projects', 'Contact'];
 
   return (
     <>
       <style>{CSS}</style>
-      <header style={{
-        position: 'fixed', top: 0, width: '100%', zIndex: 100,
-        backdropFilter: 'blur(20px)',
-        background: scrolled
-          ? isDarkMode ? 'rgba(6,8,18,0.94)' : 'rgba(248,250,252,0.94)'
-          : isDarkMode ? 'rgba(6,8,18,0.5)'  : 'rgba(248,250,252,0.5)',
-        borderBottom: `1px solid ${scrolled || menuOpen ? border : 'transparent'}`,
-        boxShadow: scrolled ? `0 4px 40px rgba(0,0,0,${isDarkMode ? '.5' : '.06'})` : 'none',
-        transition: 'all .4s ease',
-      }}>
-        <nav style={{
-          maxWidth: 1100, margin: '0 auto', padding: '0 24px',
-          height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
+      <div className="nav-pill">
+        <div className="nav-pill-inner">
+          {/* Status dot */}
+          <div className="nav-status-dot" />
+
           {/* Logo */}
-          <div style={{
-            fontFamily: "'Syne', sans-serif", fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px',
-            background: 'linear-gradient(135deg,#818cf8,#c4b5fd)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>XTR</div>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ background: 'none', border: 'none', cursor: 'none', padding: 0 }}>
+            <span className="nav-logo-text">XTR</span>
+          </button>
 
-          {/* Desktop links */}
-          <ul className="xtr-nav-links" style={{ gap: 36, listStyle: 'none', margin: 0, padding: 0 }}>
-            {['About','Skills','Projects','Contact'].map(item => (
-              <li key={item}>
-                <NavBtn
-                  isActive={activeSection === item.toLowerCase()}
-                  muted={muted} textHi={textHi} accent={accent}
-                  onClick={() => nav(item.toLowerCase())}
-                >{item}</NavBtn>
-              </li>
+          {/* Desktop nav */}
+          <nav className="nav-links-desktop">
+            {NAV.map(item => (
+              <button
+                key={item}
+                className={`nav-item${activeSection === item.toLowerCase() ? ' active' : ''}`}
+                onClick={() => nav(item.toLowerCase())}
+              >{item}</button>
             ))}
-          </ul>
+          </nav>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* Dark toggle */}
-            <button onClick={toggleDarkMode} style={{
-              background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
-              border: `1px solid ${border}`,
-              borderRadius: 10, width: 38, height: 38,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', fontSize: 16, color: muted, transition: 'all .25s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.color = accent; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = muted; e.currentTarget.style.borderColor = border; }}
-            >{isDarkMode ? '☀' : '☾'}</button>
+          {/* Hire CTA */}
+          <a href="mailto:xandertrancap08@gmail.com" className="nav-hire nav-hire-desktop">
+            Hire Me
+            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+              <path d="M6 1l3 3.5L6 8M9 4.5H1" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </a>
 
-            {/* Hamburger */}
-            <button
-              className={`xtr-mobile-menu ${menuOpen ? 'open' : ''}`}
-              onClick={() => setMenuOpen(o => !o)}
-              aria-label="Toggle menu"
-            >
-              <span/><span/><span/>
-            </button>
-          </div>
-        </nav>
+          {/* Hamburger (mobile) */}
+          <button className={`nav-hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(o => !o)} aria-label="Menu">
+            <span/><span/><span/>
+          </button>
+        </div>
+      </div>
 
-        {/* Mobile drawer */}
-        {menuOpen && (
-          <div className="xtr-drawer" style={{ background: bg, borderBottom: `1px solid ${border}` }}>
-            {['About','Skills','Projects','Contact'].map(item => (
-              <button key={item} onClick={() => nav(item.toLowerCase())} style={{
-                background: activeSection === item.toLowerCase()
-                  ? isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)'
-                  : 'transparent',
-                border: `1px solid ${activeSection === item.toLowerCase() ? 'rgba(99,102,241,0.3)' : 'transparent'}`,
-                borderRadius: 10, padding: '12px 16px', textAlign: 'left',
-                fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 500,
-                color: activeSection === item.toLowerCase() ? accent : muted,
-                cursor: 'pointer', transition: 'all .2s',
-              }}>{item}</button>
+      {/* Mobile drawer */}
+      {menuOpen && (
+        <div className="nav-drawer">
+          <div className="nav-drawer-inner" style={{ position: 'relative' }}>
+            {NAV.map(item => (
+              <button key={item} className={`nav-drawer-item${activeSection === item.toLowerCase() ? ' active' : ''}`} onClick={() => nav(item.toLowerCase())}>
+                {item}
+              </button>
             ))}
+            <a href="mailto:xandertrancap08@gmail.com"
+              style={{ display:'block', margin:'8px 8px 0', padding:'13px 20px', background:'linear-gradient(135deg,#E10600,#FF3A2D)', borderRadius:12, fontFamily:"'Barlow Condensed',sans-serif", fontSize:13, fontWeight:800, letterSpacing:'0.14em', textTransform:'uppercase', color:'#fff', textDecoration:'none', textAlign:'center', cursor:'none' }}>
+              Hire Me ↗
+            </a>
           </div>
-        )}
-      </header>
+        </div>
+      )}
     </>
-  );
-}
-
-function NavBtn({ children, isActive, muted, textHi, accent, onClick }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <button
-      onClick={onClick}
-      className={isActive ? 'xtr-nav-pill' : ''}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{
-        position: 'relative', background: 'none', border: 'none',
-        cursor: 'pointer', fontSize: 14, fontWeight: 500,
-        fontFamily: "'DM Sans', sans-serif", letterSpacing: '0.01em',
-        color: isActive ? accent : hov ? textHi : muted,
-        transition: 'color .25s', padding: '4px 0',
-      }}
-    >{children}</button>
   );
 }

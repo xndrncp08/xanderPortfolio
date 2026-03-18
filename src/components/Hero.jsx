@@ -1,267 +1,327 @@
 'use client';
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import TypingEffect from './TypingEffect';
+import ProfileEffect from './ProfileEffect';
 
 const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  @keyframes h-up   { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes h-left { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes h-rpm  { from { width:0; } }
+  @keyframes h-pulse-dot { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(2); opacity:0; } }
+  @keyframes h-shimmer { 0% { background-position:-300% center; } 100% { background-position:300% center; } }
+  @keyframes h-line { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+  @keyframes h-breathe { 0%,100% { opacity:0.5; transform:scale(1); } 50% { opacity:1; transform:scale(1.04); } }
+  @keyframes h-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
+  @keyframes h-badge { from { opacity:0; transform:translateY(8px) scale(0.92); } to { opacity:1; transform:translateY(0) scale(1); } }
+  @keyframes h-scan  { 0%{top:-10%;opacity:0;} 5%{opacity:0.8;} 95%{opacity:0.3;} 100%{top:110%;opacity:0;} }
 
-  @keyframes xtr-shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position:  200% center; }
+  .h-section {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: clamp(110px,14vw,160px) clamp(20px,4vw,56px) clamp(48px,7vw,88px);
+    position: relative; z-index: 1; overflow: hidden;
   }
-  @keyframes xtr-orb1 {
-    0%,100% { transform: translate(0,0) scale(1); }
-    33%     { transform: translate(40px,-30px) scale(1.06); }
-    66%     { transform: translate(-25px,20px) scale(0.96); }
-  }
-  @keyframes xtr-orb2 {
-    0%,100% { transform: translate(0,0) scale(1); }
-    33%     { transform: translate(-30px,22px) scale(1.04); }
-    66%     { transform: translate(18px,-14px) scale(0.98); }
-  }
-  @keyframes xtr-float {
-    0%,100% { transform: translateY(0); }
-    50%     { transform: translateY(-8px); }
-  }
-  @keyframes xtr-pulse {
-    0%   { transform: scale(0.95); opacity: .6; }
-    70%  { transform: scale(1.1);  opacity: 0; }
-    100% { transform: scale(0.95); opacity: 0; }
-  }
-  @keyframes xtr-fade-up {
-    from { opacity: 0; transform: translateY(22px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes xtr-fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  .xtr-fade-up  { animation: xtr-fade-up  0.6s ease both; }
-  .xtr-fade-in  { animation: xtr-fade-in  0.8s ease both; }
-  .xtr-float    { animation: xtr-float    3s ease-in-out infinite; }
-  .xtr-orb1     { animation: xtr-orb1    12s ease-in-out infinite; }
-  .xtr-orb2     { animation: xtr-orb2    15s ease-in-out infinite; }
-  .xtr-pulse    { animation: xtr-pulse   2.5s ease-out infinite; }
-
-  .xtr-shimmer-dark {
-    background: linear-gradient(90deg,#fff 15%,#a5b4fc 35%,#c4b5fd 50%,#a5b4fc 65%,#fff 85%);
-    background-size: 200% auto;
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    animation: xtr-shimmer 4s linear infinite;
-  }
-  .xtr-shimmer-light {
-    background: linear-gradient(90deg,#0f172a 15%,#4f46e5 35%,#7c3aed 50%,#4f46e5 65%,#0f172a 85%);
-    background-size: 200% auto;
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    animation: xtr-shimmer 4s linear infinite;
-  }
-
-  .xtr-hero-grid {
+  .h-grid {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 64px;
+    gap: clamp(48px,7vw,110px);
     align-items: center;
+    max-width: 1240px;
+    margin: 0 auto; width: 100%;
   }
-  .xtr-hero-avatar { display: block; }
+  @media (max-width: 860px) {
+    .h-grid { grid-template-columns:1fr; gap:56px; text-align:center; }
+    .h-avatar-col { order:-1; display:flex; justify-content:center; }
+    .h-btns { justify-content:center !important; }
+    .h-socials { justify-content:center !important; }
+    .h-role-row { justify-content:center !important; }
+  }
 
-  @media (max-width: 768px) {
-    .xtr-hero-grid {
-      grid-template-columns: 1fr;
-      gap: 40px;
-      text-align: center;
-    }
-    .xtr-hero-avatar {
-      order: -1;
-      display: flex;
-      justify-content: center;
-    }
-    .xtr-hero-badge   { justify-content: center; }
-    .xtr-hero-role    { justify-content: center; }
-    .xtr-hero-btns    { justify-content: center; }
-    .xtr-hero-socials { justify-content: center; }
-    .xtr-hero-bio     { margin-left: auto !important; margin-right: auto !important; text-align: center; }
-    .xtr-hero-name    { font-size: clamp(2rem, 10vw, 3.4rem) !important; letter-spacing: -1px !important; }
-    .xtr-role-line    { display: none; }
-    .xtr-hero-role    { justify-content: center; gap: 8px; }
+  .h-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5.5rem,14vw,13rem);
+    line-height: 0.84;
+    letter-spacing: 0.02em;
+    margin: 0;
+    animation: h-up 0.9s cubic-bezier(0.16,1,0.3,1) 0.1s both;
   }
+  .h-name-white {
+    background: linear-gradient(90deg, #F2F2F2 20%, #fff 40%, #aaa 50%, #fff 60%, #F2F2F2 80%);
+    background-size: 300% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    animation: h-shimmer 5s linear 1.2s infinite;
+  }
+  .h-name-red {
+    background: linear-gradient(135deg, #E10600 0%, #FF6B35 45%, #E10600 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    animation: h-shimmer 3s linear 1.5s infinite;
+    filter: drop-shadow(0 0 28px rgba(225,6,0,0.55));
+  }
+
+  .h-stat-bar {
+    display: flex; gap: 0;
+    background: rgba(255,255,255,0.018);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 18px; overflow: hidden; position: relative;
+    max-width: 1240px; margin: clamp(36px,5vw,60px) auto 0; width: 100%;
+  }
+  .h-stat-bar::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, rgba(225,6,0,0.7), rgba(255,107,53,0.5), transparent);
+  }
+  .h-stat { flex:1; padding:clamp(14px,2vw,22px) clamp(14px,2.5vw,26px); border-right:1px solid rgba(255,255,255,0.04); }
+  .h-stat:last-child { border-right:none; }
+
+  .h-rpm { height:2px; background:rgba(255,255,255,0.05); border-radius:1px; margin-top:8px; overflow:hidden; }
+  .h-rpm-fill { height:100%; border-radius:1px; background:linear-gradient(90deg,#E10600,#FF6B35); animation:h-rpm 1.6s cubic-bezier(0.16,1,0.3,1) both; box-shadow:0 0 10px rgba(225,6,0,0.7); }
+
+  .h-float-badge {
+    position:absolute;
+    background: rgba(6,6,12,0.88);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 10px 14px;
+    white-space: nowrap; z-index: 5;
+  }
+  .h-fb-1 { animation: h-badge 0.6s cubic-bezier(0.16,1,0.3,1) 1.1s both; }
+  .h-fb-2 { animation: h-badge 0.6s cubic-bezier(0.16,1,0.3,1) 1.3s both; }
+  .h-fb-3 { animation: h-badge 0.6s cubic-bezier(0.16,1,0.3,1) 1.5s both; }
+  @media (max-width:860px) { .h-float-badge { display:none; } }
 `;
 
-export default function Hero({ isDarkMode: dark }) {
-  const muted    = dark ? '#64748b' : '#94a3b8';
-  const text     = dark ? '#e2e8f0' : '#1e293b';
-  const accent   = dark ? '#818cf8' : '#4f46e5';
-  const accentHi = dark ? '#a5b4fc' : '#6366f1';
-  const bg       = dark ? '#060812' : '#f8fafc';
-  const surface  = dark ? '#0d1117' : '#ffffff';
-  const border   = dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
+export default function Hero() {
+  const [mounted, setMounted] = useState(false);
+  const [xanderDone, setXanderDone] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 80); return () => clearTimeout(t); }, []);
+
+  const stats = [
+    { label: 'GPA', value: '3.4', sub: '/ 4.0 SAIT', fill: 85, delay: '0.95s' },
+    { label: 'Projects', value: '9+', sub: 'full-stack', fill: 78, delay: '1.05s' },
+    { label: 'Internships', value: '2', sub: 'completed', fill: 100, delay: '1.15s' },
+    { label: 'Location', value: 'YYC', sub: 'Calgary, CA', fill: null, delay: '1.25s' },
+  ];
+
+  const roles = ['Software Developer', 'Full-Stack Engineer', 'React Developer', 'Problem Solver'];
 
   return (
     <>
       <style>{CSS}</style>
-      <section style={{
-        minHeight: '100vh',
-        background: dark
-          ? `radial-gradient(ellipse 80% 60% at 65% 40%, rgba(99,102,241,.13) 0%, transparent 68%), ${bg}`
-          : `radial-gradient(ellipse 80% 60% at 65% 40%, rgba(99,102,241,.07) 0%, transparent 68%), ${bg}`,
-        display: 'flex', alignItems: 'center',
-        padding: '100px 24px 60px',
-        position: 'relative', overflow: 'hidden',
-      }}>
-        {/* Orbs */}
-        <div className="xtr-orb1" style={{
-          position: 'absolute', top: '8%', right: '4%',
-          width: 440, height: 440, borderRadius: '50%',
-          background: dark ? 'rgba(99,102,241,.10)' : 'rgba(99,102,241,.06)',
-          filter: 'blur(90px)', pointerEvents: 'none',
-        }}/>
-        <div className="xtr-orb2" style={{
-          position: 'absolute', bottom: '4%', left: '-6%',
-          width: 340, height: 340, borderRadius: '50%',
-          background: dark ? 'rgba(139,92,246,.08)' : 'rgba(139,92,246,.05)',
-          filter: 'blur(80px)', pointerEvents: 'none',
-        }}/>
+      <section className="h-section">
+        {/* Breathing glow */}
+        {mounted && (
+          <div style={{ position:'absolute', top:'5%', right:'-8%', width:750, height:750, borderRadius:'50%', background:'radial-gradient(circle, rgba(225,6,0,0.13) 0%, rgba(225,6,0,0.03) 55%, transparent 75%)', pointerEvents:'none', animation:'h-breathe 5s ease-in-out infinite', zIndex:0 }} />
+        )}
 
-        <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
-          <div className="xtr-hero-grid">
-            {/* Left */}
-            <div>
-              {/* Heading */}
-              <h1
-                className={`xtr-fade-up xtr-hero-name ${dark ? 'xtr-shimmer-dark' : 'xtr-shimmer-light'}`}
-                style={{
-                  animationDelay: '80ms',
-                  fontFamily: "'Syne',sans-serif", fontWeight: 800,
-                  fontSize: 'clamp(2.4rem,6vw,5.2rem)',
-                  lineHeight: 1.06, letterSpacing: '-2px', margin: '0 0 18px',
-                }}>
-                Xander Rancap
-              </h1>
-
-              {/* Role */}
-              <div className="xtr-fade-up xtr-hero-role" style={{
-                animationDelay: '120ms',
-                display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
-              }}>
-                <div className="xtr-role-line" style={{ height: 1, width: 36, background: `linear-gradient(90deg,transparent,${accentHi})` }}/>
-                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 16, color: accent, fontWeight: 500, letterSpacing: '0.04em' }}>
-                  Software Developer
-                </span>
+        {/* Sector HUD */}
+        {mounted && (
+          <div style={{ position:'absolute', top:88, left:'clamp(20px,4vw,56px)', display:'flex', alignItems:'center', gap:12, zIndex:2, animation:'h-left 0.7s ease 0.2s both' }}>
+            {['S1','S2','S3'].map((s,i) => (
+              <div key={s} style={{ display:'flex', alignItems:'center', gap:5 }}>
+                <div style={{ width:5, height:5, borderRadius:'50%', background:i===0?'#E10600':'#1A1A1A', boxShadow:i===0?'0 0 10px #E10600':'none' }} />
+                <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:12, letterSpacing:'0.14em', color:i===0?'#E10600':'#222' }}>{s}</span>
               </div>
+            ))}
+            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:10, color:'#1C1C1C', letterSpacing:'0.12em' }}>· LAP 01</span>
+          </div>
+        )}
 
-              {/* Bio */}
-              <p className="xtr-fade-up xtr-hero-bio" style={{
-                animationDelay: '160ms',
-                fontFamily: "'DM Sans',sans-serif", fontSize: 17, lineHeight: 1.8,
-                color: muted, maxWidth: 500, margin: '0 auto 36px',
-              }}>
-                Building elegant, full-stack solutions with modern technologies.
-                Currently studying at SAIT with a passion for clean code and great UX.
+        <div className="h-grid">
+          {/* ── Left ── */}
+          <div>
+            {/* Role typing */}
+            {mounted && (
+              <div className="h-role-row" style={{ display:'flex', alignItems:'center', gap:10, marginBottom:18, animation:'h-left 0.7s ease 0.3s both' }}>
+                <div style={{ width:6, height:6, borderRadius:'50%', background:'#E10600', boxShadow:'0 0 14px #E10600', animation:'h-pulse-dot 2.4s ease-in-out infinite' }} />
+                <TypingEffect
+                  text={roles}
+                  as="span"
+                  typingSpeed={55}
+                  deletingSpeed={28}
+                  pauseDuration={2200}
+                  loop
+                  showCursor
+                  cursorCharacter="_"
+                  cursorClassName=""
+                  style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:15, letterSpacing:'0.22em', textTransform:'uppercase', color:'#E10600' }}
+                />
+              </div>
+            )}
+
+            {/* Name */}
+            <h1 className="h-name" style={{ minHeight: 'clamp(9.5rem,28vw,24rem)' }}>
+              <span className="h-name-white">
+                <TypingEffect
+                  text="Xander"
+                  as="span"
+                  typingSpeed={80}
+                  initialDelay={400}
+                  loop={false}
+                  showCursor={false}
+                  onSentenceComplete={() => setXanderDone(true)}
+                />
+              </span>
+              <br />
+              <span className="h-name-red">
+                {xanderDone && (
+                  <TypingEffect
+                    text="Rancap"
+                    as="span"
+                    typingSpeed={80}
+                    initialDelay={0}
+                    loop={false}
+                    showCursor
+                    cursorCharacter="_"
+                    cursorClassName=""
+                    pauseDuration={99999999}
+                  />
+                )}
+              </span>
+            </h1>
+
+            {/* Red divider */}
+            {mounted && (
+              <div style={{ height:2.5, width:'min(300px,75%)', background:'linear-gradient(90deg,#E10600,#FF6B35,transparent)', borderRadius:2, margin:'22px 0', transformOrigin:'left', animation:'h-line 0.9s cubic-bezier(0.16,1,0.3,1) 0.65s both', boxShadow:'0 0 14px rgba(225,6,0,0.55)' }} />
+            )}
+
+            {/* Bio */}
+            {mounted && (
+              <p style={{ fontFamily:"'Barlow',sans-serif", fontSize:16, lineHeight:1.82, color:'#5A5A5A', maxWidth:480, animation:'h-up 0.7s ease 0.75s both' }}>
+                Building elegant, full-stack solutions where great design meets solid engineering.
+                Currently studying at SAIT — always pushing the limits.
               </p>
+            )}
 
-              {/* Buttons */}
-              <div className="xtr-fade-up xtr-hero-btns" style={{
-                animationDelay: '260ms', display: 'flex', gap: 14, flexWrap: 'wrap',
-              }}>
-                <PrimaryBtn onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
-                  Get in Touch →
-                </PrimaryBtn>
-                <GhostBtn dark={dark} border={border} muted={muted} accentHi={accentHi}
-                  onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}>
+            {/* CTA Buttons */}
+            {mounted && (
+              <div className="h-btns" style={{ display:'flex', gap:12, marginTop:34, flexWrap:'wrap', animation:'h-up 0.7s ease 0.88s both' }}>
+                <button
+                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior:'smooth' })}
+                  style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:12, letterSpacing:'0.2em', textTransform:'uppercase', padding:'14px 30px', background:'linear-gradient(135deg,#E10600,#FF3A2D)', color:'#fff', border:'none', borderRadius:100, cursor:'none', display:'flex', alignItems:'center', gap:8, boxShadow:'0 0 32px rgba(225,6,0,0.4), 0 4px 20px rgba(0,0,0,0.4)', transition:'all 0.22s' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px) scale(1.04)'; e.currentTarget.style.boxShadow='0 0 56px rgba(225,6,0,0.7), 0 8px 32px rgba(0,0,0,0.5)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 0 32px rgba(225,6,0,0.4), 0 4px 20px rgba(0,0,0,0.4)'; }}
+                >
+                  Get in Touch
+                  <svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M7.5 1l4 3.5-4 3.5M11.5 4.5H.5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                </button>
+                <button
+                  onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior:'smooth' })}
+                  style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:12, letterSpacing:'0.2em', textTransform:'uppercase', padding:'13px 28px', background:'rgba(255,255,255,0.04)', color:'rgba(255,255,255,0.65)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:100, cursor:'none', backdropFilter:'blur(14px)', transition:'all 0.22s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background='rgba(255,255,255,0.09)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.22)'; e.currentTarget.style.color='#fff'; e.currentTarget.style.transform='translateY(-2px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background='rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; e.currentTarget.style.color='rgba(255,255,255,0.65)'; e.currentTarget.style.transform='none'; }}
+                >
                   View Work
-                </GhostBtn>
+                </button>
               </div>
+            )}
 
-              {/* Socials */}
-              <div className="xtr-fade-up xtr-hero-socials" style={{
-                animationDelay: '330ms', display: 'flex', gap: 20, marginTop: 36,
-              }}>
+            {/* Socials */}
+            {mounted && (
+              <div className="h-socials" style={{ display:'flex', gap:14, marginTop:28, alignItems:'center', animation:'h-up 0.7s ease 1s both' }}>
+                <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:11, letterSpacing:'0.2em', color:'#1C1C1C' }}>Links</span>
+                <div style={{ width:22, height:1, background:'rgba(255,255,255,0.07)' }} />
                 {[
-                  { icon: 'bx bxl-linkedin',  url: 'https://www.linkedin.com/in/xander-rancap-79b2a0326/' },
-                  { icon: 'bx bxl-github',    url: 'https://github.com/xndrncp08' },
-                  { icon: 'bx bxl-instagram', url: 'https://www.instagram.com/derbadoobeelat/' },
+                  { icon:'bx bxl-linkedin', url:'https://www.linkedin.com/in/xander-rancap-79b2a0326/', label:'LinkedIn' },
+                  { icon:'bx bxl-github',   url:'https://github.com/xndrncp08', label:'GitHub' },
+                  { icon:'bx bxl-instagram',url:'https://www.instagram.com/derbadoobeelat/', label:'Instagram' },
                 ].map(s => (
-                  <a key={s.icon} href={s.url} target="_blank" rel="noreferrer"
-                    style={{ fontSize: 22, color: muted, transition: 'all .25s', lineHeight: 1, display: 'block' }}
-                    onMouseEnter={e => { e.currentTarget.style.color = accentHi; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = muted; e.currentTarget.style.transform = 'none'; }}>
-                    <i className={s.icon}/>
-                  </a>
+                  <a key={s.icon} href={s.url} target="_blank" rel="noreferrer" title={s.label}
+                    style={{ width:38, height:38, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', color:'#444', fontSize:18, backdropFilter:'blur(10px)', transition:'all 0.25s', textDecoration:'none', cursor:'none' }}
+                    onMouseEnter={e => { e.currentTarget.style.color='#E10600'; e.currentTarget.style.borderColor='rgba(225,6,0,0.45)'; e.currentTarget.style.background='rgba(225,6,0,0.1)'; e.currentTarget.style.transform='translateY(-3px)'; e.currentTarget.style.boxShadow='0 0 22px rgba(225,6,0,0.3)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color='#444'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.background='rgba(255,255,255,0.04)'; e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='none'; }}
+                  ><i className={s.icon} /></a>
                 ))}
               </div>
-            </div>
+            )}
+          </div>
 
-            {/* Avatar */}
-            <div className="xtr-hero-avatar">
-              <div className="xtr-float xtr-fade-in" style={{ animationDelay: '200ms', position: 'relative' }}>
-                <div style={{
-                  position: 'absolute', inset: -3, borderRadius: 28,
-                  background: 'linear-gradient(135deg,#6366f1,#a78bfa,#6366f1)',
-                  backgroundSize: '200% 200%',
-                  animation: 'xtr-shimmer 4s linear infinite',
-                }}/>
-                <div className="xtr-pulse" style={{
-                  position: 'absolute', inset: -10, borderRadius: 28,
-                  border: '2px solid rgba(99,102,241,.4)',
-                }}/>
-                <img
-                  src="https://i.postimg.cc/9XZ3Yb9d/4f02800d-1c87-4bcd-aaa7-513405cf2e63.png"
-                  alt="Xander Rancap"
-                  style={{
-                    position: 'relative', display: 'block',
-                    width: 240, height: 240, objectFit: 'cover',
-                    borderRadius: 24,
-                    border: `3px solid ${surface}`,
-                  }}
-                />
-                {/* Badge */}
-                <div style={{
-                  position: 'absolute', bottom: -16, left: '50%', transform: 'translateX(-50%)',
-                  background: dark ? 'rgba(13,17,23,0.96)' : 'rgba(255,255,255,0.96)',
-                  border: `1px solid ${border}`,
-                  borderRadius: 99, padding: '6px 16px',
-                  display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap',
-                  boxShadow: '0 8px 28px rgba(0,0,0,.2)',
-                }}>
-                  <i className="bx bxl-github" style={{ fontSize: 14, color: accent }}/>
-                  <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 12, fontWeight: 500, color: text }}>xndrncp08</span>
+          {/* ── Right — Avatar ── */}
+          <div className="h-avatar-col">
+            {mounted && (
+              <div style={{ position:'relative', display:'inline-block', animation:'h-float 6s ease-in-out infinite 1.2s' }}>
+                {/* Spinning rings */}
+                {[{ s:420, dur:'14s', dir:1 }, { s:360, dur:'9s', dir:-1 }].map((r,i) => (
+                  <div key={i} style={{ position:'absolute', width:r.s, height:r.s, borderRadius:'50%', border:i===0?'1px dashed rgba(225,6,0,0.18)':'1px solid rgba(255,255,255,0.04)', top:'50%', left:'50%', marginLeft:-r.s/2, marginTop:-r.s/2, animation:`h-line ${r.dur} linear infinite`, animationDirection:r.dir===1?'normal':'reverse', animationName:'spin-ring', pointerEvents:'none' }} />
+                ))}
+                <style>{`@keyframes spin-ring { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }`}</style>
+
+                {/* Floating badges */}
+                <div className="h-float-badge h-fb-1" style={{ top:'8%', left:'-135px' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <div style={{ width:28, height:28, borderRadius:8, background:'rgba(97,218,251,0.1)', border:'1px solid rgba(97,218,251,0.22)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <i className="bx bxl-react" style={{ color:'#61DAFB', fontSize:16 }} />
+                    </div>
+                    <div>
+                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:11, fontWeight:700, color:'#F2F2F2', letterSpacing:'0.06em' }}>React</div>
+                      <div style={{ fontFamily:"'Barlow',sans-serif", fontSize:9, color:'#444' }}>Frontend</div>
+                    </div>
+                  </div>
                 </div>
+
+                <div className="h-float-badge h-fb-2" style={{ bottom:'18%', right:'-125px' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <div style={{ width:28, height:28, borderRadius:8, background:'rgba(104,160,99,0.1)', border:'1px solid rgba(104,160,99,0.22)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <i className="bx bxl-nodejs" style={{ color:'#68A063', fontSize:16 }} />
+                    </div>
+                    <div>
+                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:11, fontWeight:700, color:'#F2F2F2', letterSpacing:'0.06em' }}>Node.js</div>
+                      <div style={{ fontFamily:"'Barlow',sans-serif", fontSize:9, color:'#444' }}>Backend</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="h-float-badge h-fb-3" style={{ top:'-8%', right:'-90px' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                    <div style={{ width:5, height:5, borderRadius:'50%', background:'#E10600', boxShadow:'0 0 8px #E10600' }} />
+                    <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:12, color:'#E10600', letterSpacing:'0.1em' }}>SAIT · 3.4 GPA</span>
+                  </div>
+                </div>
+
+                {/* ProfileEffect wrapping the image */}
+                <ProfileEffect color="#E10600" speed={0.9} chaos={0.1} borderRadius={20}>
+                  <div style={{ position:'relative', display:'inline-block' }}>
+                    <img
+                      src="https://i.postimg.cc/W3VBJZ1Q/derpogs-(1).jpg"
+                      alt="Xander Rancap"
+                      style={{ display:'block', width:'clamp(210px,22vw,280px)', height:'clamp(210px,22vw,280px)', objectFit:'cover', borderRadius:20, filter:'contrast(1.08) brightness(0.9)' }}
+                    />
+                    {/* Scan line */}
+                    <div style={{ position:'absolute', inset:0, overflow:'hidden', borderRadius:20, pointerEvents:'none' }}>
+                      <div style={{ position:'absolute', left:0, right:0, height:50, background:'linear-gradient(180deg,transparent,rgba(225,6,0,0.08),transparent)', animation:'h-scan 3.8s ease-in-out infinite' }} />
+                    </div>
+                    {/* GitHub badge inside frame */}
+                    <div style={{ position:'absolute', bottom:-18, left:'50%', transform:'translateX(-50%)', background:'linear-gradient(135deg,rgba(6,6,14,0.96),rgba(12,8,8,0.96))', backdropFilter:'blur(24px)', border:'1px solid rgba(225,6,0,0.3)', borderRadius:100, padding:'6px 18px', display:'flex', alignItems:'center', gap:8, whiteSpace:'nowrap', boxShadow:'0 8px 32px rgba(0,0,0,0.6), 0 0 22px rgba(225,6,0,0.15)', zIndex:10 }}>
+                      <i className="bx bxl-github" style={{ fontSize:14, color:'#E10600' }} />
+                      <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:12, letterSpacing:'0.12em', color:'#F2F2F2' }}>xndrncp08</span>
+                    </div>
+                  </div>
+                </ProfileEffect>
               </div>
-            </div>
+            )}
           </div>
         </div>
+
+        {/* Stats bar */}
+        {mounted && (
+          <div className="h-stat-bar">
+            {stats.map((s, i) => (
+              <div key={s.label} className="h-stat" style={{ animation:`h-up 0.6s ease ${s.delay} both` }}>
+                <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:10, letterSpacing:'0.22em', textTransform:'uppercase', color:'#2A2A2A', marginBottom:5 }}>{s.label}</div>
+                <div style={{ display:'flex', alignItems:'baseline', gap:5 }}>
+                  <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:'clamp(1.4rem,3vw,2rem)', color:'#F2F2F2', lineHeight:1 }}>{s.value}</span>
+                  <span style={{ fontFamily:"'Barlow',sans-serif", fontSize:10, color:'#3A3A3A' }}>{s.sub}</span>
+                </div>
+                {s.fill !== null && (
+                  <div className="h-rpm">
+                    <div className="h-rpm-fill" style={{ width:`${s.fill}%`, animationDelay:`${1.3 + i * 0.13}s`, animationDuration:'1.5s' }} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </>
-  );
-}
-
-function PrimaryBtn({ children, onClick }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <button onClick={onClick}
-      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{
-        fontFamily: "'DM Sans',sans-serif", fontWeight: 600, fontSize: 14,
-        padding: '12px 26px', borderRadius: 12, border: 'none',
-        cursor: 'pointer', transition: 'all .25s', color: '#fff',
-        background: hov ? 'linear-gradient(135deg,#4f46e5,#7c3aed)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-        boxShadow: hov ? '0 8px 32px rgba(99,102,241,.55)' : '0 4px 18px rgba(99,102,241,.3)',
-        transform: hov ? 'translateY(-2px)' : 'none',
-      }}>{children}</button>
-  );
-}
-
-function GhostBtn({ children, dark, border, muted, accentHi, onClick }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <button onClick={onClick}
-      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{
-        fontFamily: "'DM Sans',sans-serif", fontWeight: 600, fontSize: 14,
-        padding: '12px 26px', borderRadius: 12, background: 'transparent',
-        cursor: 'pointer', transition: 'all .25s',
-        color: hov ? accentHi : muted,
-        border: `1px solid ${hov ? 'rgba(99,102,241,0.55)' : border}`,
-        transform: hov ? 'translateY(-2px)' : 'none',
-      }}>{children}</button>
   );
 }

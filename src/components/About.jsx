@@ -1,119 +1,121 @@
 'use client';
-
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
-
-  @keyframes xtr-fade-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .xtr-about-fade { animation: xtr-fade-up .6s ease both; }
-
-  .xtr-about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: start;
-  }
-  .xtr-highlights-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  .xtr-stats-row {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
+  @keyframes ab-up { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes ab-bar { from { width:0; } }
+  @keyframes ab-card-pulse {
+    0%,100% { box-shadow: 0 0 0 1px rgba(225,6,0,0.08), 0 20px 60px rgba(0,0,0,0.45); }
+    50%      { box-shadow: 0 0 0 1px rgba(225,6,0,0.28), 0 24px 70px rgba(0,0,0,0.6), 0 0 40px rgba(225,6,0,0.07); }
   }
 
-  @media (max-width: 768px) {
-    .xtr-about-grid {
-      grid-template-columns: 1fr;
-      gap: 40px;
-    }
-    .xtr-highlights-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
+  .ab-section { position:relative; z-index:1; padding:clamp(80px,12vw,140px) clamp(20px,4vw,56px); }
 
-  @media (max-width: 480px) {
-    .xtr-highlights-grid {
-      grid-template-columns: 1fr;
-    }
-    .xtr-stats-row > div {
-      flex: 1 1 calc(33% - 10px);
-      min-width: 80px;
-    }
+  .ab-glass {
+    background: rgba(255,255,255,0.022);
+    backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.07); border-radius: 26px; overflow:hidden; position:relative;
+    animation: ab-card-pulse 4.5s ease-in-out infinite;
   }
+  .ab-glass::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(225,6,0,0.55),rgba(255,107,53,0.35),transparent); }
+
+  .ab-hcard {
+    background: rgba(255,255,255,0.018); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,0.06); border-radius:18px; padding:22px 20px;
+    position:relative; overflow:hidden; cursor:default; transition:all 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  .ab-hcard::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#E10600,#FF6B35); transform:scaleX(0); transform-origin:left; transition:transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+  .ab-hcard:hover { border-color:rgba(225,6,0,0.2); transform:translateY(-5px); background:rgba(225,6,0,0.04); box-shadow:0 22px 60px rgba(0,0,0,0.5), 0 0 28px rgba(225,6,0,0.06); }
+  .ab-hcard:hover::after { transform:scaleX(1); }
+
+  .ab-stat {
+    flex:1; min-width:100px; padding:20px 16px; text-align:center; cursor:default;
+    background:rgba(255,255,255,0.018); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.06); border-radius:14px;
+    position:relative; overflow:hidden; transition:all 0.3s ease;
+  }
+  .ab-stat::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#E10600,#FF6B35); transform:scaleY(0); transform-origin:top; transition:transform 0.3s; }
+  .ab-stat:hover { border-color:rgba(225,6,0,0.35); transform:translateY(-5px); box-shadow:0 18px 50px rgba(0,0,0,0.5), 0 0 28px rgba(225,6,0,0.1); }
+  .ab-stat:hover::before { transform:scaleY(1); }
+
+  .ab-grid { display:grid; grid-template-columns:1fr 1fr; gap:clamp(36px,5vw,72px); align-items:start; }
+  .ab-hgrid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:768px) { .ab-grid { grid-template-columns:1fr; } }
+  @media (max-width:440px) { .ab-hgrid { grid-template-columns:1fr; } }
 `;
 
-export default function About({ isDarkMode: dark }) {
-  const muted   = dark ? '#64748b' : '#94a3b8';
-  const bold    = dark ? '#ffffff' : '#0f172a';
-  const accent  = dark ? '#818cf8' : '#4f46e5';
-  const surface = dark ? '#0d1117' : '#ffffff';
-  const border  = dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
-  const bg      = dark
-    ? 'linear-gradient(180deg,#060812 0%,#0d1117 100%)'
-    : 'linear-gradient(180deg,#f8fafc 0%,#ffffff 100%)';
+export default function About() {
+  const sectionRef = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true); }, { threshold:0.08 });
+    if (sectionRef.current) obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
 
-  const stats = [
-    { value: '3.4', label: 'GPA at SAIT' },
-    { value: '5+',  label: 'Projects Built' },
-    { value: '2',   label: 'Internships' },
+  const paras = [
+    { pre:"I'm ", bold:'Xander Rancap', rest:", a software developer at SAIT (3.4 GPA). I build clean, practical things where great design meets solid engineering." },
+    { pre:'My internship at ', bold:'Eduspec Holdings Berhad', rest:' in Metro Manila put me hands-on with Arduino, SAM Labs, and VEX Robotics — bridging hardware and software.' },
+    { pre:"I've led group projects applying OOP and scalable design. Highlight: a cross-platform gym app in ", bold:'.NET MAUI Blazor Hybrid', rest:' — clean arch, great UX, aligned team.' },
+    { pre:"I work across C#, Python, JavaScript, and SQL — comfortable with React, Node.js, Tailwind. Always pushing: Java, MongoDB, and mobile are next.", bold:null, rest:'' },
   ];
-
   const highlights = [
-    {title: 'Full-Stack Focus',    desc: 'React, Node.js, .NET — across web and mobile.' },
-    {title: 'Team Leadership',     desc: 'Led group projects with clean architecture and OOP.' },
-    {title: 'Hardware + Software', desc: 'Robotics immersion at Eduspec, Metro Manila.' },
-    {title: 'Always Learning',     desc: 'Diving into Java, CI/CD pipelines, and Mobile Development.' },
+    { num:'01', title:'Full-Stack Focus', desc:'React, Node.js, .NET — web & mobile.', icon:'bx bx-code-alt' },
+    { num:'02', title:'Team Leadership', desc:'Led projects with clean OOP architecture.', icon:'bx bx-flag' },
+    { num:'03', title:'HW + SW', desc:'Robotics deep-dive at Eduspec, Manila.', icon:'bx bx-chip' },
+    { num:'04', title:'Always Learning', desc:'Java, CI/CD, mobile — always moving.', icon:'bx bx-trending-up' },
   ];
-
-  const paragraphs = [
-    <span key={0}>I'm <Hl bold={bold}>Xander Rancap</Hl>, a software developer at SAIT (3.4 GPA). I build things that are clean, practical, and enjoyable to use — where good design meets solid engineering.</span>,
-    <span key={1}>My immersion at <Hl bold={bold}>Eduspec Holdings Berhad</Hl> in Metro Manila had me working hands-on with Arduino, SAM Labs, and VEX Robotics — deepening my appreciation for how hardware and software intersect.</span>,
-    <span key={2}>I've led group projects applying OOP and scalable design. My favourite was a cross-platform gym app in <Hl bold={bold}>.NET MAUI Blazor Hybrid</Hl>, focused on clean architecture, usability, and keeping the team aligned.</span>,
-    <span key={3}>I work across C#, Python, JavaScript, and SQL, and I'm comfortable with React, Node.js, and Tailwind. Always curious — currently exploring Java, MongoDB, and mobile development.</span>,
+  const stats = [
+    { value:'3.4', label:'GPA at SAIT', fill:85 },
+    { value:'9+',  label:'Projects Built', fill:78 },
+    { value:'2',   label:'Internships', fill:100 },
   ];
 
   return (
     <>
       <style>{CSS}</style>
-      <section id="about" style={{ padding: 'clamp(60px,10vw,120px) 24px', background: bg }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          {/* Label */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 48 }}>
-            <div style={{ width: 28, height: 3, borderRadius: 99, background: 'linear-gradient(90deg,#6366f1,#a78bfa)' }}/>
-            <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '.10em', textTransform: 'uppercase', color: accent }}>
-              About Me
-            </span>
+      <section id="about" className="ab-section" ref={sectionRef}>
+        <div style={{ position:'absolute', left:'-8%', top:'15%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle,rgba(225,6,0,0.07) 0%,transparent 70%)', pointerEvents:'none', zIndex:0 }} />
+
+        <div style={{ maxWidth:1240, margin:'0 auto', position:'relative', zIndex:1 }}>
+          {/* Eyebrow */}
+          <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:40, animation:vis?'ab-up 0.7s ease both':'none' }}>
+            <div style={{ width:32, height:2, background:'linear-gradient(90deg,#E10600,#FF6B35)', borderRadius:1, boxShadow:'0 0 10px rgba(225,6,0,0.55)' }} />
+            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:12, letterSpacing:'0.22em', textTransform:'uppercase', color:'#E10600' }}>Driver Profile</span>
+            <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.04)' }} />
+            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:10, letterSpacing:'0.15em', color:'#1C1C1C' }}>#01 · SAIT · YYC</span>
           </div>
 
-          <div className="xtr-about-grid">
+          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:'clamp(3.8rem,9vw,9rem)', letterSpacing:'0.02em', lineHeight:0.88, color:'#F2F2F2', margin:'0 0 clamp(40px,5vw,64px)', animation:vis?'ab-up 0.8s ease 0.1s both':'none' }}>
+            About<br/>
+            <span style={{ background:'linear-gradient(135deg,#E10600,#FF6B35)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', filter:'drop-shadow(0 0 22px rgba(225,6,0,0.4))' }}>Me</span>
+          </h2>
+
+          <div className="ab-grid">
             {/* Left */}
             <div>
-              {paragraphs.map((para, i) => (
-                <p key={i} className="xtr-about-fade" style={{
-                  animationDelay: `${i * 80}ms`,
-                  fontFamily: "'DM Sans',sans-serif",
-                  fontSize: 16, lineHeight: 1.85, color: muted, margin: '0 0 20px',
-                }}>{para}</p>
+              {paras.map((p, i) => (
+                <p key={i} style={{ fontFamily:"'Barlow',sans-serif", fontSize:15.5, lineHeight:1.85, color:'#5C5C5C', margin:'0 0 18px', animation:vis?`ab-up 0.7s ease ${0.2+i*0.08}s both`:'none' }}>
+                  {p.pre}{p.bold && <strong style={{ color:'#C8C8C8', fontWeight:600 }}>{p.bold}</strong>}{p.rest}
+                </p>
               ))}
-              <div className="xtr-stats-row" style={{ marginTop: 32 }}>
-                {stats.map((s, i) => (
-                  <StatCard key={s.label} s={s} dark={dark} border={border} muted={muted} delay={360 + i * 80}/>
-                ))}
+              <div style={{ display:'flex', gap:10, marginTop:28, flexWrap:'wrap', animation:vis?'ab-up 0.7s ease 0.56s both':'none' }}>
+                {stats.map((s,i) => <StatCard key={s.label} {...s} delay={i*70} />)}
               </div>
             </div>
 
-            {/* Right */}
-            <div className="xtr-highlights-grid">
-              {highlights.map((h, i) => (
-                <HighlightCard key={h.title} dark={dark} surface={surface} border={border} bold={bold} muted={muted} delay={i * 80} {...h}/>
-              ))}
+            {/* Right: glass panel */}
+            <div className="ab-glass" style={{ padding:'clamp(24px,3vw,38px)', animation:vis?'ab-up 0.8s ease 0.28s both':'none' }}>
+              <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:'6.5rem', color:'rgba(225,6,0,0.04)', position:'absolute', right:12, top:-18, lineHeight:1, userSelect:'none', pointerEvents:'none', letterSpacing:'0.06em' }}>XTR</div>
+              <div className="ab-hgrid">
+                {highlights.map((h,i) => (
+                  <div key={h.title} className="ab-hcard">
+                    <i className={h.icon} style={{ fontSize:20, color:'#E10600', marginBottom:10, display:'block' }} />
+                    <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:9, letterSpacing:'0.2em', color:'#E10600', marginBottom:8 }}>{h.num}</div>
+                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:13, fontWeight:700, letterSpacing:'0.04em', color:'#F2F2F2', marginBottom:5, textTransform:'uppercase' }}>{h.title}</div>
+                    <div style={{ fontFamily:"'Barlow',sans-serif", fontSize:12.5, color:'#4A4A4A', lineHeight:1.6 }}>{h.desc}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -122,50 +124,15 @@ export default function About({ isDarkMode: dark }) {
   );
 }
 
-function StatCard({ s, dark, border, muted, delay }) {
+function StatCard({ value, label, fill, delay }) {
   const [hov, setHov] = useState(false);
   return (
-    <div
-      className="xtr-about-fade"
-      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{
-        animationDelay: `${delay}ms`, flex: 1, minWidth: 80,
-        background: hov ? dark ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)' : dark ? 'rgba(255,255,255,0.04)' : 'rgba(99,102,241,0.04)',
-        border: `1px solid ${hov ? 'rgba(99,102,241,0.4)' : border}`,
-        borderRadius: 14, padding: '16px 12px', textAlign: 'center',
-        transition: 'all .3s ease', transform: hov ? 'translateY(-4px)' : 'none',
-        boxShadow: hov ? '0 10px 28px rgba(99,102,241,0.18)' : 'none',
-      }}>
-      <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 24,
-        background: 'linear-gradient(135deg,#818cf8,#c4b5fd)',
-        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{s.value}</div>
-      <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, color: muted, marginTop: 4, fontWeight: 500, letterSpacing: '0.04em' }}>{s.label}</div>
+    <div className="ab-stat" onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+      <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:30, color:hov?'#E10600':'#F2F2F2', lineHeight:1, transition:'color 0.3s', textShadow:hov?'0 0 20px rgba(225,6,0,0.55)':'none' }}>{value}</div>
+      <div style={{ fontFamily:"'Barlow',sans-serif", fontSize:10.5, color:'#3C3C3C', marginTop:4 }}>{label}</div>
+      <div style={{ height:2, background:'rgba(255,255,255,0.05)', borderRadius:1, marginTop:10, overflow:'hidden' }}>
+        <div style={{ height:'100%', width:`${fill}%`, background:'linear-gradient(90deg,#E10600,#FF6B35)', borderRadius:1, animation:`ab-bar 1.5s cubic-bezier(0.16,1,0.3,1) ${delay}ms both`, boxShadow:hov?'0 0 10px rgba(225,6,0,0.55)':'none' }} />
+      </div>
     </div>
   );
-}
-
-function HighlightCard({ icon, title, desc, dark, surface, border, bold, muted, delay }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <div
-      className="xtr-about-fade"
-      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{
-        animationDelay: `${delay + 200}ms`,
-        background: hov ? dark ? 'rgba(99,102,241,0.10)' : 'rgba(99,102,241,0.06)' : dark ? 'rgba(255,255,255,0.03)' : surface,
-        border: `1px solid ${hov ? 'rgba(99,102,241,0.45)' : border}`,
-        borderRadius: 16, padding: '18px 16px',
-        cursor: 'default', transition: 'all .3s ease',
-        transform: hov ? 'translateY(-4px)' : 'none',
-        boxShadow: hov ? '0 12px 32px rgba(99,102,241,0.15)' : 'none',
-      }}>
-      <div style={{ fontSize: 20, marginBottom: 8 }}>{icon}</div>
-      <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 13, fontWeight: 700, color: bold, marginBottom: 5 }}>{title}</div>
-      <div style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: muted, lineHeight: 1.6 }}>{desc}</div>
-    </div>
-  );
-}
-
-function Hl({ children, bold }) {
-  return <strong style={{ color: bold, fontWeight: 600 }}>{children}</strong>;
 }
