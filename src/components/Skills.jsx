@@ -77,18 +77,18 @@ function SkillChip({ skill, active, hovered, onHover, onClick, idx }) {
     <button
       className="skill-chip"
       style={{
-        background: isOn ? `rgba(${rgb}, 0.12)` : "rgba(0,0,0,0.03)",
+        background: isOn ? `rgba(${rgb}, 0.15)` : "rgba(248,244,232,0.05)",
         borderColor: active
           ? `rgba(${rgb}, 0.7)`
           : isOn
             ? `rgba(${rgb}, 0.45)`
-            : "rgba(0,0,0,0.13)",
-        color: isOn ? skill.color : "#555",
+            : "rgba(248,244,232,0.15)",
+        color: isOn ? skill.color : "rgba(248,244,232,0.55)",
         boxShadow: active
           ? `3px 3px 0 rgba(${rgb}, 0.4)`
           : isOn
             ? `2px 2px 0 rgba(${rgb},0.22)`
-            : "2px 2px 0 rgba(0,0,0,0.07)",
+            : "2px 2px 0 rgba(248,244,232,0.06)",
         transform: isOn ? "translate(-1px, -1px)" : "none",
         animation: `pop-in 0.35s cubic-bezier(0.16,1,0.3,1) ${idx * 28}ms both`,
       }}
@@ -99,7 +99,7 @@ function SkillChip({ skill, active, hovered, onHover, onClick, idx }) {
       <i
         className={`skill-chip-icon ${skill.icon}`}
         style={{
-          color: isOn ? skill.color : "#888",
+          color: isOn ? skill.color : "rgba(248,244,232,0.4)",
           filter: isOn ? `drop-shadow(0 0 4px rgba(${rgb},0.5))` : "none",
         }}
       />
@@ -200,7 +200,7 @@ export default function ComicSkills() {
           position: relative;
           min-height: 100vh;
           padding: clamp(72px, 10vw, 110px) clamp(20px, 5vw, 64px) clamp(56px, 7vw, 88px);
-          background: var(--ink);
+          background: #0a0a0e;
           overflow: hidden;
           display: flex; flex-direction: column; justify-content: center;
         }
@@ -267,14 +267,14 @@ export default function ComicSkills() {
         @media (max-width: 500px) { .cats-grid { grid-template-columns: 1fr; } }
 
         .cat-panel {
-          background: var(--paper);
-          border: var(--border-med);
+          background: rgba(248,244,232,0.07);
+          border: 2px solid rgba(248,244,232,0.12);
           padding: 18px 16px 22px;
           position: relative; overflow: hidden;
           margin: -2px;
           transition: background 0.15s ease;
         }
-        .cat-panel:hover { background: #fffef5; }
+        .cat-panel:hover { background: rgba(248,244,232,0.12); }
 
         /* Skill chip */
         .skill-chip {
@@ -592,7 +592,7 @@ export default function ComicSkills() {
                     style={{
                       fontFamily: "var(--font-comic)",
                       fontSize: 18,
-                      color: "rgba(0,0,0,0.18)",
+                      color: "rgba(248,244,232,0.25)",
                       letterSpacing: "0.06em",
                       textAlign: "center",
                       marginTop: 10,

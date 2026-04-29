@@ -72,6 +72,15 @@ export default function ComicHeader({ activeSection, dark, onToggleDark }) {
           position: fixed; top: 0; left: 0; right: 0; z-index: 100;
           transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
+        /* Unscrolled: floating over dark hero — use white text */
+        .ch-nav:not(.scrolled) .ch-logo { color: rgba(248,244,232,0.92); }
+        .ch-nav:not(.scrolled) .ch-link { color: rgba(248,244,232,0.7); }
+        .ch-nav:not(.scrolled) .ch-num { color: rgba(248,244,232,0.35) !important; }
+        .ch-nav:not(.scrolled) .ch-dark-toggle { color: rgba(248,244,232,0.7); border-color: rgba(248,244,232,0.25); box-shadow: none; }
+        .ch-nav:not(.scrolled) .ch-burger { border-color: rgba(248,244,232,0.4); box-shadow: none; }
+        .ch-nav:not(.scrolled) .ch-burger span { background: rgba(248,244,232,0.8); }
+        .ch-nav:not(.scrolled) .ch-hire { border-color: rgba(10,10,14,0.5); box-shadow: 3px 3px 0 rgba(10,10,14,0.4); }
+
         .ch-nav.scrolled {
           background: var(--nav-bg);
           border-bottom: 3px solid var(--fg);
@@ -92,6 +101,7 @@ export default function ComicHeader({ activeSection, dark, onToggleDark }) {
           text-decoration: none;
           display: flex; align-items: baseline; gap: 4px;
           flex-shrink: 0;
+          transition: color 0.3s ease;
         }
         .ch-logo-accent { color: var(--red); }
         .ch-issue {
@@ -129,12 +139,12 @@ export default function ComicHeader({ activeSection, dark, onToggleDark }) {
         }
         .ch-link.active, .ch-link:hover {
           background: var(--yellow);
-          border-color: var(--fg);
-          box-shadow: var(--panel-shadow-sm);
+          border-color: #0a0a0e;
+          box-shadow: 3px 3px 0 #0a0a0e;
           transform: translate(-1px, -1px);
-          color: #0a0a0e;
+          color: #0a0a0e !important;
         }
-        .ch-link.active .ch-num, .ch-link:hover .ch-num { color: #0a0a0e; }
+        .ch-link.active .ch-num, .ch-link:hover .ch-num { color: #0a0a0e !important; }
 
         /* Right-side controls */
         .ch-controls {
@@ -156,9 +166,9 @@ export default function ComicHeader({ activeSection, dark, onToggleDark }) {
         .ch-dark-toggle:hover {
           background: var(--yellow);
           color: #0a0a0e;
-          border-color: var(--fg);
+          border-color: #0a0a0e;
           transform: translate(-1px, -1px);
-          box-shadow: 4px 4px 0 var(--fg);
+          box-shadow: 4px 4px 0 #0a0a0e;
         }
 
         .ch-hire {
@@ -168,8 +178,8 @@ export default function ComicHeader({ activeSection, dark, onToggleDark }) {
           padding: 7px 16px;
           background: var(--red);
           color: white;
-          border: var(--border-med);
-          box-shadow: var(--panel-shadow-sm);
+          border: 3px solid rgba(10,10,14,0.5);
+          box-shadow: 3px 3px 0 rgba(10,10,14,0.4);
           cursor: none;
           text-decoration: none;
           transition: transform 0.15s, box-shadow 0.15s;
@@ -177,7 +187,7 @@ export default function ComicHeader({ activeSection, dark, onToggleDark }) {
         }
         .ch-hire:hover {
           transform: translate(-2px, -2px);
-          box-shadow: 5px 5px 0 var(--fg);
+          box-shadow: 5px 5px 0 rgba(10,10,14,0.5);
         }
 
         /* Mobile burger */
@@ -187,6 +197,7 @@ export default function ComicHeader({ activeSection, dark, onToggleDark }) {
           border: 2px solid var(--fg);
           padding: 8px; box-shadow: var(--panel-shadow-sm);
           flex-shrink: 0;
+          transition: border-color 0.3s, box-shadow 0.3s;
         }
         @media (max-width: 700px) { .ch-burger { display: flex; } }
         .ch-burger span {

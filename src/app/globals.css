@@ -85,26 +85,18 @@ body {
   font-family: var(--font-body);
   cursor: none;
   overflow-x: hidden;
-  transition:
-    background 0.35s ease,
-    color 0.35s ease;
+  transition: background 0.35s ease, color 0.35s ease;
 }
 
 @media (pointer: coarse) {
-  body {
-    cursor: auto;
-  }
-  a,
-  button {
-    cursor: pointer;
-  }
+  body { cursor: auto; }
+  a, button { cursor: pointer; }
 }
 
 /* ── CURSOR ─────────────────────────────────────────────────────── */
 .comic-cursor-dot {
   position: fixed;
-  width: 8px;
-  height: 8px;
+  width: 8px; height: 8px;
   background: var(--red);
   border-radius: 50%;
   pointer-events: none;
@@ -114,28 +106,21 @@ body {
 }
 .comic-cursor-ring {
   position: fixed;
-  width: 30px;
-  height: 30px;
+  width: 30px; height: 30px;
   border: 2px solid var(--fg);
   border-radius: 50%;
   pointer-events: none;
   z-index: calc(var(--z-cursor) - 1);
   transform: translate(-50%, -50%);
-  transition:
-    width 0.18s ease,
-    height 0.18s ease,
-    border-color 0.18s ease;
+  transition: width 0.18s ease, height 0.18s ease, border-color 0.18s ease;
 }
 .comic-cursor-ring.expanded {
-  width: 48px;
-  height: 48px;
+  width: 48px; height: 48px;
   border-color: var(--red);
 }
 
 /* ── TYPOGRAPHY ─────────────────────────────────────────────────── */
-.font-comic {
-  font-family: var(--font-comic);
-}
+.font-comic { font-family: var(--font-comic); }
 .comic-title {
   font-family: var(--font-comic);
   letter-spacing: 0.04em;
@@ -153,8 +138,7 @@ body {
 .panel {
   border: var(--border-med);
   box-shadow: var(--panel-shadow);
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
   background: var(--bg);
 }
 .panel-sm {
@@ -169,42 +153,22 @@ body {
 
 /* ── HALFTONE PATTERNS ──────────────────────────────────────────── */
 .halftone {
-  background-image: radial-gradient(
-    circle,
-    rgba(0, 0, 0, 0.08) 1.2px,
-    transparent 1.2px
-  );
+  background-image: radial-gradient(circle, rgba(0,0,0,0.08) 1.2px, transparent 1.2px);
   background-size: 10px 10px;
 }
 [data-theme="dark"] .halftone {
-  background-image: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.05) 1.2px,
-    transparent 1.2px
-  );
+  background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1.2px, transparent 1.2px);
 }
 .halftone-light {
-  background-image: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.1) 1px,
-    transparent 1px
-  );
+  background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
   background-size: 12px 12px;
 }
 .halftone-yellow {
-  background-image: radial-gradient(
-    circle,
-    rgba(245, 200, 0, 0.16) 1.2px,
-    transparent 1.2px
-  );
+  background-image: radial-gradient(circle, rgba(245,200,0,0.16) 1.2px, transparent 1.2px);
   background-size: 10px 10px;
 }
 .halftone-red {
-  background-image: radial-gradient(
-    circle,
-    rgba(225, 6, 0, 0.1) 1.2px,
-    transparent 1.2px
-  );
+  background-image: radial-gradient(circle, rgba(225,6,0,0.1) 1.2px, transparent 1.2px);
   background-size: 10px 10px;
 }
 
@@ -222,14 +186,8 @@ body {
   text-transform: uppercase;
   line-height: 1.4;
 }
-.caption-red {
-  background: var(--red);
-  color: white;
-}
-.caption-dark {
-  background: var(--ink);
-  color: var(--yellow);
-}
+.caption-red { background: var(--red); color: white; }
+.caption-dark { background: var(--ink); color: var(--yellow); }
 
 /* ── SPEECH BUBBLES ─────────────────────────────────────────────── */
 .speech-bubble {
@@ -239,18 +197,14 @@ body {
   border-radius: 22px;
   padding: 14px 20px;
   font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 14px; line-height: 1.5;
   color: var(--fg);
   box-shadow: 3px 3px 0 var(--fg);
 }
 .speech-bubble::after {
-  content: "";
-  position: absolute;
-  bottom: -18px;
-  left: 28px;
-  width: 0;
-  height: 0;
+  content: '';
+  position: absolute; bottom: -18px; left: 28px;
+  width: 0; height: 0;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
   border-top: 18px solid var(--bg);
@@ -272,12 +226,9 @@ body {
 
 /* ── BUTTONS ────────────────────────────────────────────────────── */
 .btn-comic {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: inline-flex; align-items: center; gap: 8px;
   padding: 12px 24px;
-  font-family: var(--font-comic);
-  font-size: 18px;
+  font-family: var(--font-comic); font-size: 18px;
   letter-spacing: 0.08em;
   color: var(--fg);
   background: var(--yellow);
@@ -285,11 +236,8 @@ body {
   box-shadow: var(--panel-shadow-sm);
   cursor: none;
   text-decoration: none;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-  position: relative;
-  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative; overflow: hidden;
 }
 .btn-comic:hover {
   transform: translate(-2px, -2px);
@@ -299,39 +247,25 @@ body {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0 var(--fg);
 }
-.btn-comic-red {
-  background: var(--red);
-  color: white;
-}
-.btn-comic-ink {
-  background: var(--ink);
-  color: var(--yellow);
-}
+.btn-comic-red { background: var(--red); color: white; }
+.btn-comic-ink { background: var(--ink); color: var(--yellow); }
 
 /* ── CHAPTER BAR ────────────────────────────────────────────────── */
 .chapter-bar {
-  display: flex;
-  align-items: center;
-  gap: 0;
+  display: flex; align-items: center; gap: 0;
   margin-bottom: 32px;
 }
 .chapter-bar::before {
-  content: "";
-  flex: 0 0 40px;
-  height: 4px;
+  content: ''; flex: 0 0 40px; height: 4px;
   background: var(--fg);
 }
 .chapter-bar::after {
-  content: "";
-  flex: 1;
-  height: 2px;
-  background: var(--fg);
-  opacity: 0.1;
+  content: ''; flex: 1; height: 2px;
+  background: var(--fg); opacity: 0.1;
 }
 .chapter-label {
   font-family: var(--font-comic);
-  font-size: 13px;
-  letter-spacing: 0.18em;
+  font-size: 13px; letter-spacing: 0.18em;
   color: #0a0a0e;
   background: var(--yellow);
   border: 2px solid var(--fg);
@@ -355,134 +289,56 @@ body {
 
 /* ── ANIMATIONS ─────────────────────────────────────────────────── */
 @keyframes panel-reveal {
-  from {
-    clip-path: inset(0 100% 0 0);
-    opacity: 0.5;
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-  }
+  from { clip-path: inset(0 100% 0 0); opacity: 0.5; }
+  to { clip-path: inset(0 0 0 0); opacity: 1; }
 }
 @keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 @keyframes pop-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.72) rotate(-4deg);
-  }
-  70% {
-    transform: scale(1.06) rotate(1.5deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
+  0% { opacity: 0; transform: scale(0.72) rotate(-4deg); }
+  70% { transform: scale(1.06) rotate(1.5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 @keyframes bubble-appear {
-  0% {
-    opacity: 0;
-    transform: scale(0) rotate(-3deg);
-  }
-  60% {
-    transform: scale(1.08) rotate(1deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
+  0% { opacity: 0; transform: scale(0) rotate(-3deg); }
+  60% { transform: scale(1.08) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 @keyframes drift {
-  0%,
-  100% {
-    transform: rotate(2deg) translateY(0px);
-  }
-  50% {
-    transform: rotate(2deg) translateY(-10px);
-  }
+  0%, 100% { transform: rotate(2deg) translateY(0px); }
+  50% { transform: rotate(2deg) translateY(-10px); }
 }
-@keyframes bar-fill {
-  from {
-    width: 0;
-  }
-}
+@keyframes bar-fill { from { width: 0; } }
 @keyframes blink-dot {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.2;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
 }
 @keyframes reactor-pulse {
-  0%,
-  100% {
-    box-shadow:
-      0 0 10px rgba(30, 200, 255, 0.15),
-      0 0 0px rgba(30, 200, 255, 0);
-  }
-  50% {
-    box-shadow:
-      0 0 22px rgba(30, 200, 255, 0.45),
-      0 0 40px rgba(30, 200, 255, 0.1);
-  }
+  0%, 100% { box-shadow: 0 0 10px rgba(30,200,255,0.15), 0 0 0px rgba(30,200,255,0); }
+  50% { box-shadow: 0 0 22px rgba(30,200,255,0.45), 0 0 40px rgba(30,200,255,0.1); }
 }
 @keyframes web-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ── SCROLLBAR ──────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--surface);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--fg);
-  opacity: 0.4;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--fg); opacity: 0.4; }
 
 /* ── SELECTION & FOCUS ──────────────────────────────────────────── */
-::selection {
-  background: var(--yellow);
-  color: var(--fg);
-}
-:focus-visible {
-  outline: 3px solid var(--red);
-  outline-offset: 2px;
-}
+::selection { background: var(--yellow); color: var(--fg); }
+:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 
-a {
-  cursor: none;
-}
-@media (pointer: coarse) {
-  a {
-    cursor: pointer;
-  }
-}
+a { cursor: none; }
+@media (pointer: coarse) { a { cursor: pointer; } }
 
 /* ── DARK MODE: hero stats ──────────────────────────────────────── */
 [data-theme="dark"] .hero-stats {
@@ -579,7 +435,5 @@ a {
 /* ── MOBILE TOUCH: remove custom cursor ────────────────────────── */
 @media (pointer: coarse) {
   .comic-cursor-dot,
-  .comic-cursor-ring {
-    display: none;
-  }
+  .comic-cursor-ring { display: none; }
 }

@@ -143,7 +143,7 @@ export default function ComicHero() {
         .hero-section {
           position: relative;
           min-height: 100vh;
-          background: var(--ink);
+          background: #0a0a0e;
           overflow: hidden;
           display: flex;
           flex-direction: column;
@@ -209,12 +209,21 @@ export default function ComicHero() {
           max-width: 1240px; margin: 0 auto; width: 100%;
           position: relative; z-index: 1;
         }
+        .hero-photo-col {
+          padding: 60px 70px 20px 50px;
+          overflow: visible;
+        }
         @media (max-width: 860px) {
           .hero-grid {
             grid-template-columns: 1fr;
             text-align: center;
           }
-          .hero-photo-col { order: -1; display: flex; justify-content: center; }
+          .hero-photo-col {
+            order: -1;
+            display: flex;
+            justify-content: center;
+            padding: 16px 16px 0;
+          }
           .hero-btns, .hero-socials { justify-content: center !important; }
         }
 
@@ -299,6 +308,7 @@ export default function ComicHero() {
           white-space: nowrap;
           display: flex; align-items: center; gap: 4px;
         }
+        @media (max-width: 860px) { .hero-sticker { display: none; } }
 
         /* Speech bubble */
         .hero-speech {
@@ -320,6 +330,7 @@ export default function ComicHero() {
           border-right: 8px solid transparent;
           border-top: 12px solid var(--paper);
         }
+        @media (max-width: 860px) { .hero-speech { display: none; } }
 
         /* Stats strip */
         .hero-stats {
@@ -331,6 +342,7 @@ export default function ComicHero() {
           animation: slide-up 0.7s ease 1s both;
           overflow: hidden;
         }
+        [data-theme="dark"] .hero-stats { background: #111118; }
         .hero-stat-item {
           flex: 1;
           padding: clamp(14px, 2vw, 22px) clamp(14px, 2.5vw, 26px);
@@ -338,7 +350,8 @@ export default function ComicHero() {
           position: relative; transition: background 0.15s;
         }
         .hero-stat-item:last-child { border-right: none; }
-        .hero-stat-item:hover { background: rgba(245, 200, 0, 0.18); }
+        .hero-stat-item:hover { background: var(--yellow); }
+        [data-theme="dark"] .hero-stat-item:hover { background: rgba(245,200,0,0.12); }
         .stat-label {
           font-family: var(--font-label); font-size: 9px; font-weight: 700;
           letter-spacing: 0.2em; text-transform: uppercase;
@@ -372,24 +385,14 @@ export default function ComicHero() {
           .hero-stat-item { flex: 0 0 50%; border-bottom: var(--border-thin); }
           .hero-stat-item:nth-child(even) { border-right: none; }
           .hero-stat-item:last-child { border-bottom: none; }
-
-          /* Hide stickers that overflow on small screens */
-          .hero-sticker { display: none; }
-          /* Keep only the bottom-right one */
-          .hero-photo-frame > .hero-sticker:first-of-type { display: flex; }
-
-          .hero-photo-frame img {
-            width: clamp(140px, 40vw, 200px) !important;
-            height: clamp(140px, 40vw, 200px) !important;
-          }
         }
       `}</style>
 
       <section className="hero-section">
         <div className="hero-halftone" />
         <div className="hero-slash" />
-        <SpeedLines />
-        <ArcReactor
+        {mounted && <SpeedLines />}
+        {mounted && <ArcReactor
           style={{
             position: "absolute",
             bottom: -60,
@@ -400,8 +403,8 @@ export default function ComicHero() {
             zIndex: 0,
             pointerEvents: "none",
           }}
-        />
-        <SpideyWeb
+        />}
+        {mounted && <SpideyWeb
           style={{
             position: "absolute",
             bottom: 0,
@@ -411,7 +414,7 @@ export default function ComicHero() {
             opacity: 0.06,
             zIndex: 0,
           }}
-        />
+        />}
 
         {/* Issue tag strip */}
         {mounted && (

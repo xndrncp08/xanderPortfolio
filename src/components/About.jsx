@@ -56,8 +56,10 @@ export default function ComicAbout() {
 
   useEffect(() => {
     const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setVis(true); },
-      { threshold: 0.04 }
+      ([e]) => {
+        if (e.isIntersecting) setVis(true);
+      },
+      { threshold: 0.04 },
     );
     if (sectionRef.current) obs.observe(sectionRef.current);
     return () => obs.disconnect();
@@ -400,22 +402,66 @@ export default function ComicAbout() {
 
       <section id="about" className="about-section" ref={sectionRef}>
         {/* Arc reactor deco */}
-        <svg viewBox="0 0 300 300" fill="none" className="about-arc"
-          style={{ position: "absolute", top: -100, right: -100, width: 380, height: 380, zIndex: 0, pointerEvents: "none" }}>
-          <circle cx="150" cy="150" r="140" stroke="rgba(30,200,255,1)" strokeWidth="1.5" />
-          <circle cx="150" cy="150" r="108" stroke="rgba(30,200,255,1)" strokeWidth="1" />
-          <circle cx="150" cy="150" r="76" stroke="rgba(30,200,255,1)" strokeWidth="1" />
-          <circle cx="150" cy="150" r="38" stroke="rgba(30,200,255,1)" strokeWidth="1.5" />
+        <svg
+          viewBox="0 0 300 300"
+          fill="none"
+          className="about-arc"
+          style={{
+            position: "absolute",
+            top: -100,
+            right: -100,
+            width: 380,
+            height: 380,
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        >
+          <circle
+            cx="150"
+            cy="150"
+            r="140"
+            stroke="rgba(30,200,255,1)"
+            strokeWidth="1.5"
+          />
+          <circle
+            cx="150"
+            cy="150"
+            r="108"
+            stroke="rgba(30,200,255,1)"
+            strokeWidth="1"
+          />
+          <circle
+            cx="150"
+            cy="150"
+            r="76"
+            stroke="rgba(30,200,255,1)"
+            strokeWidth="1"
+          />
+          <circle
+            cx="150"
+            cy="150"
+            r="38"
+            stroke="rgba(30,200,255,1)"
+            strokeWidth="1.5"
+          />
         </svg>
 
         <div className="about-inner">
           {/* Chapter bar */}
-          <div className="chapter-bar" style={{ animation: vis ? "slide-up 0.5s ease both" : "none" }}>
+          <div
+            className="chapter-bar"
+            style={{ animation: vis ? "slide-up 0.5s ease both" : "none" }}
+          >
             <div className="chapter-label">Chapter 01</div>
           </div>
 
           {/* Heading */}
-          <h2 className="about-heading" style={{ animation: vis ? "slide-up 0.65s ease 0.08s both" : "none" }}>
+          <h2
+            className="about-heading"
+            style={{
+              animation: vis ? "slide-up 0.65s ease 0.08s both" : "none",
+            }}
+          >
             Origin
             <br />
             <span className="outline">Story</span>
@@ -428,7 +474,9 @@ export default function ComicAbout() {
                 key={panel.ch}
                 className="story-card"
                 style={{
-                  animation: vis ? `panel-reveal 0.6s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.1}s both` : "none",
+                  animation: vis
+                    ? `panel-reveal 0.6s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.1}s both`
+                    : "none",
                 }}
               >
                 {/* Halftone in JS to avoid class collision */}
@@ -443,21 +491,32 @@ export default function ComicAbout() {
                 <div className="story-tag">{panel.tag}</div>
 
                 {/* Accent corner */}
-                <div className="story-corner" style={{ background: panel.accent }} />
+                <div
+                  className="story-corner"
+                  style={{ background: panel.accent }}
+                />
               </div>
             ))}
           </div>
 
           {/* ── HUMAN SIDE PANEL ── */}
-          <div className="human-panel" style={{ animation: vis ? "slide-up 0.65s ease 0.5s both" : "none" }}>
+          <div
+            className="human-panel"
+            style={{
+              animation: vis ? "slide-up 0.65s ease 0.5s both" : "none",
+            }}
+          >
             {/* Quote / statement block */}
             <div className="human-quote-block">
               <div className="human-quote-eyebrow">// Off the clock</div>
               <p className="human-quote-text">
-                I run, play sports, and mess with music — mostly to <em>reset</em> when I've been staring at a problem so long everything starts looking wrong.
+                I run, play sports, and mess with music — mostly to{" "}
+                <em>reset</em> when I've been staring at a problem so long
+                everything starts looking wrong.
               </p>
               <p className="human-quote-sub">
-                It helps more than it probably should. Outside stuff keeps the inside stuff from getting too loud.
+                It helps more than it probably should. Outside stuff keeps the
+                inside stuff from getting too loud.
               </p>
             </div>
 
@@ -474,17 +533,33 @@ export default function ComicAbout() {
           </div>
 
           {/* ── BOTTOM STRIP ── */}
-          <div className="about-now-strip" style={{ animation: vis ? "slide-up 0.65s ease 0.62s both" : "none" }}>
-            <div style={{ flex: 1, minWidth: 200, position: "relative", zIndex: 1 }}>
+          <div
+            className="about-now-strip"
+            style={{
+              animation: vis ? "slide-up 0.65s ease 0.62s both" : "none",
+            }}
+          >
+            <div
+              style={{
+                flex: 1,
+                minWidth: 200,
+                position: "relative",
+                zIndex: 1,
+              }}
+            >
               <div className="now-label">Right Now</div>
               <p className="now-text">
-                Studying at <em>SAIT</em>, building things that actually work, and figuring out what I'm genuinely good at. Slowly.
+                Studying at <em>SAIT</em>, building things that actually work,
+                and figuring out what I'm genuinely good at. Slowly.
               </p>
             </div>
 
             <div className="now-divider" />
 
-            <div className="now-stats" style={{ position: "relative", zIndex: 1 }}>
+            <div
+              className="now-stats"
+              style={{ position: "relative", zIndex: 1 }}
+            >
               {[
                 { v: "3.7", l: "GPA" },
                 { v: "9+", l: "Projects" },

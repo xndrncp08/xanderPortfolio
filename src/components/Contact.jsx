@@ -25,7 +25,7 @@ export default function ComicContact() {
           position: relative;
           min-height: 100vh;
           padding: clamp(72px, 10vw, 110px) clamp(20px, 5vw, 64px) 0;
-          background: var(--ink);
+          background: #0a0a0e;
           overflow: hidden;
           display: flex; flex-direction: column; justify-content: center;
         }
