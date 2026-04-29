@@ -1,138 +1,504 @@
-'use client';
-import { useState, useEffect, useRef } from 'react';
+"use client";
+import { useState, useEffect, useRef } from "react";
 
-const CSS = `
-  @keyframes ab-up { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes ab-bar { from { width:0; } }
-  @keyframes ab-card-pulse {
-    0%,100% { box-shadow: 0 0 0 1px rgba(225,6,0,0.08), 0 20px 60px rgba(0,0,0,0.45); }
-    50%      { box-shadow: 0 0 0 1px rgba(225,6,0,0.28), 0 24px 70px rgba(0,0,0,0.6), 0 0 40px rgba(225,6,0,0.07); }
-  }
+// Personal story panels - about the person, not the resume
+const STORY_PANELS = [
+  {
+    ch: "01",
+    caption: "Meanwhile, somewhere in Manila...",
+    title: "The Origin",
+    body: "I grew up in the Philippines. Heat, humidity, and a city that never really slows down. Then I moved to Calgary — which still feels like a strange trade sometimes. Winters here are unnecessarily aggressive. I'm still adjusting, honestly.",
+    accent: "var(--blue)",
+    rotation: "-1.5deg",
+    tag: "PH → YYC",
+  },
+  {
+    ch: "02",
+    caption: "How it started...",
+    title: "The Accidental Developer",
+    body: "I didn't have some big plan. I just kept messing around with things until coding stuck longer than everything else. Which, honestly, surprised me more than anyone. I still don't fully know why it clicked — it just did.",
+    accent: "var(--yellow)",
+    rotation: "1deg",
+    tag: "No Grand Plan",
+  },
+  {
+    ch: "03",
+    caption: "The villain: perfectionism",
+    title: "Build. Cringe. Improve.",
+    body: "My process is basically: build something, think it's solid, come back later, and immediately see five things I'd change. It's a little annoying. But I've accepted that the cringe is the compass — it means I'm getting better.",
+    accent: "var(--red)",
+    rotation: "-0.8deg",
+    tag: "The Loop",
+  },
+  {
+    ch: "04",
+    caption: "A character trait (for better or worse)",
+    title: "I Sit With It",
+    body: "I tend to hold problems in my head longer than I probably need to. Not stuck — just thinking. I'd rather actually understand what's happening before jumping in. I've done the \"code first, regret later\" thing enough times to know how it ends.",
+    accent: "var(--green)",
+    rotation: "1.5deg",
+    tag: "Think First",
+  },
+];
 
-  .ab-section { position:relative; z-index:1; padding:clamp(80px,12vw,140px) clamp(20px,4vw,56px); }
+// Off-panel personal tidbits
+const TIDBITS = [
+  { icon: "🏃", label: "Running", note: "Clears my head better than anything" },
+  { icon: "🎵", label: "Music", note: "Mostly when I'm stuck on something" },
+  { icon: "⚽", label: "Sports", note: "Grew up playing, still do" },
+  { icon: "❄️", label: "Calgary winters", note: "Still haven't forgiven them" },
+];
 
-  .ab-glass {
-    background: rgba(255,255,255,0.022);
-    backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%);
-    border: 1px solid rgba(255,255,255,0.07); border-radius: 26px; overflow:hidden; position:relative;
-    animation: ab-card-pulse 4.5s ease-in-out infinite;
-  }
-  .ab-glass::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(225,6,0,0.55),rgba(255,107,53,0.35),transparent); }
-
-  .ab-hcard {
-    background: rgba(255,255,255,0.018); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    border:1px solid rgba(255,255,255,0.06); border-radius:18px; padding:22px 20px;
-    position:relative; overflow:hidden; cursor:default; transition:all 0.35s cubic-bezier(0.16,1,0.3,1);
-  }
-  .ab-hcard::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#E10600,#FF6B35); transform:scaleX(0); transform-origin:left; transition:transform 0.35s cubic-bezier(0.16,1,0.3,1); }
-  .ab-hcard:hover { border-color:rgba(225,6,0,0.2); transform:translateY(-5px); background:rgba(225,6,0,0.04); box-shadow:0 22px 60px rgba(0,0,0,0.5), 0 0 28px rgba(225,6,0,0.06); }
-  .ab-hcard:hover::after { transform:scaleX(1); }
-
-  .ab-stat {
-    flex:1; min-width:100px; padding:20px 16px; text-align:center; cursor:default;
-    background:rgba(255,255,255,0.018); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.06); border-radius:14px;
-    position:relative; overflow:hidden; transition:all 0.3s ease;
-  }
-  .ab-stat::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#E10600,#FF6B35); transform:scaleY(0); transform-origin:top; transition:transform 0.3s; }
-  .ab-stat:hover { border-color:rgba(225,6,0,0.35); transform:translateY(-5px); box-shadow:0 18px 50px rgba(0,0,0,0.5), 0 0 28px rgba(225,6,0,0.1); }
-  .ab-stat:hover::before { transform:scaleY(1); }
-
-  .ab-grid { display:grid; grid-template-columns:1fr 1fr; gap:clamp(36px,5vw,72px); align-items:start; }
-  .ab-hgrid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  @media (max-width:768px) { .ab-grid { grid-template-columns:1fr; } }
-  @media (max-width:440px) { .ab-hgrid { grid-template-columns:1fr; } }
-`;
-
-export default function About() {
+export default function ComicAbout() {
   const sectionRef = useRef(null);
   const [vis, setVis] = useState(false);
+  const [activePanel, setActivePanel] = useState(null);
+
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVis(true); }, { threshold:0.08 });
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setVis(true); },
+      { threshold: 0.04 }
+    );
     if (sectionRef.current) obs.observe(sectionRef.current);
     return () => obs.disconnect();
   }, []);
 
-  const paras = [
-    { pre:"I'm ", bold:'Xander Rancap', rest:", a software developer at SAIT (3.4 GPA). I build clean, practical things where great design meets solid engineering." },
-    { pre:'My internship at ', bold:'Eduspec Holdings Berhad', rest:' in Metro Manila put me hands-on with Arduino, SAM Labs, and VEX Robotics — bridging hardware and software.' },
-    { pre:"I've led group projects applying OOP and scalable design. Highlight: a cross-platform gym app in ", bold:'.NET MAUI Blazor Hybrid', rest:' — clean arch, great UX, aligned team.' },
-    { pre:"I work across C#, Python, JavaScript, and SQL — comfortable with React, Node.js, Tailwind. Always pushing: Java, MongoDB, and mobile are next.", bold:null, rest:'' },
-  ];
-  const highlights = [
-    { num:'01', title:'Full-Stack Focus', desc:'React, Node.js, .NET — web & mobile.', icon:'bx bx-code-alt' },
-    { num:'02', title:'Team Leadership', desc:'Led projects with clean OOP architecture.', icon:'bx bx-flag' },
-    { num:'03', title:'HW + SW', desc:'Robotics deep-dive at Eduspec, Manila.', icon:'bx bx-chip' },
-    { num:'04', title:'Always Learning', desc:'Java, CI/CD, mobile — always moving.', icon:'bx bx-trending-up' },
-  ];
-  const stats = [
-    { value:'3.4', label:'GPA at SAIT', fill:85 },
-    { value:'9+',  label:'Projects Built', fill:78 },
-    { value:'2',   label:'Internships', fill:100 },
-  ];
-
   return (
     <>
-      <style>{CSS}</style>
-      <section id="about" className="ab-section" ref={sectionRef}>
-        <div style={{ position:'absolute', left:'-8%', top:'15%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle,rgba(225,6,0,0.07) 0%,transparent 70%)', pointerEvents:'none', zIndex:0 }} />
+      <style>{`
+        /* ── ABOUT SECTION ── */
+        .about-section {
+          position: relative;
+          padding: clamp(72px, 10vw, 120px) clamp(16px, 5vw, 64px) clamp(56px, 8vw, 96px);
+          background: var(--bg);
+          overflow: hidden;
+        }
 
-        <div style={{ maxWidth:1240, margin:'0 auto', position:'relative', zIndex:1 }}>
-          {/* Eyebrow */}
-          <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:40, animation:vis?'ab-up 0.7s ease both':'none' }}>
-            <div style={{ width:32, height:2, background:'linear-gradient(90deg,#E10600,#FF6B35)', borderRadius:1, boxShadow:'0 0 10px rgba(225,6,0,0.55)' }} />
-            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:12, letterSpacing:'0.22em', textTransform:'uppercase', color:'#E10600' }}>Driver Profile</span>
-            <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.04)' }} />
-            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:10, letterSpacing:'0.15em', color:'#1C1C1C' }}>#01 · SAIT · YYC</span>
+        /* Diagonal hatch texture */
+        .about-section::before {
+          content: '';
+          position: absolute; inset: 0; pointer-events: none;
+          background: repeating-linear-gradient(
+            -45deg, transparent 0px, transparent 22px,
+            var(--muted2) 22px, var(--muted2) 23px
+          );
+        }
+
+        /* Arc reactor deco — top right */
+        .about-arc {
+          position: absolute; top: -100px; right: -100px;
+          width: 380px; height: 380px;
+          opacity: 0.05; z-index: 0; pointer-events: none;
+        }
+        [data-theme="dark"] .about-arc { opacity: 0.1; }
+
+        .about-inner {
+          max-width: 1240px; margin: 0 auto;
+          position: relative; z-index: 1; width: 100%;
+        }
+
+        /* ── HEADING ── */
+        .about-heading {
+          font-family: var(--font-comic);
+          font-size: clamp(3.5rem, 9vw, 8rem);
+          letter-spacing: 0.03em;
+          line-height: 0.88;
+          color: var(--fg);
+          margin: 0 0 clamp(32px, 5vw, 56px);
+          animation: slide-up 0.7s ease 0.05s both;
+        }
+        .about-heading span { color: var(--red); }
+        .about-heading .outline {
+          -webkit-text-stroke: 3px var(--fg);
+          color: transparent;
+        }
+
+        /* ── STORY PANELS GRID ── */
+        .about-panels-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: clamp(12px, 2vw, 20px);
+          margin-bottom: clamp(32px, 5vw, 52px);
+        }
+        @media (max-width: 700px) {
+          .about-panels-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Individual story panel */
+        .story-card {
+          position: relative;
+          background: var(--bg);
+          border: var(--border-med);
+          box-shadow: var(--panel-shadow);
+          padding: clamp(18px, 2.5vw, 28px);
+          cursor: default;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          overflow: hidden;
+        }
+        .story-card::before {
+          content: '';
+          position: absolute; inset: 0; pointer-events: none;
+          background-image: radial-gradient(circle, var(--muted2) 1px, transparent 1px);
+          background-size: 10px 10px;
+        }
+        .story-card:hover {
+          transform: translate(-3px, -3px);
+          box-shadow: 8px 8px 0 var(--fg);
+        }
+
+        /* Chapter tag */
+        .story-card-ch {
+          position: absolute;
+          top: 0; left: 0;
+          background: var(--yellow);
+          border-right: var(--border-thin);
+          border-bottom: var(--border-thin);
+          padding: 3px 10px;
+          font-family: var(--font-comic);
+          font-size: 10px;
+          letter-spacing: 0.14em;
+          color: #0a0a0e;
+        }
+
+        /* Caption bar */
+        .story-caption {
+          background: var(--fg);
+          padding: 5px 12px;
+          margin-bottom: 14px;
+          margin-top: 24px;
+          display: inline-block;
+        }
+        .story-caption span {
+          font-family: var(--font-body);
+          font-size: 11px;
+          color: var(--bg);
+          font-style: italic;
+          letter-spacing: 0.03em;
+          opacity: 0.7;
+        }
+
+        /* Title */
+        .story-card-title {
+          font-family: var(--font-comic);
+          font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+          letter-spacing: 0.04em;
+          color: var(--fg);
+          margin: 0 0 10px;
+          line-height: 1.1;
+        }
+
+        /* Body */
+        .story-card-body {
+          font-family: var(--font-body);
+          font-size: clamp(13px, 1.5vw, 14.5px);
+          line-height: 1.72;
+          color: var(--muted);
+          margin: 0 0 14px;
+        }
+
+        /* Bottom tag chip */
+        .story-tag {
+          display: inline-block;
+          font-family: var(--font-comic);
+          font-size: 10px;
+          letter-spacing: 0.12em;
+          padding: 2px 10px;
+          border: var(--border-thin);
+          color: var(--fg);
+          opacity: 0.45;
+        }
+
+        /* Accent corner */
+        .story-corner {
+          position: absolute;
+          bottom: 0; right: 0;
+          width: 32px; height: 32px;
+          border-left: var(--border-thin);
+          border-top: var(--border-thin);
+        }
+
+        /* ── THE HUMAN PANEL ── */
+        .human-panel {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: clamp(16px, 3vw, 32px);
+          margin-bottom: clamp(28px, 4vw, 44px);
+          align-items: start;
+        }
+        @media (max-width: 700px) {
+          .human-panel { grid-template-columns: 1fr; }
+        }
+
+        /* "The human side" speech bubble quote */
+        .human-quote-block {
+          position: relative;
+          background: var(--fg);
+          border: var(--border-med);
+          box-shadow: var(--panel-shadow);
+          padding: clamp(20px, 3vw, 32px);
+          overflow: hidden;
+        }
+        .human-quote-block::before {
+          content: '';
+          position: absolute; inset: 0;
+          background-image: radial-gradient(circle, var(--bg) 1px, transparent 1px);
+          background-size: 12px 12px;
+          opacity: 0.08;
+          pointer-events: none;
+        }
+        .human-quote-eyebrow {
+          font-family: var(--font-comic);
+          font-size: 10px;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: var(--yellow);
+          margin-bottom: 10px;
+          opacity: 0.8;
+        }
+        .human-quote-text {
+          font-family: var(--font-comic);
+          font-size: clamp(1.4rem, 3vw, 2rem);
+          letter-spacing: 0.04em;
+          line-height: 1.2;
+          color: var(--bg);
+          margin: 0;
+        }
+        .human-quote-text em {
+          font-style: normal;
+          color: var(--yellow);
+        }
+        .human-quote-sub {
+          font-family: var(--font-body);
+          font-size: 13px;
+          color: var(--bg);
+          opacity: 0.45;
+          margin-top: 12px;
+          line-height: 1.6;
+          font-style: italic;
+        }
+
+        /* Tidbits grid */
+        .tidbits-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: clamp(8px, 1.5vw, 12px);
+        }
+        @media (max-width: 440px) {
+          .tidbits-grid { grid-template-columns: 1fr; }
+        }
+
+        .tidbit-card {
+          background: var(--bg);
+          border: var(--border-thin);
+          box-shadow: var(--panel-shadow-sm);
+          padding: 14px 16px;
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .tidbit-card:hover {
+          transform: translate(-2px, -2px);
+          box-shadow: 5px 5px 0 var(--fg);
+        }
+        .tidbit-icon {
+          font-size: 22px;
+          margin-bottom: 6px;
+          display: block;
+          line-height: 1;
+        }
+        .tidbit-label {
+          font-family: var(--font-comic);
+          font-size: 14px;
+          letter-spacing: 0.05em;
+          color: var(--fg);
+          margin-bottom: 3px;
+        }
+        .tidbit-note {
+          font-family: var(--font-body);
+          font-size: 11.5px;
+          color: var(--muted);
+          line-height: 1.5;
+        }
+
+        /* ── BOTTOM STRIP: "What I'm About Right Now" ── */
+        .about-now-strip {
+          background: var(--fg);
+          border: var(--border-bold);
+          box-shadow: var(--panel-shadow);
+          padding: clamp(20px, 3vw, 32px) clamp(20px, 3.5vw, 40px);
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          gap: clamp(20px, 4vw, 48px);
+          flex-wrap: wrap;
+        }
+        .about-now-strip::before {
+          content: '';
+          position: absolute; inset: 0;
+          background-image: radial-gradient(circle, var(--bg) 1px, transparent 1px);
+          background-size: 14px 14px;
+          opacity: 0.06;
+          pointer-events: none;
+        }
+        .now-label {
+          font-family: var(--font-comic);
+          font-size: 10px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--yellow);
+          background: rgba(245, 200, 0, 0.12);
+          border: 2px solid rgba(245, 200, 0, 0.3);
+          padding: 3px 12px;
+          margin-bottom: 10px;
+          display: inline-block;
+        }
+        .now-text {
+          font-family: var(--font-comic);
+          font-size: clamp(1rem, 2.5vw, 1.35rem);
+          letter-spacing: 0.04em;
+          color: var(--bg);
+          line-height: 1.3;
+        }
+        .now-text em { font-style: normal; color: var(--yellow); }
+
+        .now-stats {
+          display: flex;
+          gap: clamp(20px, 3.5vw, 40px);
+          flex-wrap: wrap;
+        }
+        .now-stat {
+          text-align: center;
+        }
+        .now-stat-val {
+          font-family: var(--font-comic);
+          font-size: clamp(1.6rem, 4vw, 2.4rem);
+          color: var(--yellow);
+          letter-spacing: 0.04em;
+          line-height: 1;
+        }
+        .now-stat-lbl {
+          font-family: var(--font-label);
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          color: var(--bg);
+          opacity: 0.35;
+          text-transform: uppercase;
+          margin-top: 3px;
+        }
+        .now-divider {
+          width: 2px;
+          height: 56px;
+          background: var(--bg);
+          opacity: 0.12;
+          flex-shrink: 0;
+        }
+        @media (max-width: 600px) {
+          .now-divider { display: none; }
+          .about-now-strip { flex-direction: column; align-items: flex-start; }
+        }
+      `}</style>
+
+      <section id="about" className="about-section" ref={sectionRef}>
+        {/* Arc reactor deco */}
+        <svg viewBox="0 0 300 300" fill="none" className="about-arc"
+          style={{ position: "absolute", top: -100, right: -100, width: 380, height: 380, zIndex: 0, pointerEvents: "none" }}>
+          <circle cx="150" cy="150" r="140" stroke="rgba(30,200,255,1)" strokeWidth="1.5" />
+          <circle cx="150" cy="150" r="108" stroke="rgba(30,200,255,1)" strokeWidth="1" />
+          <circle cx="150" cy="150" r="76" stroke="rgba(30,200,255,1)" strokeWidth="1" />
+          <circle cx="150" cy="150" r="38" stroke="rgba(30,200,255,1)" strokeWidth="1.5" />
+        </svg>
+
+        <div className="about-inner">
+          {/* Chapter bar */}
+          <div className="chapter-bar" style={{ animation: vis ? "slide-up 0.5s ease both" : "none" }}>
+            <div className="chapter-label">Chapter 01</div>
           </div>
 
-          <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:'clamp(3.8rem,9vw,9rem)', letterSpacing:'0.02em', lineHeight:0.88, color:'#F2F2F2', margin:'0 0 clamp(40px,5vw,64px)', animation:vis?'ab-up 0.8s ease 0.1s both':'none' }}>
-            About<br/>
-            <span style={{ background:'linear-gradient(135deg,#E10600,#FF6B35)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', filter:'drop-shadow(0 0 22px rgba(225,6,0,0.4))' }}>Me</span>
+          {/* Heading */}
+          <h2 className="about-heading" style={{ animation: vis ? "slide-up 0.65s ease 0.08s both" : "none" }}>
+            Origin
+            <br />
+            <span className="outline">Story</span>
           </h2>
 
-          <div className="ab-grid">
-            {/* Left */}
-            <div>
-              {paras.map((p, i) => (
-                <p key={i} style={{ fontFamily:"'Barlow',sans-serif", fontSize:15.5, lineHeight:1.85, color:'#5C5C5C', margin:'0 0 18px', animation:vis?`ab-up 0.7s ease ${0.2+i*0.08}s both`:'none' }}>
-                  {p.pre}{p.bold && <strong style={{ color:'#C8C8C8', fontWeight:600 }}>{p.bold}</strong>}{p.rest}
-                </p>
-              ))}
-              <div style={{ display:'flex', gap:10, marginTop:28, flexWrap:'wrap', animation:vis?'ab-up 0.7s ease 0.56s both':'none' }}>
-                {stats.map((s,i) => <StatCard key={s.label} {...s} delay={i*70} />)}
+          {/* ── STORY PANELS ── */}
+          <div className="about-panels-grid">
+            {STORY_PANELS.map((panel, i) => (
+              <div
+                key={panel.ch}
+                className="story-card"
+                style={{
+                  animation: vis ? `panel-reveal 0.6s cubic-bezier(0.16,1,0.3,1) ${0.1 + i * 0.1}s both` : "none",
+                }}
+              >
+                {/* Halftone in JS to avoid class collision */}
+                <div className="story-card-ch">{panel.ch}</div>
+
+                <div className="story-caption">
+                  <span>{panel.caption}</span>
+                </div>
+
+                <h3 className="story-card-title">{panel.title}</h3>
+                <p className="story-card-body">{panel.body}</p>
+                <div className="story-tag">{panel.tag}</div>
+
+                {/* Accent corner */}
+                <div className="story-corner" style={{ background: panel.accent }} />
               </div>
+            ))}
+          </div>
+
+          {/* ── HUMAN SIDE PANEL ── */}
+          <div className="human-panel" style={{ animation: vis ? "slide-up 0.65s ease 0.5s both" : "none" }}>
+            {/* Quote / statement block */}
+            <div className="human-quote-block">
+              <div className="human-quote-eyebrow">// Off the clock</div>
+              <p className="human-quote-text">
+                I run, play sports, and mess with music — mostly to <em>reset</em> when I've been staring at a problem so long everything starts looking wrong.
+              </p>
+              <p className="human-quote-sub">
+                It helps more than it probably should. Outside stuff keeps the inside stuff from getting too loud.
+              </p>
             </div>
 
-            {/* Right: glass panel */}
-            <div className="ab-glass" style={{ padding:'clamp(24px,3vw,38px)', animation:vis?'ab-up 0.8s ease 0.28s both':'none' }}>
-              <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:'6.5rem', color:'rgba(225,6,0,0.04)', position:'absolute', right:12, top:-18, lineHeight:1, userSelect:'none', pointerEvents:'none', letterSpacing:'0.06em' }}>XTR</div>
-              <div className="ab-hgrid">
-                {highlights.map((h,i) => (
-                  <div key={h.title} className="ab-hcard">
-                    <i className={h.icon} style={{ fontSize:20, color:'#E10600', marginBottom:10, display:'block' }} />
-                    <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:9, letterSpacing:'0.2em', color:'#E10600', marginBottom:8 }}>{h.num}</div>
-                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:13, fontWeight:700, letterSpacing:'0.04em', color:'#F2F2F2', marginBottom:5, textTransform:'uppercase' }}>{h.title}</div>
-                    <div style={{ fontFamily:"'Barlow',sans-serif", fontSize:12.5, color:'#4A4A4A', lineHeight:1.6 }}>{h.desc}</div>
-                  </div>
-                ))}
-              </div>
+            {/* Tidbits */}
+            <div className="tidbits-grid">
+              {TIDBITS.map((t) => (
+                <div key={t.label} className="tidbit-card">
+                  <span className="tidbit-icon">{t.icon}</span>
+                  <div className="tidbit-label">{t.label}</div>
+                  <div className="tidbit-note">{t.note}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── BOTTOM STRIP ── */}
+          <div className="about-now-strip" style={{ animation: vis ? "slide-up 0.65s ease 0.62s both" : "none" }}>
+            <div style={{ flex: 1, minWidth: 200, position: "relative", zIndex: 1 }}>
+              <div className="now-label">Right Now</div>
+              <p className="now-text">
+                Studying at <em>SAIT</em>, building things that actually work, and figuring out what I'm genuinely good at. Slowly.
+              </p>
+            </div>
+
+            <div className="now-divider" />
+
+            <div className="now-stats" style={{ position: "relative", zIndex: 1 }}>
+              {[
+                { v: "3.7", l: "GPA" },
+                { v: "9+", l: "Projects" },
+                { v: "2", l: "Internships" },
+              ].map((s) => (
+                <div key={s.l} className="now-stat">
+                  <div className="now-stat-val">{s.v}</div>
+                  <div className="now-stat-lbl">{s.l}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
     </>
-  );
-}
-
-function StatCard({ value, label, fill, delay }) {
-  const [hov, setHov] = useState(false);
-  return (
-    <div className="ab-stat" onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
-      <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:30, color:hov?'#E10600':'#F2F2F2', lineHeight:1, transition:'color 0.3s', textShadow:hov?'0 0 20px rgba(225,6,0,0.55)':'none' }}>{value}</div>
-      <div style={{ fontFamily:"'Barlow',sans-serif", fontSize:10.5, color:'#3C3C3C', marginTop:4 }}>{label}</div>
-      <div style={{ height:2, background:'rgba(255,255,255,0.05)', borderRadius:1, marginTop:10, overflow:'hidden' }}>
-        <div style={{ height:'100%', width:`${fill}%`, background:'linear-gradient(90deg,#E10600,#FF6B35)', borderRadius:1, animation:`ab-bar 1.5s cubic-bezier(0.16,1,0.3,1) ${delay}ms both`, boxShadow:hov?'0 0 10px rgba(225,6,0,0.55)':'none' }} />
-      </div>
-    </div>
   );
 }

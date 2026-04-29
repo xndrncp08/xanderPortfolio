@@ -1,51 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 
-const CSS = `
-  @keyframes sk-up { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes sk-chip-in { from { opacity:0; transform:scale(0.84) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
-  @keyframes sk-scan { 0%{top:-2%;opacity:0;} 5%{opacity:1;} 95%{opacity:0.5;} 100%{top:100%;opacity:0;} }
-  @keyframes sk-pulse { 0%,100%{box-shadow:0 0 0 1px rgba(225,6,0,0.1),0 24px 80px rgba(0,0,0,0.5);} 50%{box-shadow:0 0 0 1px rgba(225,6,0,0.3),0 24px 80px rgba(0,0,0,0.7),0 0 50px rgba(225,6,0,0.07);} }
-  @keyframes sk-bar { from { width:0; } }
-
-  .sk-section { position:relative; z-index:1; padding:clamp(80px,12vw,140px) clamp(20px,4vw,56px); }
-  .sk-layout { display:grid; grid-template-columns:1fr 1fr; gap:clamp(40px,5vw,72px); align-items:start; max-width:1240px; margin:0 auto; }
-  @media (max-width:768px) { .sk-layout { grid-template-columns:1fr; } }
-
-  .sk-left { position:sticky; top:clamp(80px,10vw,120px); }
-  @media (max-width:768px) { .sk-left { position:static; } }
-
-  .sk-glass {
-    background:rgba(255,255,255,0.022); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%);
-    border:1px solid rgba(255,255,255,0.07); border-radius:26px; padding:clamp(24px,3.5vw,42px);
-    position:relative; overflow:hidden; animation:sk-pulse 4.5s ease-in-out infinite;
-  }
-  .sk-glass::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(225,6,0,0.6),rgba(255,107,53,0.4),transparent); }
-
-  .sk-cat-label { fontFamily:"'Bebas Neue',sans-serif"; font-size:9px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:#222; margin:22px 0 10px; }
-  .sk-cat-label:first-child { margin-top:0; }
-
-  .sk-chips { display:flex; flex-wrap:wrap; gap:8px; }
-  .sk-chip {
-    display:inline-flex; align-items:center; gap:8px;
-    padding:9px 14px; border-radius:10px;
-    font-family:'Barlow Semi Condensed',sans-serif; font-size:12.5px; font-weight:600; letter-spacing:0.03em;
-    border:1px solid transparent; cursor:none; position:relative; overflow:hidden;
-    transition:all 0.25s cubic-bezier(0.16,1,0.3,1);
-    animation:sk-chip-in 0.4s cubic-bezier(0.16,1,0.3,1) both;
-  }
-  .sk-chip::before { content:''; position:absolute; top:0; left:0; width:3px; height:0; transition:height 0.25s ease; }
-  .sk-chip:hover::before, .sk-chip.active::before { height:100%; }
-  .sk-chip:hover { transform:translateY(-2px); }
-  .sk-chip.active { transform:translateY(-1px); }
-  .sk-chip-icon { font-size:15px; line-height:1; flex-shrink:0; }
-  .sk-divider { height:1px; background:rgba(255,255,255,0.05); border:none; margin:18px 0; }
-
-  .sk-stats-row { display:flex; gap:0; border-top:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05); margin:28px 0; }
-  .sk-stat { flex:1; padding:18px 0; border-right:1px solid rgba(255,255,255,0.05); }
-  .sk-stat:last-child { border-right:none; }
-`;
-
 const SKILLS = [
   {
     name: "JavaScript",
@@ -67,6 +22,7 @@ const SKILLS = [
     color: "#9B59B6",
     cat: "Languages",
   },
+
   {
     name: "React / React Native",
     icon: "bx bxl-react",
@@ -74,37 +30,141 @@ const SKILLS = [
     cat: "Frontend",
   },
   { name: "Vue.js", icon: "bx bxl-vuejs", color: "#42B883", cat: "Frontend" },
+  { name: "Next.js", icon: "bx bxl-nodejs", color: "#000000", cat: "Frontend" },
   {
-    name: "HTML / CSS / Tailwind",
+    name: "Tailwind CSS",
     icon: "bx bxl-html5",
-    color: "#E34F26",
+    color: "#38BDF8",
     cat: "Frontend",
   },
+
   {
     name: "Node.js / Express",
     icon: "bx bxl-nodejs",
     color: "#68A063",
     cat: "Backend",
   },
+  {
+    name: ".NET / Blazor",
+    icon: "devicon-dotnetcore-plain",
+    color: "#512BD4",
+    cat: "Backend",
+  },
+
   { name: "MongoDB", icon: "bx bxl-mongodb", color: "#47A248", cat: "Data" },
   { name: "MySQL", icon: "bx bxs-data", color: "#4479A1", cat: "Data" },
-  { name: "NoSQL", icon: "bx bxs-data", color: "#4479A1", cat: "Data" },
   { name: "Supabase", icon: "bx bx-cloud", color: "#3ECF8E", cat: "Data" },
+  { name: "PostgreSQL", icon: "bx bxs-data", color: "#336791", cat: "Data" },
+
   { name: "Git", icon: "bx bxl-git", color: "#F05032", cat: "Tooling" },
+  { name: "Docker", icon: "bx bxl-docker", color: "#2496ED", cat: "Tooling" },
+  { name: "Figma", icon: "bx bxl-figma", color: "#F24E1E", cat: "Tooling" },
 ];
+
 const CATS = ["Languages", "Frontend", "Backend", "Data", "Tooling"];
 
 function hexToRgb(hex) {
   const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return r
     ? `${parseInt(r[1], 16)},${parseInt(r[2], 16)},${parseInt(r[3], 16)}`
-    : "225,6,0";
+    : "245,200,0";
 }
 
-export default function Skills() {
+function SkillChip({ skill, active, hovered, onHover, onClick, idx }) {
+  const rgb = hexToRgb(skill.color);
+  const isOn = active || hovered;
+  return (
+    <button
+      className="skill-chip"
+      style={{
+        background: isOn ? `rgba(${rgb}, 0.12)` : "rgba(0,0,0,0.03)",
+        borderColor: active
+          ? `rgba(${rgb}, 0.7)`
+          : isOn
+            ? `rgba(${rgb}, 0.45)`
+            : "rgba(0,0,0,0.13)",
+        color: isOn ? skill.color : "#555",
+        boxShadow: active
+          ? `3px 3px 0 rgba(${rgb}, 0.4)`
+          : isOn
+            ? `2px 2px 0 rgba(${rgb},0.22)`
+            : "2px 2px 0 rgba(0,0,0,0.07)",
+        transform: isOn ? "translate(-1px, -1px)" : "none",
+        animation: `pop-in 0.35s cubic-bezier(0.16,1,0.3,1) ${idx * 28}ms both`,
+      }}
+      onMouseEnter={onHover}
+      onMouseLeave={() => onHover(null)}
+      onClick={onClick}
+    >
+      <i
+        className={`skill-chip-icon ${skill.icon}`}
+        style={{
+          color: isOn ? skill.color : "#888",
+          filter: isOn ? `drop-shadow(0 0 4px rgba(${rgb},0.5))` : "none",
+        }}
+      />
+      {skill.name}
+      {active && (
+        <span style={{ fontSize: 8, opacity: 0.7, marginLeft: 2 }}>✓</span>
+      )}
+    </button>
+  );
+}
+
+function CategoryPanel({
+  cat,
+  skills,
+  active,
+  hovered,
+  onHover,
+  onToggle,
+  visible,
+  panelIdx,
+}) {
+  return (
+    <div
+      className="cat-panel"
+      style={{
+        animation: visible
+          ? `slide-up 0.5s ease ${panelIdx * 75}ms both`
+          : "none",
+      }}
+    >
+      <div
+        className="caption"
+        style={{
+          position: "absolute",
+          top: -2,
+          left: -2,
+          fontSize: 10,
+          zIndex: 2,
+        }}
+      >
+        {cat}
+      </div>
+      <div
+        style={{ display: "flex", flexWrap: "wrap", gap: 8, paddingTop: 10 }}
+      >
+        {skills.map((skill, i) => (
+          <SkillChip
+            key={skill.name}
+            skill={skill}
+            active={active === skill.name}
+            hovered={hovered === skill.name}
+            onHover={(v) => onHover(v ? skill.name : null)}
+            onClick={() => onToggle(skill)}
+            idx={i}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function ComicSkills() {
   const sectionRef = useRef(null);
   const [vis, setVis] = useState(false);
-  const [hovered, setHovered] = useState(null);
+  const [hovered, setHov] = useState(null);
   const [active, setActive] = useState(null);
 
   useEffect(() => {
@@ -112,358 +172,439 @@ export default function Skills() {
       ([e]) => {
         if (e.isIntersecting) setVis(true);
       },
-      { threshold: 0.08 },
+      { threshold: 0.05 },
     );
     if (sectionRef.current) obs.observe(sectionRef.current);
     return () => obs.disconnect();
   }, []);
 
-  const handleClick = (skill) => {
+  const handleToggle = (skill) => {
     const next = active === skill.name ? null : skill.name;
     setActive(next);
     window.dispatchEvent(
       new CustomEvent("skill-filter", { detail: { skill: next } }),
     );
-    if (next)
-      setTimeout(
-        () =>
-          document
-            .getElementById("projects")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-        100,
-      );
+    if (next) {
+      setTimeout(() => {
+        document
+          .getElementById("projects")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+    }
   };
 
   return (
     <>
-      <style>{CSS}</style>
-      <section id="skills" className="sk-section" ref={sectionRef}>
-        <div
+      <style>{`
+        .skills-section {
+          position: relative;
+          min-height: 100vh;
+          padding: clamp(72px, 10vw, 110px) clamp(20px, 5vw, 64px) clamp(56px, 7vw, 88px);
+          background: var(--ink);
+          overflow: hidden;
+          display: flex; flex-direction: column; justify-content: center;
+        }
+        .skills-section::before {
+          content: ''; position: absolute; inset: 0; pointer-events: none;
+          background-image: radial-gradient(circle, rgba(248,244,232,0.05) 1px, transparent 1px);
+          background-size: 12px 12px;
+        }
+
+        /* Arc reactor — Iron Man decoration, bottom right */
+        .skills-arc {
+          position: absolute; bottom: -100px; right: -100px;
+          width: 380px; height: 380px;
+          opacity: 0.08; z-index: 0; pointer-events: none;
+          animation: reactor-pulse 5s ease-in-out infinite;
+        }
+
+        /* Spider web — top right corner */
+        .skills-web {
+          position: absolute; top: 0; right: 0;
+          width: 160px; height: 160px;
+          opacity: 0.05; z-index: 0; pointer-events: none;
+        }
+
+        .skills-inner { max-width: 1240px; margin: 0 auto; position: relative; z-index: 1; width: 100%; }
+
+        .skills-layout {
+          display: grid;
+          grid-template-columns: 1fr 2.2fr;
+          gap: clamp(32px, 5vw, 72px);
+          align-items: start;
+        }
+        @media (max-width: 860px) { .skills-layout { grid-template-columns: 1fr; } }
+
+        .skills-left { position: sticky; top: 90px; }
+        @media (max-width: 860px) { .skills-left { position: static; } }
+
+        .skills-chapter {
+          font-family: var(--font-comic);
+          font-size: clamp(3.5rem, 9vw, 8rem);
+          letter-spacing: 0.03em; line-height: 0.88;
+          color: var(--paper); margin: 0 0 18px;
+        }
+        .skills-chapter span { color: var(--yellow); }
+
+        /* Stat row */
+        .skill-counts {
+          display: flex; gap: 0;
+          border: 2px solid rgba(248,244,232,0.1);
+          margin: 22px 0; overflow: hidden;
+        }
+        .skill-count-item {
+          flex: 1; padding: 14px 0; text-align: center;
+          border-right: 1px solid rgba(248,244,232,0.07);
+        }
+        .skill-count-item:last-child { border-right: none; }
+
+        /* Category panels */
+        .cats-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0;
+        }
+        @media (max-width: 500px) { .cats-grid { grid-template-columns: 1fr; } }
+
+        .cat-panel {
+          background: var(--paper);
+          border: var(--border-med);
+          padding: 18px 16px 22px;
+          position: relative; overflow: hidden;
+          margin: -2px;
+          transition: background 0.15s ease;
+        }
+        .cat-panel:hover { background: #fffef5; }
+
+        /* Skill chip */
+        .skill-chip {
+          display: inline-flex; align-items: center; gap: 7px;
+          padding: 8px 12px;
+          font-family: var(--font-label); font-size: 12px; font-weight: 600;
+          letter-spacing: 0.02em;
+          border: 2px solid; cursor: none;
+          transition: all 0.15s ease;
+          background: none; text-align: left;
+        }
+        .skill-chip-icon { font-size: 14px; flex-shrink: 0; }
+
+        /* Active filter pill */
+        .filter-pill {
+          display: flex; align-items: center; gap: 10px;
+          background: rgba(245,200,0,0.1);
+          border: 2px solid var(--yellow);
+          box-shadow: 2px 2px 0 var(--yellow);
+          padding: 10px 16px; margin-top: 14px;
+          animation: pop-in 0.3s ease both;
+        }
+
+        /* "Next arc" teaser panel */
+        .next-arc-panel {
+          background: rgba(245,200,0,0.025);
+          display: flex; flex-direction: column;
+          justify-content: center; align-items: center;
+          min-height: 100px;
+        }
+      `}</style>
+
+      <section id="skills" className="skills-section" ref={sectionRef}>
+        {/* Iron Man arc reactor */}
+        <svg
+          viewBox="0 0 300 300"
+          fill="none"
+          className="skills-arc"
           style={{
             position: "absolute",
-            bottom: "-8%",
-            right: "-5%",
-            width: 500,
-            height: 500,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle,rgba(225,6,0,0.07) 0%,transparent 70%)",
-            pointerEvents: "none",
+            bottom: -100,
+            right: -100,
+            width: 380,
+            height: 380,
             zIndex: 0,
+            pointerEvents: "none",
+            opacity: 0.1,
           }}
-        />
+        >
+          <circle
+            cx="150"
+            cy="150"
+            r="140"
+            stroke="rgba(30,200,255,1)"
+            strokeWidth="1.5"
+          />
+          <circle
+            cx="150"
+            cy="150"
+            r="110"
+            stroke="rgba(30,200,255,1)"
+            strokeWidth="1"
+          />
+          <circle
+            cx="150"
+            cy="150"
+            r="75"
+            stroke="rgba(30,200,255,1)"
+            strokeWidth="1"
+          />
+          <circle
+            cx="150"
+            cy="150"
+            r="38"
+            stroke="rgba(30,200,255,1)"
+            strokeWidth="1.5"
+          />
+          <circle
+            cx="150"
+            cy="150"
+            r="14"
+            fill="rgba(30,200,255,0.15)"
+            stroke="rgba(30,200,255,0.5)"
+            strokeWidth="1.5"
+          />
+        </svg>
 
-        <div className="sk-layout">
-          {/* ── Left editorial ── */}
-          <div className="sk-left">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                marginBottom: 24,
-                animation: vis ? "sk-up 0.6s ease both" : "none",
-              }}
-            >
-              <div
-                style={{
-                  width: 32,
-                  height: 2,
-                  background: "linear-gradient(90deg,#E10600,#FF6B35)",
-                  borderRadius: 1,
-                  boxShadow: "0 0 10px rgba(225,6,0,0.55)",
-                }}
+        {/* Spider-Man web */}
+        <svg
+          viewBox="0 0 200 200"
+          fill="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: 160,
+            height: 160,
+            opacity: 0.07,
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        >
+          {[90, 70, 50, 30].map((r) => (
+            <circle
+              key={r}
+              cx="100"
+              cy="0"
+              r={r}
+              stroke="white"
+              strokeWidth="0.8"
+            />
+          ))}
+          {[0, 45, 90, 135].map((deg, i) => {
+            const rad = (deg * Math.PI) / 180;
+            return (
+              <line
+                key={i}
+                x1={100 + 5 * Math.cos(rad)}
+                y1={5 * Math.sin(rad)}
+                x2={100 + 95 * Math.cos(rad)}
+                y2={95 * Math.sin(rad)}
+                stroke="white"
+                strokeWidth="0.7"
               />
-              <span
-                style={{
-                  fontFamily: "'Bebas Neue',sans-serif",
-                  fontSize: 12,
-                  letterSpacing: "0.22em",
-                  textTransform: "uppercase",
-                  color: "#E10600",
-                }}
-              >
-                Tech Stack
-              </span>
-            </div>
+            );
+          })}
+        </svg>
 
-            <h2
-              style={{
-                fontFamily: "'Bebas Neue',sans-serif",
-                fontSize: "clamp(3.8rem,9vw,9rem)",
-                letterSpacing: "0.02em",
-                lineHeight: 0.88,
-                color: "#F2F2F2",
-                margin: "0 0 20px",
-                animation: vis ? "sk-up 0.7s ease 0.08s both" : "none",
-              }}
-            >
-              Skills &amp;
-              <br />
-              <span
-                style={{
-                  background: "linear-gradient(135deg,#E10600,#FF6B35)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 22px rgba(225,6,0,0.4))",
-                }}
-              >
-                Tech
-              </span>
-            </h2>
-
-            <p
-              style={{
-                fontFamily: "'Barlow',sans-serif",
-                fontSize: 15,
-                lineHeight: 1.78,
-                color: "#5C5C5C",
-                animation: vis ? "sk-up 0.7s ease 0.15s both" : "none",
-              }}
-            >
-              Languages, frameworks, and tools I reach for when building things
-              that matter. Click any skill to filter matching projects.
-            </p>
-
+        <div className="skills-inner">
+          <div
+            className="chapter-bar"
+            style={{ animation: vis ? "slide-up 0.6s ease both" : "none" }}
+          >
             <div
-              className="sk-stats-row"
-              style={{ animation: vis ? "sk-up 0.7s ease 0.22s both" : "none" }}
+              className="chapter-label"
+              style={{ background: "var(--yellow)" }}
             >
-              {[
-                { n: SKILLS.length, l: "Technologies" },
-                { n: CATS.length, l: "Categories" },
-                { n: "3+", l: "Years exp." },
-              ].map((s) => (
-                <div key={s.l} className="sk-stat">
-                  <div
-                    style={{
-                      fontFamily: "'Bebas Neue',sans-serif",
-                      fontSize: 36,
-                      color: "#F2F2F2",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {s.n}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "'Barlow',sans-serif",
-                      fontSize: 9.5,
-                      color: "#3C3C3C",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      marginTop: 3,
-                    }}
-                  >
-                    {s.l}
-                  </div>
-                </div>
-              ))}
+              Chapter 02
             </div>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                fontFamily: "'Barlow',sans-serif",
-                fontSize: 11.5,
-                color: "#2A2A2A",
-                animation: vis ? "sk-up 0.7s ease 0.3s both" : "none",
-              }}
-            >
-              <div
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  background: active ? "#E10600" : "#222",
-                  boxShadow: active ? "0 0 8px #E10600" : "none",
-                  flexShrink: 0,
-                  transition: "all 0.3s",
-                }}
-              />
-              {active
-                ? `Showing projects using ${active} — click to clear`
-                : "Click a skill to filter projects below"}
-            </div>
-
-            {active && (
-              <div
-                style={{
-                  marginTop: 14,
-                  padding: "10px 16px",
-                  background: "rgba(225,6,0,0.07)",
-                  border: "1px solid rgba(225,6,0,0.22)",
-                  borderRadius: 10,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  animation: "sk-up 0.3s ease both",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'Bebas Neue',sans-serif",
-                    fontSize: 12,
-                    letterSpacing: "0.1em",
-                    color: "#E10600",
-                  }}
-                >
-                  Filter: {active}
-                </span>
-                <button
-                  onClick={() => {
-                    setActive(null);
-                    window.dispatchEvent(
-                      new CustomEvent("skill-filter", {
-                        detail: { skill: null },
-                      }),
-                    );
-                  }}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "none",
-                    color: "#E10600",
-                    fontSize: 18,
-                    lineHeight: 1,
-                    padding: 0,
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-            )}
           </div>
 
-          {/* ── Right chip card ── */}
-          <div>
-            <div className="sk-glass">
-              {/* Scan line */}
-              <div
+          <div className="skills-layout">
+            {/* Left editorial */}
+            <div className="skills-left">
+              <h2
+                className="skills-chapter"
                 style={{
-                  position: "absolute",
-                  left: 0,
-                  right: 0,
-                  height: 48,
-                  pointerEvents: "none",
-                  zIndex: 1,
-                  animation: "sk-scan 9s ease-in-out infinite",
-                  background:
-                    "linear-gradient(180deg,transparent,rgba(225,6,0,0.04),transparent)",
+                  animation: vis ? "slide-up 0.7s ease 0.08s both" : "none",
                 }}
-              />
+              >
+                The
+                <br />
+                <span>Arsenal</span>
+              </h2>
 
-              <div style={{ position: "relative", zIndex: 2 }}>
-                {CATS.map((cat) => {
-                  const group = SKILLS.filter((s) => s.cat === cat);
-                  return (
-                    <div key={cat}>
-                      <div
-                        style={{
-                          fontFamily: "'Bebas Neue',sans-serif",
-                          fontSize: 9,
-                          letterSpacing: "0.22em",
-                          textTransform: "uppercase",
-                          color: "#222",
-                          margin: "22px 0 10px",
-                        }}
-                        className="sk-cat-label"
-                      >
-                        {cat}
-                      </div>
-                      <div className="sk-chips">
-                        {group.map((skill, gi) => {
-                          const isH = hovered === skill.name;
-                          const isA = active === skill.name;
-                          const rgb = hexToRgb(skill.color);
-                          return (
-                            <div
-                              key={skill.name}
-                              className={`sk-chip${isA ? " active" : ""}`}
-                              style={{
-                                "--chip-color": skill.color,
-                                animationDelay: `${gi * 36}ms`,
-                                background:
-                                  isH || isA
-                                    ? `rgba(${rgb},0.1)`
-                                    : "rgba(255,255,255,0.03)",
-                                borderColor: isA
-                                  ? `rgba(${rgb},0.7)`
-                                  : isH
-                                    ? `rgba(${rgb},0.4)`
-                                    : "rgba(255,255,255,0.07)",
-                                color: isH || isA ? skill.color : "#666",
-                                boxShadow: isA
-                                  ? `0 0 0 2px rgba(${rgb},0.22),0 8px 24px rgba(${rgb},0.2)`
-                                  : isH
-                                    ? `0 5px 18px rgba(${rgb},0.15)`
-                                    : "none",
-                              }}
-                              onMouseEnter={() => setHovered(skill.name)}
-                              onMouseLeave={() => setHovered(null)}
-                              onClick={() => handleClick(skill)}
-                            >
-                              <i
-                                className={`sk-chip-icon ${skill.icon}`}
-                                style={{
-                                  color: isH || isA ? skill.color : "#3A3A3A",
-                                  filter:
-                                    isH || isA
-                                      ? `drop-shadow(0 0 5px rgba(${rgb},0.6))`
-                                      : "none",
-                                  transition: "all 0.2s",
-                                }}
-                              />
-                              {skill.name}
-                              <style>{`.sk-chip::before { background: ${skill.color}; }`}</style>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      {cat !== CATS[CATS.length - 1] && (
-                        <hr className="sk-divider" />
-                      )}
+              <p
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: 14.5,
+                  lineHeight: 1.78,
+                  color: "rgba(248,244,232,0.42)",
+                  animation: vis ? "slide-up 0.6s ease 0.15s both" : "none",
+                }}
+              >
+                Languages, frameworks, and tools I reach for. Tap any skill to
+                filter matching projects.
+              </p>
+
+              <div
+                className="skill-counts"
+                style={{
+                  animation: vis ? "slide-up 0.6s ease 0.22s both" : "none",
+                }}
+              >
+                {[
+                  { n: SKILLS.length, l: "Tech" },
+                  { n: CATS.length, l: "Areas" },
+                  { n: "3+", l: "Yrs" },
+                ].map((s) => (
+                  <div key={s.l} className="skill-count-item">
+                    <div
+                      style={{
+                        fontFamily: "var(--font-comic)",
+                        fontSize: 32,
+                        color: "var(--yellow)",
+                        lineHeight: 1,
+                        letterSpacing: "0.04em",
+                      }}
+                    >
+                      {s.n}
                     </div>
-                  );
-                })}
+                    <div
+                      style={{
+                        fontFamily: "var(--font-label)",
+                        fontSize: 9,
+                        fontWeight: 700,
+                        letterSpacing: "0.14em",
+                        textTransform: "uppercase",
+                        color: "rgba(248,244,232,0.3)",
+                        marginTop: 3,
+                      }}
+                    >
+                      {s.l}
+                    </div>
+                  </div>
+                ))}
               </div>
 
+              {/* Filter status */}
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 12,
-                  marginTop: 20,
-                  borderTop: "1px solid rgba(255,255,255,0.05)",
-                  paddingTop: 18,
+                  gap: 8,
+                  fontFamily: "var(--font-body)",
+                  fontSize: 12,
+                  color: "rgba(248,244,232,0.28)",
+                  animation: vis ? "slide-up 0.6s ease 0.3s both" : "none",
                 }}
               >
-                <div
-                  style={{
-                    flex: 1,
-                    height: 1,
-                    background: "rgba(225,6,0,0.14)",
-                  }}
-                />
                 <span
                   style={{
-                    fontFamily: "'Bebas Neue',sans-serif",
-                    fontSize: 10,
-                    letterSpacing: "0.18em",
-                    color: "#222",
-                  }}
-                >
-                  {active ? "1 filter active" : `${SKILLS.length} technologies`}
-                </span>
-                <div
-                  style={{
-                    flex: 1,
-                    height: 1,
-                    background: "rgba(255,255,255,0.04)",
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    flexShrink: 0,
+                    background: active
+                      ? "var(--yellow)"
+                      : "rgba(255,255,255,0.12)",
+                    boxShadow: active ? "0 0 8px var(--yellow)" : "none",
+                    transition: "all 0.25s ease",
+                    display: "inline-block",
                   }}
                 />
+                {active
+                  ? `Showing projects using "${active}"`
+                  : "Tap a skill to filter projects"}
+              </div>
+
+              {active && (
+                <div className="filter-pill">
+                  <span
+                    style={{
+                      fontFamily: "var(--font-comic)",
+                      fontSize: 13,
+                      letterSpacing: "0.08em",
+                      color: "var(--yellow)",
+                    }}
+                  >
+                    Filter: {active}
+                  </span>
+                  <button
+                    onClick={() => {
+                      setActive(null);
+                      window.dispatchEvent(
+                        new CustomEvent("skill-filter", {
+                          detail: { skill: null },
+                        }),
+                      );
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "none",
+                      color: "var(--yellow)",
+                      fontSize: 20,
+                      lineHeight: 1,
+                      padding: "0 0 0 8px",
+                      marginLeft: "auto",
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Right category panels */}
+            <div>
+              <div className="cats-grid">
+                {CATS.map((cat, pi) => (
+                  <CategoryPanel
+                    key={cat}
+                    cat={cat}
+                    skills={SKILLS.filter((s) => s.cat === cat)}
+                    active={active}
+                    hovered={hovered}
+                    onHover={setHov}
+                    onToggle={handleToggle}
+                    visible={vis}
+                    panelIdx={pi}
+                  />
+                ))}
+                {/* Teaser panel */}
+                <div
+                  className="cat-panel next-arc-panel"
+                  style={{
+                    animation: vis
+                      ? `slide-up 0.5s ease ${CATS.length * 75}ms both`
+                      : "none",
+                  }}
+                >
+                  <div
+                    className="caption"
+                    style={{
+                      position: "absolute",
+                      top: -2,
+                      left: -2,
+                      fontSize: 10,
+                    }}
+                  >
+                    Next Arc
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-comic)",
+                      fontSize: 18,
+                      color: "rgba(0,0,0,0.18)",
+                      letterSpacing: "0.06em",
+                      textAlign: "center",
+                      marginTop: 10,
+                    }}
+                  >
+                    Coming:
+                    <br />
+                    <span style={{ color: "var(--yellow)", fontSize: 14 }}>
+                      CI/CD · AWS · k8s
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

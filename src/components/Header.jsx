@@ -1,259 +1,327 @@
-'use client';
-import { useState, useEffect, useRef } from 'react';
+"use client";
+import { useState, useEffect } from "react";
 
-const CSS = `
-  @keyframes nav-float {
-    0%,100% { transform: translateX(-50%) translateY(0px); }
-    50%      { transform: translateX(-50%) translateY(-3px); }
-  }
-  @keyframes nav-glow-pulse {
-    0%,100% { box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(225,6,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08); }
-    50%      { box-shadow: 0 12px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(225,6,0,0.4), 0 0 30px rgba(225,6,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08); }
-  }
-  @keyframes indicator-slide {
-    from { opacity:0; transform:scaleX(0); }
-    to   { opacity:1; transform:scaleX(1); }
-  }
-  @keyframes drawer-in {
-    from { opacity:0; transform:translateY(-10px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
+const NAV_ITEMS = [
+  { id: "about", label: "Origin", ch: "01" },
+  { id: "skills", label: "Arsenal", ch: "02" },
+  { id: "projects", label: "Case Files", ch: "03" },
+  { id: "contact", label: "Signal", ch: "04" },
+];
 
-  .nav-pill {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    animation: nav-float 4s ease-in-out infinite, nav-glow-pulse 3s ease-in-out infinite;
-    transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-  }
+// Sun icon for light mode button
+function SunIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    >
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  );
+}
 
-  .nav-pill-inner {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 8px 6px 12px;
-    border-radius: 999px;
-    background: rgba(8,8,12,0.85);
-    backdrop-filter: blur(32px) saturate(200%);
-    -webkit-backdrop-filter: blur(32px) saturate(200%);
-    border: 1px solid rgba(255,255,255,0.1);
-    white-space: nowrap;
-  }
+// Moon icon for dark mode button
+function MoonIcon() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    >
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
 
-  .nav-logo-text {
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 900;
-    font-size: 14px;
-    letter-spacing: 0.08em;
-    background: linear-gradient(135deg, #F2F2F2, #E10600);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-right: 8px;
-    padding-right: 12px;
-    border-right: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .nav-item {
-    position: relative;
-    background: none;
-    border: none;
-    cursor: none;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    padding: 7px 14px;
-    border-radius: 999px;
-    color: rgba(255,255,255,0.45);
-    transition: all 0.25s ease;
-  }
-  .nav-item:hover { color: rgba(255,255,255,0.9); }
-  .nav-item.active {
-    color: #fff;
-    background: rgba(225,6,0,0.15);
-    box-shadow: inset 0 0 0 1px rgba(225,6,0,0.3), 0 0 16px rgba(225,6,0,0.2);
-  }
-
-  .nav-hire {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    padding: 8px 16px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #E10600, #FF3A2D);
-    color: #fff;
-    border: none;
-    cursor: none;
-    text-decoration: none;
-    margin-left: 4px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: all 0.2s;
-    box-shadow: 0 0 20px rgba(225,6,0,0.35);
-  }
-  .nav-hire:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 32px rgba(225,6,0,0.6);
-  }
-
-  .nav-hamburger {
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: none;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background 0.2s;
-  }
-  .nav-hamburger span {
-    display: block;
-    width: 18px; height: 1.5px;
-    background: rgba(255,255,255,0.5);
-    border-radius: 1px;
-    transition: all 0.3s;
-  }
-  .nav-hamburger.open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); background: #E10600; }
-  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
-  .nav-hamburger.open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); background: #E10600; }
-
-  .nav-links-desktop { display: flex; align-items: center; gap: 2px; }
-
-  @media (max-width: 640px) {
-    .nav-links-desktop { display: none !important; }
-    .nav-hamburger { display: flex !important; }
-    .nav-hire-desktop { display: none !important; }
-  }
-
-  .nav-drawer {
-    position: fixed;
-    top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 999;
-    animation: drawer-in 0.3s cubic-bezier(0.16,1,0.3,1);
-    min-width: 220px;
-  }
-  .nav-drawer-inner {
-    background: rgba(6,6,10,0.95);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
-    padding: 8px;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(225,6,0,0.1);
-    overflow: hidden;
-  }
-  .nav-drawer-inner::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 10%; right: 10%; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(225,6,0,0.5), transparent);
-  }
-  .nav-drawer-item {
-    display: block; width: 100%;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 14px; font-weight: 700; letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 13px 20px;
-    background: none; border: none; cursor: none;
-    color: rgba(255,255,255,0.5);
-    text-align: left;
-    border-radius: 12px;
-    transition: all 0.2s;
-  }
-  .nav-drawer-item:hover, .nav-drawer-item.active { color: #fff; background: rgba(225,6,0,0.12); }
-
-  /* Red dot indicator */
-  .nav-status-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: #E10600;
-    box-shadow: 0 0 8px #E10600;
-    animation: border-glow 2s ease-in-out infinite;
-    flex-shrink: 0;
-    margin-right: 2px;
-  }
-`;
-
-export default function Header({ activeSection }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+export default function ComicHeader({ activeSection, dark, onToggleDark }) {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', h);
-    return () => window.removeEventListener('scroll', h);
+    const h = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", h, { passive: true });
+    return () => window.removeEventListener("scroll", h);
   }, []);
 
-  const nav = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMenuOpen(false);
   };
-  const NAV = ['About', 'Skills', 'Projects', 'Contact'];
 
   return (
     <>
-      <style>{CSS}</style>
-      <div className="nav-pill">
-        <div className="nav-pill-inner">
-          {/* Status dot */}
-          <div className="nav-status-dot" />
+      <style>{`
+        .ch-nav {
+          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+          transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .ch-nav.scrolled {
+          background: var(--nav-bg);
+          border-bottom: 3px solid var(--fg);
+          box-shadow: 0 4px 0 rgba(0,0,0,0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+        .ch-inner {
+          max-width: 1240px; margin: 0 auto;
+          padding: 14px clamp(16px, 4vw, 48px);
+          display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        }
+        .ch-logo {
+          font-family: var(--font-comic);
+          font-size: 26px;
+          letter-spacing: 0.08em;
+          color: var(--fg);
+          text-decoration: none;
+          display: flex; align-items: baseline; gap: 4px;
+          flex-shrink: 0;
+        }
+        .ch-logo-accent { color: var(--red); }
+        .ch-issue {
+          font-family: var(--font-comic);
+          font-size: 10px;
+          letter-spacing: 0.16em;
+          color: var(--muted);
+          padding: 2px 7px;
+          border: 2px solid currentColor;
+          opacity: 0.5;
+          margin-left: 8px;
+          vertical-align: middle;
+        }
 
+        .ch-links { display: flex; align-items: center; gap: 2px; }
+        @media (max-width: 700px) { .ch-links { display: none; } }
+
+        .ch-link {
+          display: flex; align-items: center; gap: 5px;
+          padding: 7px 13px;
+          font-family: var(--font-comic);
+          font-size: 15px;
+          letter-spacing: 0.07em;
+          color: var(--fg);
+          text-decoration: none;
+          cursor: none;
+          border: 2px solid transparent;
+          transition: all 0.15s ease;
+          background: none;
+        }
+        .ch-link .ch-num {
+          font-family: var(--font-body); font-size: 9px; font-weight: 700;
+          letter-spacing: 0.12em; color: var(--muted); margin-right: 1px;
+          transition: color 0.15s;
+        }
+        .ch-link.active, .ch-link:hover {
+          background: var(--yellow);
+          border-color: var(--fg);
+          box-shadow: var(--panel-shadow-sm);
+          transform: translate(-1px, -1px);
+          color: #0a0a0e;
+        }
+        .ch-link.active .ch-num, .ch-link:hover .ch-num { color: #0a0a0e; }
+
+        /* Right-side controls */
+        .ch-controls {
+          display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+        }
+
+        /* Dark mode toggle */
+        .ch-dark-toggle {
+          width: 36px; height: 36px;
+          display: flex; align-items: center; justify-content: center;
+          border: var(--border-thin);
+          box-shadow: var(--panel-shadow-sm);
+          background: transparent;
+          color: var(--fg);
+          cursor: none;
+          transition: all 0.15s ease;
+          flex-shrink: 0;
+        }
+        .ch-dark-toggle:hover {
+          background: var(--yellow);
+          color: #0a0a0e;
+          border-color: var(--fg);
+          transform: translate(-1px, -1px);
+          box-shadow: 4px 4px 0 var(--fg);
+        }
+
+        .ch-hire {
+          font-family: var(--font-comic);
+          font-size: 14px;
+          letter-spacing: 0.06em;
+          padding: 7px 16px;
+          background: var(--red);
+          color: white;
+          border: var(--border-med);
+          box-shadow: var(--panel-shadow-sm);
+          cursor: none;
+          text-decoration: none;
+          transition: transform 0.15s, box-shadow 0.15s;
+          white-space: nowrap;
+        }
+        .ch-hire:hover {
+          transform: translate(-2px, -2px);
+          box-shadow: 5px 5px 0 var(--fg);
+        }
+
+        /* Mobile burger */
+        .ch-burger {
+          display: none; flex-direction: column; gap: 5px;
+          cursor: none; background: none;
+          border: 2px solid var(--fg);
+          padding: 8px; box-shadow: var(--panel-shadow-sm);
+          flex-shrink: 0;
+        }
+        @media (max-width: 700px) { .ch-burger { display: flex; } }
+        .ch-burger span {
+          width: 20px; height: 2px; background: var(--fg);
+          transition: all 0.2s ease; display: block;
+        }
+        .ch-burger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .ch-burger.open span:nth-child(2) { opacity: 0; }
+        .ch-burger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* Mobile full-screen menu */
+        .ch-mobile-menu {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background: var(--bg); z-index: 99;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 10px;
+          transform: translateX(100%);
+          transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+        .ch-mobile-menu.open { transform: translateX(0); }
+
+        .ch-mobile-link {
+          font-family: var(--font-comic);
+          font-size: clamp(2.2rem, 9vw, 3.5rem);
+          letter-spacing: 0.06em;
+          color: var(--fg); background: none; border: none;
+          cursor: none; padding: 8px 28px;
+          transition: all 0.15s ease;
+          display: block; width: auto;
+        }
+        .ch-mobile-link:hover, .ch-mobile-link.active {
+          background: var(--yellow);
+          border: var(--border-med);
+          box-shadow: var(--panel-shadow-sm);
+          transform: translate(-2px, -2px);
+          color: #0a0a0e;
+        }
+
+        .ch-mobile-footer {
+          margin-top: 24px;
+          display: flex; align-items: center; gap: 16px;
+        }
+        .ch-mobile-issue {
+          font-family: var(--font-comic);
+          font-size: 10px; letter-spacing: 0.18em; color: var(--muted);
+          opacity: 0.4;
+        }
+      `}</style>
+
+      <header className={`ch-nav${scrolled ? " scrolled" : ""}`}>
+        <div className="ch-inner">
           {/* Logo */}
-          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ background: 'none', border: 'none', cursor: 'none', padding: 0 }}>
-            <span className="nav-logo-text">XTR</span>
-          </button>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="ch-logo"
+          >
+            XR
+            <span className="ch-logo-accent">.</span>
+            <span className="ch-issue">ISSUE #001</span>
+          </a>
 
           {/* Desktop nav */}
-          <nav className="nav-links-desktop">
-            {NAV.map(item => (
+          <nav className="ch-links">
+            {NAV_ITEMS.map((item) => (
               <button
-                key={item}
-                className={`nav-item${activeSection === item.toLowerCase() ? ' active' : ''}`}
-                onClick={() => nav(item.toLowerCase())}
-              >{item}</button>
+                key={item.id}
+                className={`ch-link${activeSection === item.id ? " active" : ""}`}
+                onClick={() => scrollTo(item.id)}
+              >
+                <span className="ch-num">{item.ch}</span>
+                {item.label}
+              </button>
             ))}
           </nav>
 
-          {/* Hire CTA */}
-          <a href="mailto:xandertrancap08@gmail.com" className="nav-hire nav-hire-desktop">
-            Hire Me
-            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-              <path d="M6 1l3 3.5L6 8M9 4.5H1" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </a>
-
-          {/* Hamburger (mobile) */}
-          <button className={`nav-hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(o => !o)} aria-label="Menu">
-            <span/><span/><span/>
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile drawer */}
-      {menuOpen && (
-        <div className="nav-drawer">
-          <div className="nav-drawer-inner" style={{ position: 'relative' }}>
-            {NAV.map(item => (
-              <button key={item} className={`nav-drawer-item${activeSection === item.toLowerCase() ? ' active' : ''}`} onClick={() => nav(item.toLowerCase())}>
-                {item}
-              </button>
-            ))}
-            <a href="mailto:xandertrancap08@gmail.com"
-              style={{ display:'block', margin:'8px 8px 0', padding:'13px 20px', background:'linear-gradient(135deg,#E10600,#FF3A2D)', borderRadius:12, fontFamily:"'Barlow Condensed',sans-serif", fontSize:13, fontWeight:800, letterSpacing:'0.14em', textTransform:'uppercase', color:'#fff', textDecoration:'none', textAlign:'center', cursor:'none' }}>
-              Hire Me ↗
+          {/* Controls: dark toggle + hire me */}
+          <div className="ch-controls">
+            <button
+              className="ch-dark-toggle"
+              onClick={onToggleDark}
+              title={dark ? "Light mode" : "Dark mode"}
+              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {dark ? <SunIcon /> : <MoonIcon />}
+            </button>
+            <a href="mailto:xander.rancap8@gmail.com" className="ch-hire">
+              Hire Me
             </a>
+
+            {/* Mobile burger */}
+            <button
+              className={`ch-burger${menuOpen ? " open" : ""}`}
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label="Toggle menu"
+            >
+              <span />
+              <span />
+              <span />
+            </button>
           </div>
         </div>
-      )}
+      </header>
+
+      {/* Mobile menu */}
+      <nav className={`ch-mobile-menu${menuOpen ? " open" : ""}`}>
+        {NAV_ITEMS.map((item) => (
+          <button
+            key={item.id}
+            className={`ch-mobile-link${activeSection === item.id ? " active" : ""}`}
+            onClick={() => scrollTo(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
+        <div className="ch-mobile-footer">
+          <button
+            className="ch-dark-toggle"
+            onClick={() => {
+              onToggleDark();
+              setMenuOpen(false);
+            }}
+            title={dark ? "Light mode" : "Dark mode"}
+          >
+            {dark ? <SunIcon /> : <MoonIcon />}
+          </button>
+          <a href="mailto:xander.rancap8@gmail.com" className="ch-hire">
+            Hire Me
+          </a>
+        </div>
+        <div className="ch-mobile-issue">© 2026 XANDER RANCAP</div>
+      </nav>
     </>
   );
 }

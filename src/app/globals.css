@@ -1,39 +1,585 @@
 @import "tailwindcss";
 
 :root {
-  --red:      #E10600;
-  --red-hi:   #FF3A2D;
-  --red-lo:   rgba(225,6,0,0.12);
-  --bg:       #05050A;
-  --surface:  #0A0A12;
-  --card:     rgba(255,255,255,0.025);
-  --border:   rgba(255,255,255,0.07);
-  --text:     #F2F2F2;
-  --muted:    #666;
-  --subtle:   #2A2A2A;
+  /* Core palette */
+  --ink: #0a0a0e;
+  --paper: #f8f4e8;
+  --paper-dark: #ede8d6;
+  --yellow: #f5c800;
+  --yellow-deep: #e0a500;
+  --red: #e10600;
+  --red-light: #ff3a2d;
+  --blue: #1448cc;
+  --green: #00a86b;
+
+  /* Iron Man accent — arc reactor blue */
+  --arc: #1ec8ff;
+  --arc-dim: rgba(30, 200, 255, 0.18);
+
+  /* Borders — light mode: dark solid strokes */
+  --border-thin: 2px solid var(--ink);
+  --border-med: 3px solid var(--ink);
+  --border-bold: 4px solid var(--ink);
+  --panel-shadow: 5px 5px 0px var(--ink);
+  --panel-shadow-sm: 3px 3px 0px var(--ink);
+
+  /* Typography */
+  --font-comic: "Bangers", cursive;
+  --font-body: "Barlow", sans-serif;
+  --font-label: "Barlow Condensed", sans-serif;
+
+  /* Semantic aliases — light mode */
+  --bg: var(--paper);
+  --fg: var(--ink);
+  --surface: var(--paper-dark);
+  --muted: rgba(10, 10, 14, 0.5);
+  --muted2: rgba(10, 10, 14, 0.08);
+  --nav-bg: rgba(248, 244, 232, 0.97);
+
+  /* Z-index scale */
+  --z-bg: 0;
+  --z-content: 1;
+  --z-panels: 2;
+  --z-nav: 100;
+  --z-cursor: 9999;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── DARK MODE ─────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg: #0c0c12;
+  --fg: #ede8d6;
+  --surface: #14141c;
+  --paper: #0c0c12;
+  --paper-dark: #14141c;
+  --ink: #ede8d6;
+  --muted: rgba(237, 232, 214, 0.45);
+  --muted2: rgba(237, 232, 214, 0.07);
+  --nav-bg: rgba(12, 12, 18, 0.97);
+
+  /* Dark mode borders — use the light foreground color */
+  --border-thin: 2px solid rgba(237, 232, 214, 0.25);
+  --border-med: 3px solid rgba(237, 232, 214, 0.25);
+  --border-bold: 4px solid rgba(237, 232, 214, 0.25);
+  --panel-shadow: 5px 5px 0px rgba(237, 232, 214, 0.15);
+  --panel-shadow-sm: 3px 3px 0px rgba(237, 232, 214, 0.15);
+
+  --arc: #3dd8ff;
+}
+
+/* ── RESET ──────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 html {
   scroll-behavior: smooth;
-  cursor: none;
+  background-color: var(--bg);
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Barlow', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
   cursor: none;
+  overflow-x: hidden;
+  transition:
+    background 0.35s ease,
+    color 0.35s ease;
 }
 
-/* Hide default cursor on all interactive elements */
-*, a, button, input, textarea, select, label { cursor: none !important; }
+@media (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+  a,
+  button {
+    cursor: pointer;
+  }
+}
 
-::selection { background: var(--red); color: #fff; }
+/* ── CURSOR ─────────────────────────────────────────────────────── */
+.comic-cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--red);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  transform: translate(-50%, -50%);
+  transition: background 0.2s ease;
+}
+.comic-cursor-ring {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--fg);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: calc(var(--z-cursor) - 1);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.18s ease,
+    height 0.18s ease,
+    border-color 0.18s ease;
+}
+.comic-cursor-ring.expanded {
+  width: 48px;
+  height: 48px;
+  border-color: var(--red);
+}
 
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+/* ── TYPOGRAPHY ─────────────────────────────────────────────────── */
+.font-comic {
+  font-family: var(--font-comic);
+}
+.comic-title {
+  font-family: var(--font-comic);
+  letter-spacing: 0.04em;
+  -webkit-text-stroke: 2px var(--fg);
+  paint-order: stroke fill;
+}
+.comic-title-outline {
+  font-family: var(--font-comic);
+  letter-spacing: 0.04em;
+  -webkit-text-stroke: 3px var(--fg);
+  color: transparent;
+}
+
+/* ── PANELS ─────────────────────────────────────────────────────── */
+.panel {
+  border: var(--border-med);
+  box-shadow: var(--panel-shadow);
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+.panel-sm {
+  border: var(--border-thin);
+  box-shadow: var(--panel-shadow-sm);
+}
+.panel-dark {
+  background: var(--ink);
+  border: var(--border-bold);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* ── HALFTONE PATTERNS ──────────────────────────────────────────── */
+.halftone {
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.08) 1.2px,
+    transparent 1.2px
+  );
+  background-size: 10px 10px;
+}
+[data-theme="dark"] .halftone {
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.05) 1.2px,
+    transparent 1.2px
+  );
+}
+.halftone-light {
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 1px,
+    transparent 1px
+  );
+  background-size: 12px 12px;
+}
+.halftone-yellow {
+  background-image: radial-gradient(
+    circle,
+    rgba(245, 200, 0, 0.16) 1.2px,
+    transparent 1.2px
+  );
+  background-size: 10px 10px;
+}
+.halftone-red {
+  background-image: radial-gradient(
+    circle,
+    rgba(225, 6, 0, 0.1) 1.2px,
+    transparent 1.2px
+  );
+  background-size: 10px 10px;
+}
+
+/* ── CAPTION BOXES ──────────────────────────────────────────────── */
+.caption {
+  display: inline-block;
+  background: var(--yellow);
+  border: var(--border-thin);
+  box-shadow: 2px 2px 0 var(--fg);
+  padding: 4px 12px;
+  font-family: var(--font-comic);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: #0a0a0e;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.caption-red {
+  background: var(--red);
+  color: white;
+}
+.caption-dark {
+  background: var(--ink);
+  color: var(--yellow);
+}
+
+/* ── SPEECH BUBBLES ─────────────────────────────────────────────── */
+.speech-bubble {
+  position: relative;
+  background: var(--bg);
+  border: 2.5px solid var(--fg);
+  border-radius: 22px;
+  padding: 14px 20px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  box-shadow: 3px 3px 0 var(--fg);
+}
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -18px;
+  left: 28px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 18px solid var(--bg);
+  filter: drop-shadow(2px 3px 0 var(--fg));
+}
+
+/* ── ACTION WORDS ───────────────────────────────────────────────── */
+.action-word {
+  font-family: var(--font-comic);
+  letter-spacing: 0.04em;
+  color: var(--yellow);
+  -webkit-text-stroke: 3px var(--fg);
+  paint-order: stroke fill;
+  text-shadow: 5px 5px 0 var(--fg);
+  display: inline-block;
+  transform: rotate(-8deg);
+  line-height: 1;
+}
+
+/* ── BUTTONS ────────────────────────────────────────────────────── */
+.btn-comic {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-family: var(--font-comic);
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  background: var(--yellow);
+  border: var(--border-med);
+  box-shadow: var(--panel-shadow-sm);
+  cursor: none;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn-comic:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--fg);
+}
+.btn-comic:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--fg);
+}
+.btn-comic-red {
+  background: var(--red);
+  color: white;
+}
+.btn-comic-ink {
+  background: var(--ink);
+  color: var(--yellow);
+}
+
+/* ── CHAPTER BAR ────────────────────────────────────────────────── */
+.chapter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 32px;
+}
+.chapter-bar::before {
+  content: "";
+  flex: 0 0 40px;
+  height: 4px;
+  background: var(--fg);
+}
+.chapter-bar::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: var(--fg);
+  opacity: 0.1;
+}
+.chapter-label {
+  font-family: var(--font-comic);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: #0a0a0e;
+  background: var(--yellow);
+  border: 2px solid var(--fg);
+  padding: 4px 14px;
+  margin: 0 -1px;
+  text-transform: uppercase;
+  box-shadow: 2px 2px 0 var(--fg);
+}
+
+/* ── SECTION TRANSITIONS ────────────────────────────────────────── */
+.section-divider-down {
+  height: 48px;
+  background: linear-gradient(to bottom right, var(--bg) 50%, var(--ink) 50%);
+  margin-top: -1px;
+}
+.section-divider-up {
+  height: 48px;
+  background: linear-gradient(to top right, var(--bg) 50%, var(--ink) 50%);
+  margin-bottom: -1px;
+}
+
+/* ── ANIMATIONS ─────────────────────────────────────────────────── */
+@keyframes panel-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.5;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.72) rotate(-4deg);
+  }
+  70% {
+    transform: scale(1.06) rotate(1.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+@keyframes bubble-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-3deg);
+  }
+  60% {
+    transform: scale(1.08) rotate(1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: rotate(2deg) translateY(0px);
+  }
+  50% {
+    transform: rotate(2deg) translateY(-10px);
+  }
+}
+@keyframes bar-fill {
+  from {
+    width: 0;
+  }
+}
+@keyframes blink-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+@keyframes reactor-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px rgba(30, 200, 255, 0.15),
+      0 0 0px rgba(30, 200, 255, 0);
+  }
+  50% {
+    box-shadow:
+      0 0 22px rgba(30, 200, 255, 0.45),
+      0 0 40px rgba(30, 200, 255, 0.1);
+  }
+}
+@keyframes web-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── SCROLLBAR ──────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--fg);
+  opacity: 0.4;
+}
+
+/* ── SELECTION & FOCUS ──────────────────────────────────────────── */
+::selection {
+  background: var(--yellow);
+  color: var(--fg);
+}
+:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 2px;
+}
+
+a {
+  cursor: none;
+}
+@media (pointer: coarse) {
+  a {
+    cursor: pointer;
+  }
+}
+
+/* ── DARK MODE: hero stats ──────────────────────────────────────── */
+[data-theme="dark"] .hero-stats {
+  background: var(--surface) !important;
+  border-color: rgba(237, 232, 214, 0.12) !important;
+}
+[data-theme="dark"] .hero-stat-item {
+  border-color: rgba(237, 232, 214, 0.08) !important;
+  color: var(--fg) !important;
+}
+[data-theme="dark"] .hero-stat-item:hover {
+  background: rgba(245, 200, 0, 0.08) !important;
+}
+
+/* ── DARK MODE: projects ────────────────────────────────────────── */
+[data-theme="dark"] .projects-section {
+  background: var(--bg) !important;
+}
+[data-theme="dark"] .projects-section::before {
+  opacity: 0.3 !important;
+}
+
+/* ── DARK MODE: about ───────────────────────────────────────────── */
+[data-theme="dark"] .about-section {
+  background: var(--bg) !important;
+}
+
+/* ── DARK MODE: nav buttons ─────────────────────────────────────── */
+[data-theme="dark"] .nav-btn {
+  background: var(--surface) !important;
+  color: var(--fg) !important;
+  border-color: rgba(237, 232, 214, 0.15) !important;
+}
+[data-theme="dark"] .nav-btn:hover:not(:disabled) {
+  background: var(--yellow) !important;
+  color: #0a0a0e !important;
+  border-color: var(--yellow) !important;
+}
+
+/* ── DARK MODE: contact info row ────────────────────────────────── */
+[data-theme="dark"] .info-row:hover {
+  background: rgba(237, 232, 214, 0.04) !important;
+}
+
+/* ── DARK MODE: story / cat panels (skills section) ────────────── */
+[data-theme="dark"] .story-panel,
+[data-theme="dark"] .cat-panel {
+  background: var(--surface) !important;
+}
+[data-theme="dark"] .story-panel:hover,
+[data-theme="dark"] .cat-panel:hover {
+  background: #1a1a24 !important;
+}
+[data-theme="dark"] .story-panel p {
+  color: rgba(237, 232, 214, 0.5) !important;
+}
+
+/* ── DARK MODE: story cards in About ───────────────────────────── */
+[data-theme="dark"] .story-card {
+  background: var(--surface) !important;
+}
+[data-theme="dark"] .story-card:hover {
+  box-shadow: 8px 8px 0 rgba(237, 232, 214, 0.2) !important;
+}
+[data-theme="dark"] .story-card-title {
+  color: var(--fg) !important;
+}
+[data-theme="dark"] .story-caption {
+  background: rgba(237, 232, 214, 0.15) !important;
+}
+[data-theme="dark"] .story-caption span {
+  color: var(--fg) !important;
+}
+
+/* ── DARK MODE: tidbit cards ────────────────────────────────────── */
+[data-theme="dark"] .tidbit-card {
+  background: var(--surface) !important;
+}
+
+/* ── DARK MODE: comic input fields ─────────────────────────────── */
+[data-theme="dark"] .comic-input {
+  background: rgba(237, 232, 214, 0.04) !important;
+  border-color: rgba(237, 232, 214, 0.12) !important;
+  color: var(--fg) !important;
+}
+[data-theme="dark"] .comic-input:focus {
+  border-color: var(--yellow) !important;
+  background: rgba(237, 232, 214, 0.07) !important;
+}
+[data-theme="dark"] .comic-input::placeholder {
+  color: rgba(237, 232, 214, 0.2) !important;
+}
+
+/* ── MOBILE TOUCH: remove custom cursor ────────────────────────── */
+@media (pointer: coarse) {
+  .comic-cursor-dot,
+  .comic-cursor-ring {
+    display: none;
+  }
+}

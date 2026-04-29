@@ -1,324 +1,748 @@
-'use client';
-import { useState, useEffect } from 'react';
-import TypingEffect from './TypingEffect';
-import ProfileEffect from './ProfileEffect';
+"use client";
+import { useState, useEffect } from "react";
 
-const CSS = `
-  @keyframes h-up   { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes h-left { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:translateX(0); } }
-  @keyframes h-rpm  { from { width:0; } }
-  @keyframes h-pulse-dot { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(2); opacity:0; } }
-  @keyframes h-shimmer { 0% { background-position:-300% center; } 100% { background-position:300% center; } }
-  @keyframes h-line { from { transform:scaleX(0); } to { transform:scaleX(1); } }
-  @keyframes h-breathe { 0%,100% { opacity:0.5; transform:scale(1); } 50% { opacity:1; transform:scale(1.04); } }
-  @keyframes h-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
-  @keyframes h-badge { from { opacity:0; transform:translateY(8px) scale(0.92); } to { opacity:1; transform:translateY(0) scale(1); } }
-  @keyframes h-scan  { 0%{top:-10%;opacity:0;} 5%{opacity:0.8;} 95%{opacity:0.3;} 100%{top:110%;opacity:0;} }
+// Minimal speed-line burst from right-center, Iron Man HUD style
+function SpeedLines({ count = 40 }) {
+  return (
+    <svg
+      viewBox="0 0 800 800"
+      preserveAspectRatio="xMidYMid slice"
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        opacity: 0.055,
+        pointerEvents: "none",
+      }}
+    >
+      {Array.from({ length: count }, (_, i) => {
+        const angle = i * (360 / count) * (Math.PI / 180);
+        const cx = 600,
+          cy = 400,
+          r1 = 60,
+          r2 = 750;
+        return (
+          <line
+            key={i}
+            x1={cx + r1 * Math.cos(angle)}
+            y1={cy + r1 * Math.sin(angle)}
+            x2={cx + r2 * Math.cos(angle)}
+            y2={cy + r2 * Math.sin(angle)}
+            stroke="white"
+            strokeWidth={i % 5 === 0 ? 2 : 0.7}
+          />
+        );
+      })}
+    </svg>
+  );
+}
 
-  .h-section {
-    min-height: 100vh;
-    display: flex; flex-direction: column; justify-content: center;
-    padding: clamp(110px,14vw,160px) clamp(20px,4vw,56px) clamp(48px,7vw,88px);
-    position: relative; z-index: 1; overflow: hidden;
-  }
-  .h-grid {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: clamp(48px,7vw,110px);
-    align-items: center;
-    max-width: 1240px;
-    margin: 0 auto; width: 100%;
-  }
-  @media (max-width: 860px) {
-    .h-grid { grid-template-columns:1fr; gap:56px; text-align:center; }
-    .h-avatar-col { order:-1; display:flex; justify-content:center; }
-    .h-btns { justify-content:center !important; }
-    .h-socials { justify-content:center !important; }
-    .h-role-row { justify-content:center !important; }
-  }
+// Spider-Man web — corner decoration, kept subtle
+function SpideyWeb({ style = {} }) {
+  return (
+    <svg
+      viewBox="0 0 200 200"
+      fill="none"
+      style={{ pointerEvents: "none", ...style }}
+    >
+      <circle cx="100" cy="100" r="92" stroke="white" strokeWidth="0.9" />
+      <circle cx="100" cy="100" r="68" stroke="white" strokeWidth="0.9" />
+      <circle cx="100" cy="100" r="44" stroke="white" strokeWidth="0.9" />
+      <circle cx="100" cy="100" r="20" stroke="white" strokeWidth="0.9" />
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, i) => {
+        const rad = (deg * Math.PI) / 180;
+        return (
+          <line
+            key={i}
+            x1={100 + 8 * Math.cos(rad)}
+            y1={100 + 8 * Math.sin(rad)}
+            x2={100 + 96 * Math.cos(rad)}
+            y2={100 + 96 * Math.sin(rad)}
+            stroke="white"
+            strokeWidth="0.7"
+            opacity={i % 2 === 0 ? 0.9 : 0.4}
+          />
+        );
+      })}
+    </svg>
+  );
+}
 
-  .h-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(5.5rem,14vw,13rem);
-    line-height: 0.84;
-    letter-spacing: 0.02em;
-    margin: 0;
-    animation: h-up 0.9s cubic-bezier(0.16,1,0.3,1) 0.1s both;
-  }
-  .h-name-white {
-    background: linear-gradient(90deg, #F2F2F2 20%, #fff 40%, #aaa 50%, #fff 60%, #F2F2F2 80%);
-    background-size: 300% auto;
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    animation: h-shimmer 5s linear 1.2s infinite;
-  }
-  .h-name-red {
-    background: linear-gradient(135deg, #E10600 0%, #FF6B35 45%, #E10600 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    animation: h-shimmer 3s linear 1.5s infinite;
-    filter: drop-shadow(0 0 28px rgba(225,6,0,0.55));
-  }
+// Iron Man arc reactor — subtle HUD circle
+function ArcReactor({ style = {} }) {
+  return (
+    <svg
+      viewBox="0 0 80 80"
+      fill="none"
+      style={{ pointerEvents: "none", ...style }}
+    >
+      <circle
+        cx="40"
+        cy="40"
+        r="36"
+        stroke="rgba(30,200,255,0.25)"
+        strokeWidth="1"
+      />
+      <circle
+        cx="40"
+        cy="40"
+        r="28"
+        stroke="rgba(30,200,255,0.18)"
+        strokeWidth="1"
+      />
+      <circle
+        cx="40"
+        cy="40"
+        r="18"
+        stroke="rgba(30,200,255,0.35)"
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="40"
+        cy="40"
+        r="8"
+        fill="rgba(30,200,255,0.18)"
+        stroke="rgba(30,200,255,0.5)"
+        strokeWidth="1"
+      />
+      {/* HUD triangle marks */}
+      {[0, 1, 2, 3, 4, 5].map((i) => {
+        const angle = (i * 60 * Math.PI) / 180;
+        const x1 = 40 + 20 * Math.cos(angle),
+          y1 = 40 + 20 * Math.sin(angle);
+        const x2 = 40 + 25 * Math.cos(angle),
+          y2 = 40 + 25 * Math.sin(angle);
+        return (
+          <line
+            key={i}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="rgba(30,200,255,0.45)"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        );
+      })}
+    </svg>
+  );
+}
 
-  .h-stat-bar {
-    display: flex; gap: 0;
-    background: rgba(255,255,255,0.018);
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 18px; overflow: hidden; position: relative;
-    max-width: 1240px; margin: clamp(36px,5vw,60px) auto 0; width: 100%;
-  }
-  .h-stat-bar::before {
-    content:''; position:absolute; top:0; left:0; right:0; height:1px;
-    background: linear-gradient(90deg, transparent, rgba(225,6,0,0.7), rgba(255,107,53,0.5), transparent);
-  }
-  .h-stat { flex:1; padding:clamp(14px,2vw,22px) clamp(14px,2.5vw,26px); border-right:1px solid rgba(255,255,255,0.04); }
-  .h-stat:last-child { border-right:none; }
-
-  .h-rpm { height:2px; background:rgba(255,255,255,0.05); border-radius:1px; margin-top:8px; overflow:hidden; }
-  .h-rpm-fill { height:100%; border-radius:1px; background:linear-gradient(90deg,#E10600,#FF6B35); animation:h-rpm 1.6s cubic-bezier(0.16,1,0.3,1) both; box-shadow:0 0 10px rgba(225,6,0,0.7); }
-
-  .h-float-badge {
-    position:absolute;
-    background: rgba(6,6,12,0.88);
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px; padding: 10px 14px;
-    white-space: nowrap; z-index: 5;
-  }
-  .h-fb-1 { animation: h-badge 0.6s cubic-bezier(0.16,1,0.3,1) 1.1s both; }
-  .h-fb-2 { animation: h-badge 0.6s cubic-bezier(0.16,1,0.3,1) 1.3s both; }
-  .h-fb-3 { animation: h-badge 0.6s cubic-bezier(0.16,1,0.3,1) 1.5s both; }
-  @media (max-width:860px) { .h-float-badge { display:none; } }
-`;
-
-export default function Hero() {
+export default function ComicHero() {
   const [mounted, setMounted] = useState(false);
-  const [xanderDone, setXanderDone] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setMounted(true), 80); return () => clearTimeout(t); }, []);
-
-  const stats = [
-    { label: 'GPA', value: '3.4', sub: '/ 4.0 SAIT', fill: 85, delay: '0.95s' },
-    { label: 'Projects', value: '9+', sub: 'full-stack', fill: 78, delay: '1.05s' },
-    { label: 'Internships', value: '2', sub: 'completed', fill: 100, delay: '1.15s' },
-    { label: 'Location', value: 'YYC', sub: 'Calgary, CA', fill: null, delay: '1.25s' },
-  ];
-
-  const roles = ['Software Developer', 'Full-Stack Engineer', 'React Developer', 'Problem Solver'];
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 80);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <>
-      <style>{CSS}</style>
-      <section className="h-section">
-        {/* Breathing glow */}
-        {mounted && (
-          <div style={{ position:'absolute', top:'5%', right:'-8%', width:750, height:750, borderRadius:'50%', background:'radial-gradient(circle, rgba(225,6,0,0.13) 0%, rgba(225,6,0,0.03) 55%, transparent 75%)', pointerEvents:'none', animation:'h-breathe 5s ease-in-out infinite', zIndex:0 }} />
-        )}
+      <style>{`
+        .hero-section {
+          position: relative;
+          min-height: 100vh;
+          background: var(--ink);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: clamp(90px, 12vw, 140px) clamp(20px, 5vw, 64px) clamp(60px, 7vw, 100px);
+        }
 
-        {/* Sector HUD */}
+        /* Halftone texture */
+        .hero-halftone {
+          position: absolute; inset: 0; pointer-events: none; z-index: 0;
+          background-image: radial-gradient(circle, rgba(248,244,232,0.055) 1px, transparent 1px);
+          background-size: 13px 13px;
+        }
+
+        /* Diagonal slash accent — Spider-Man red swatch */
+        .hero-slash {
+          position: absolute; top: -30%; right: -12%;
+          width: 55%; height: 230%;
+          background: var(--red);
+          opacity: 0.05;
+          transform: rotate(-16deg);
+          pointer-events: none; z-index: 0;
+        }
+
+        /* Iron Man arc reactor — bottom right decoration */
+        .hero-arc {
+          position: absolute; bottom: -60px; right: -60px;
+          width: 320px; height: 320px;
+          opacity: 0.22; z-index: 0;
+          pointer-events: none;
+          animation: reactor-pulse 4s ease-in-out infinite;
+        }
+
+        /* Spider-Man web corner */
+        .hero-web {
+          position: absolute; bottom: 0; left: 0;
+          width: 200px; height: 200px;
+          opacity: 0.06; z-index: 0;
+          pointer-events: none;
+        }
+
+        /* Issue label strip */
+        .hero-issue-strip {
+          position: absolute; top: 68px;
+          left: clamp(20px, 5vw, 64px);
+          display: flex; align-items: center; gap: 8px;
+          z-index: 2;
+          animation: slide-up 0.5s ease 0.1s both;
+        }
+        .hero-issue-tag {
+          padding: 3px 10px;
+          font-family: var(--font-comic);
+          font-size: 10px;
+          letter-spacing: 0.2em;
+        }
+
+        /* Main grid */
+        .hero-grid {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: clamp(40px, 6vw, 80px);
+          align-items: center;
+          max-width: 1240px; margin: 0 auto; width: 100%;
+          position: relative; z-index: 1;
+        }
+        @media (max-width: 860px) {
+          .hero-grid {
+            grid-template-columns: 1fr;
+            text-align: center;
+          }
+          .hero-photo-col { order: -1; display: flex; justify-content: center; }
+          .hero-btns, .hero-socials { justify-content: center !important; }
+        }
+
+        /* Name stack */
+        .hero-name {
+          font-family: var(--font-comic);
+          font-size: clamp(4.5rem, 14vw, 12rem);
+          letter-spacing: 0.03em;
+          line-height: 0.88;
+          margin: 0;
+        }
+        .hero-name-fill { color: rgba(248,244,232,0.92); }
+        .hero-name-red {
+          color: var(--red);
+          -webkit-text-stroke: 2px rgba(10,10,14,0.5);
+          filter: drop-shadow(0 0 18px rgba(225,6,0,0.5));
+          animation: slide-up 0.8s cubic-bezier(0.16,1,0.3,1) 0.35s both;
+        }
+
+        /* Role chip */
+        .hero-role-chip {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: var(--yellow);
+          border: 2px solid rgba(10,10,14,0.35);
+          padding: 5px 14px;
+          font-family: var(--font-comic); font-size: 14px;
+          letter-spacing: 0.1em; color: #0a0a0e;
+          margin-bottom: 14px;
+          animation: slide-up 0.6s ease 0.5s both;
+        }
+
+        /* Bio text */
+        .hero-bio {
+          font-family: var(--font-body);
+          font-size: 15px; line-height: 1.82;
+          color: rgba(248,244,232,0.48);
+          max-width: 440px;
+          margin: 0 0 28px;
+          animation: slide-up 0.7s ease 0.55s both;
+        }
+
+        /* Social buttons */
+        .hero-social-btn {
+          width: 38px; height: 38px;
+          border: 2px solid rgba(248,244,232,0.18);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 17px;
+          color: rgba(248,244,232,0.38);
+          text-decoration: none;
+          transition: all 0.15s ease;
+        }
+        .hero-social-btn:hover {
+          background: var(--yellow); color: #0a0a0e;
+          border-color: var(--yellow);
+          transform: translate(-2px, -2px);
+          box-shadow: 3px 3px 0 rgba(245,200,0,0.4);
+        }
+
+        /* Photo frame */
+        .hero-photo-frame {
+          position: relative; display: inline-block;
+          animation: drift 6s ease-in-out infinite 1.5s, pop-in 0.7s cubic-bezier(0.16,1,0.3,1) 0.6s both;
+        }
+        .hero-photo-frame img {
+          display: block;
+          width: clamp(180px, 20vw, 260px);
+          height: clamp(180px, 20vw, 260px);
+          object-fit: cover;
+          border: 4px solid rgba(248,244,232,0.85);
+          box-shadow: 8px 8px 0 var(--red);
+          filter: contrast(1.04) brightness(0.96);
+        }
+
+        /* Stickers */
+        .hero-sticker {
+          position: absolute;
+          font-family: var(--font-comic); font-size: 10px;
+          letter-spacing: 0.1em;
+          padding: 4px 10px;
+          border: 2px solid rgba(10,10,14,0.4);
+          box-shadow: 2px 2px 0 rgba(10,10,14,0.35);
+          white-space: nowrap;
+          display: flex; align-items: center; gap: 4px;
+        }
+
+        /* Speech bubble */
+        .hero-speech {
+          position: absolute; top: -52px; left: 50%;
+          transform: translateX(-50%);
+          background: var(--paper); border: 2px solid rgba(10,10,14,0.35);
+          padding: 8px 16px;
+          font-family: var(--font-body); font-size: 12px;
+          color: #0a0a0e; white-space: nowrap;
+          border-radius: 14px; box-shadow: 2px 2px 0 rgba(10,10,14,0.25);
+          animation: bubble-appear 0.5s cubic-bezier(0.16,1,0.3,1) 1.4s both;
+          z-index: 10;
+        }
+        .hero-speech::after {
+          content: ''; position: absolute;
+          bottom: -12px; left: 50%; transform: translateX(-50%);
+          width: 0; height: 0;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-top: 12px solid var(--paper);
+        }
+
+        /* Stats strip */
+        .hero-stats {
+          max-width: 1240px; margin: clamp(32px, 4vw, 52px) auto 0;
+          display: flex; gap: 0; width: 100%;
+          border: var(--border-med); box-shadow: var(--panel-shadow);
+          background: var(--bg);
+          position: relative; z-index: 1;
+          animation: slide-up 0.7s ease 1s both;
+          overflow: hidden;
+        }
+        .hero-stat-item {
+          flex: 1;
+          padding: clamp(14px, 2vw, 22px) clamp(14px, 2.5vw, 26px);
+          border-right: var(--border-thin);
+          position: relative; transition: background 0.15s;
+        }
+        .hero-stat-item:last-child { border-right: none; }
+        .hero-stat-item:hover { background: rgba(245, 200, 0, 0.18); }
+        .stat-label {
+          font-family: var(--font-label); font-size: 9px; font-weight: 700;
+          letter-spacing: 0.2em; text-transform: uppercase;
+          color: var(--muted); margin-bottom: 5px;
+        }
+        .stat-value {
+          font-family: var(--font-comic);
+          font-size: clamp(1.6rem, 3vw, 2.4rem);
+          color: var(--fg); line-height: 1;
+        }
+        .stat-sub { font-family: var(--font-body); font-size: 11px; color: var(--muted); margin-top: 2px; }
+        .stat-bar { height: 3px; background: var(--muted2); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+        .stat-bar-fill {
+          height: 100%; border-radius: 2px;
+          background: linear-gradient(90deg, var(--red), var(--yellow));
+          animation: bar-fill 1.4s cubic-bezier(0.16,1,0.3,1) 1.2s both;
+        }
+
+        /* Scroll hint */
+        .hero-scroll-hint {
+          position: absolute; bottom: 22px; left: 50%;
+          transform: translateX(-50%);
+          display: flex; flex-direction: column; align-items: center; gap: 6px;
+          z-index: 2;
+          animation: slide-up 0.5s ease 1.8s both;
+          opacity: 0.35;
+        }
+
+        @media (max-width: 640px) {
+          .hero-stats { flex-wrap: wrap; }
+          .hero-stat-item { flex: 0 0 50%; border-bottom: var(--border-thin); }
+          .hero-stat-item:nth-child(even) { border-right: none; }
+          .hero-stat-item:last-child { border-bottom: none; }
+
+          /* Hide stickers that overflow on small screens */
+          .hero-sticker { display: none; }
+          /* Keep only the bottom-right one */
+          .hero-photo-frame > .hero-sticker:first-of-type { display: flex; }
+
+          .hero-photo-frame img {
+            width: clamp(140px, 40vw, 200px) !important;
+            height: clamp(140px, 40vw, 200px) !important;
+          }
+        }
+      `}</style>
+
+      <section className="hero-section">
+        <div className="hero-halftone" />
+        <div className="hero-slash" />
+        <SpeedLines />
+        <ArcReactor
+          style={{
+            position: "absolute",
+            bottom: -60,
+            right: -60,
+            width: 320,
+            height: 320,
+            opacity: 0.2,
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        />
+        <SpideyWeb
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: 180,
+            height: 180,
+            opacity: 0.06,
+            zIndex: 0,
+          }}
+        />
+
+        {/* Issue tag strip */}
         {mounted && (
-          <div style={{ position:'absolute', top:88, left:'clamp(20px,4vw,56px)', display:'flex', alignItems:'center', gap:12, zIndex:2, animation:'h-left 0.7s ease 0.2s both' }}>
-            {['S1','S2','S3'].map((s,i) => (
-              <div key={s} style={{ display:'flex', alignItems:'center', gap:5 }}>
-                <div style={{ width:5, height:5, borderRadius:'50%', background:i===0?'#E10600':'#1A1A1A', boxShadow:i===0?'0 0 10px #E10600':'none' }} />
-                <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:12, letterSpacing:'0.14em', color:i===0?'#E10600':'#222' }}>{s}</span>
-              </div>
-            ))}
-            <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:10, color:'#1C1C1C', letterSpacing:'0.12em' }}>· LAP 01</span>
+          <div className="hero-issue-strip">
+            <div
+              className="hero-issue-tag"
+              style={{ background: "var(--red)", border: "var(--border-thin)" }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-comic)",
+                  fontSize: 10,
+                  letterSpacing: "0.18em",
+                  color: "white",
+                }}
+              >
+                ISSUE #001
+              </span>
+            </div>
+            <div
+              className="hero-issue-tag"
+              style={{
+                background: "var(--yellow)",
+                border: "var(--border-thin)",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-comic)",
+                  fontSize: 10,
+                  letterSpacing: "0.18em",
+                  color: "#0a0a0e",
+                }}
+              >
+                ORIGIN STORY
+              </span>
+            </div>
           </div>
         )}
 
-        <div className="h-grid">
-          {/* ── Left ── */}
+        <div className="hero-grid">
+          {/* Left: Text content */}
           <div>
-            {/* Role typing */}
             {mounted && (
-              <div className="h-role-row" style={{ display:'flex', alignItems:'center', gap:10, marginBottom:18, animation:'h-left 0.7s ease 0.3s both' }}>
-                <div style={{ width:6, height:6, borderRadius:'50%', background:'#E10600', boxShadow:'0 0 14px #E10600', animation:'h-pulse-dot 2.4s ease-in-out infinite' }} />
-                <TypingEffect
-                  text={roles}
-                  as="span"
-                  typingSpeed={55}
-                  deletingSpeed={28}
-                  pauseDuration={2200}
-                  loop
-                  showCursor
-                  cursorCharacter="_"
-                  cursorClassName=""
-                  style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:15, letterSpacing:'0.22em', textTransform:'uppercase', color:'#E10600' }}
-                />
+              <div style={{ display: "flex", marginBottom: 10 }}>
+                <div className="hero-role-chip">
+                  <span
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: "var(--red)",
+                      display: "inline-block",
+                      animation: "blink-dot 1.8s ease-in-out infinite",
+                      flexShrink: 0,
+                    }}
+                  />
+                  Full-Stack Developer
+                </div>
               </div>
             )}
 
-            {/* Name */}
-            <h1 className="h-name" style={{ minHeight: 'clamp(9.5rem,28vw,24rem)' }}>
-              <span className="h-name-white">
-                <TypingEffect
-                  text="Xander"
-                  as="span"
-                  typingSpeed={80}
-                  initialDelay={400}
-                  loop={false}
-                  showCursor={false}
-                  onSentenceComplete={() => setXanderDone(true)}
-                />
-              </span>
-              <br />
-              <span className="h-name-red">
-                {xanderDone && (
-                  <TypingEffect
-                    text="Rancap"
-                    as="span"
-                    typingSpeed={80}
-                    initialDelay={0}
-                    loop={false}
-                    showCursor
-                    cursorCharacter="_"
-                    cursorClassName=""
-                    pauseDuration={99999999}
-                  />
-                )}
-              </span>
-            </h1>
+            <div style={{ marginBottom: 20 }}>
+              <h1
+                className="hero-name hero-name-fill"
+                style={{
+                  animation:
+                    "slide-up 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s both",
+                }}
+              >
+                XANDER
+              </h1>
+              <h1 className="hero-name hero-name-red">RANCAP</h1>
+            </div>
 
-            {/* Red divider */}
             {mounted && (
-              <div style={{ height:2.5, width:'min(300px,75%)', background:'linear-gradient(90deg,#E10600,#FF6B35,transparent)', borderRadius:2, margin:'22px 0', transformOrigin:'left', animation:'h-line 0.9s cubic-bezier(0.16,1,0.3,1) 0.65s both', boxShadow:'0 0 14px rgba(225,6,0,0.55)' }} />
-            )}
-
-            {/* Bio */}
-            {mounted && (
-              <p style={{ fontFamily:"'Barlow',sans-serif", fontSize:16, lineHeight:1.82, color:'#5A5A5A', maxWidth:480, animation:'h-up 0.7s ease 0.75s both' }}>
-                Building elegant, full-stack solutions where great design meets solid engineering.
-                Currently studying at SAIT — always pushing the limits.
+              <p className="hero-bio">
+                Building full-stack things where clean design meets solid
+                engineering. I try stuff, break it, learn something, and redo it
+                until it's right. Based in Calgary — currently at SAIT, always
+                shipping.
               </p>
             )}
 
-            {/* CTA Buttons */}
             {mounted && (
-              <div className="h-btns" style={{ display:'flex', gap:12, marginTop:34, flexWrap:'wrap', animation:'h-up 0.7s ease 0.88s both' }}>
+              <div
+                className="hero-btns"
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  flexWrap: "wrap",
+                  marginBottom: 24,
+                  animation: "slide-up 0.6s ease 0.7s both",
+                }}
+              >
                 <button
-                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior:'smooth' })}
-                  style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:12, letterSpacing:'0.2em', textTransform:'uppercase', padding:'14px 30px', background:'linear-gradient(135deg,#E10600,#FF3A2D)', color:'#fff', border:'none', borderRadius:100, cursor:'none', display:'flex', alignItems:'center', gap:8, boxShadow:'0 0 32px rgba(225,6,0,0.4), 0 4px 20px rgba(0,0,0,0.4)', transition:'all 0.22s' }}
-                  onMouseEnter={e => { e.currentTarget.style.transform='translateY(-3px) scale(1.04)'; e.currentTarget.style.boxShadow='0 0 56px rgba(225,6,0,0.7), 0 8px 32px rgba(0,0,0,0.5)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 0 32px rgba(225,6,0,0.4), 0 4px 20px rgba(0,0,0,0.4)'; }}
+                  className="btn-comic btn-comic-red"
+                  style={{ fontSize: 15, padding: "11px 24px", cursor: "none" }}
+                  onClick={() =>
+                    document
+                      .getElementById("contact")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
                 >
-                  Get in Touch
-                  <svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M7.5 1l4 3.5-4 3.5M11.5 4.5H.5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  Get In Touch
+                  <svg width="11" height="9" viewBox="0 0 12 9" fill="none">
+                    <path
+                      d="M7.5 1l4 3.5-4 3.5M11.5 4.5H.5"
+                      stroke="white"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                    />
+                  </svg>
                 </button>
                 <button
-                  onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior:'smooth' })}
-                  style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:12, letterSpacing:'0.2em', textTransform:'uppercase', padding:'13px 28px', background:'rgba(255,255,255,0.04)', color:'rgba(255,255,255,0.65)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:100, cursor:'none', backdropFilter:'blur(14px)', transition:'all 0.22s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background='rgba(255,255,255,0.09)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.22)'; e.currentTarget.style.color='#fff'; e.currentTarget.style.transform='translateY(-2px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background='rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; e.currentTarget.style.color='rgba(255,255,255,0.65)'; e.currentTarget.style.transform='none'; }}
+                  className="btn-comic"
+                  style={{
+                    fontSize: 15,
+                    padding: "11px 24px",
+                    cursor: "none",
+                    background: "transparent",
+                    color: "rgba(248,244,232,0.65)",
+                    borderColor: "rgba(248,244,232,0.22)",
+                  }}
+                  onClick={() =>
+                    document
+                      .getElementById("projects")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(248,244,232,0.08)";
+                    e.currentTarget.style.borderColor = "rgba(248,244,232,0.5)";
+                    e.currentTarget.style.color = "rgba(248,244,232,0.9)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.borderColor =
+                      "rgba(248,244,232,0.22)";
+                    e.currentTarget.style.color = "rgba(248,244,232,0.65)";
+                  }}
                 >
                   View Work
                 </button>
               </div>
             )}
 
-            {/* Socials */}
             {mounted && (
-              <div className="h-socials" style={{ display:'flex', gap:14, marginTop:28, alignItems:'center', animation:'h-up 0.7s ease 1s both' }}>
-                <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:11, letterSpacing:'0.2em', color:'#1C1C1C' }}>Links</span>
-                <div style={{ width:22, height:1, background:'rgba(255,255,255,0.07)' }} />
+              <div
+                className="hero-socials"
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  alignItems: "center",
+                  animation: "slide-up 0.6s ease 0.85s both",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-comic)",
+                    fontSize: 9,
+                    letterSpacing: "0.22em",
+                    color: "rgba(255,255,255,0.18)",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Find me
+                </span>
+                <div
+                  style={{
+                    width: 16,
+                    height: 2,
+                    background: "rgba(255,255,255,0.08)",
+                  }}
+                />
                 {[
-                  { icon:'bx bxl-linkedin', url:'https://www.linkedin.com/in/xander-rancap-79b2a0326/', label:'LinkedIn' },
-                  { icon:'bx bxl-github',   url:'https://github.com/xndrncp08', label:'GitHub' },
-                  { icon:'bx bxl-instagram',url:'https://www.instagram.com/derbadoobeelat/', label:'Instagram' },
-                ].map(s => (
-                  <a key={s.icon} href={s.url} target="_blank" rel="noreferrer" title={s.label}
-                    style={{ width:38, height:38, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', color:'#444', fontSize:18, backdropFilter:'blur(10px)', transition:'all 0.25s', textDecoration:'none', cursor:'none' }}
-                    onMouseEnter={e => { e.currentTarget.style.color='#E10600'; e.currentTarget.style.borderColor='rgba(225,6,0,0.45)'; e.currentTarget.style.background='rgba(225,6,0,0.1)'; e.currentTarget.style.transform='translateY(-3px)'; e.currentTarget.style.boxShadow='0 0 22px rgba(225,6,0,0.3)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color='#444'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.background='rgba(255,255,255,0.04)'; e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='none'; }}
-                  ><i className={s.icon} /></a>
+                  {
+                    icon: "bx bxl-linkedin",
+                    url: "https://www.linkedin.com/in/xander-rancap-79b2a0326/",
+                    label: "LinkedIn",
+                  },
+                  {
+                    icon: "bx bxl-github",
+                    url: "https://github.com/xndrncp08",
+                    label: "GitHub",
+                  },
+                  {
+                    icon: "bx bxl-instagram",
+                    url: "https://www.instagram.com/derbadoobeelat/",
+                    label: "Instagram",
+                  },
+                ].map((s) => (
+                  <a
+                    key={s.icon}
+                    href={s.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={s.label}
+                    className="hero-social-btn"
+                  >
+                    <i className={s.icon} />
+                  </a>
                 ))}
               </div>
             )}
           </div>
 
-          {/* ── Right — Avatar ── */}
-          <div className="h-avatar-col">
+          {/* Right: Photo */}
+          <div className="hero-photo-col">
             {mounted && (
-              <div style={{ position:'relative', display:'inline-block', animation:'h-float 6s ease-in-out infinite 1.2s' }}>
-                {/* Spinning rings */}
-                {[{ s:420, dur:'14s', dir:1 }, { s:360, dur:'9s', dir:-1 }].map((r,i) => (
-                  <div key={i} style={{ position:'absolute', width:r.s, height:r.s, borderRadius:'50%', border:i===0?'1px dashed rgba(225,6,0,0.18)':'1px solid rgba(255,255,255,0.04)', top:'50%', left:'50%', marginLeft:-r.s/2, marginTop:-r.s/2, animation:`h-line ${r.dur} linear infinite`, animationDirection:r.dir===1?'normal':'reverse', animationName:'spin-ring', pointerEvents:'none' }} />
-                ))}
-                <style>{`@keyframes spin-ring { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }`}</style>
-
-                {/* Floating badges */}
-                <div className="h-float-badge h-fb-1" style={{ top:'8%', left:'-135px' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <div style={{ width:28, height:28, borderRadius:8, background:'rgba(97,218,251,0.1)', border:'1px solid rgba(97,218,251,0.22)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                      <i className="bx bxl-react" style={{ color:'#61DAFB', fontSize:16 }} />
-                    </div>
-                    <div>
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:11, fontWeight:700, color:'#F2F2F2', letterSpacing:'0.06em' }}>React</div>
-                      <div style={{ fontFamily:"'Barlow',sans-serif", fontSize:9, color:'#444' }}>Frontend</div>
-                    </div>
-                  </div>
+              <div className="hero-photo-frame">
+                <div className="hero-speech">
+                  &ldquo;Ship it. Learn. Repeat.&rdquo;
                 </div>
-
-                <div className="h-float-badge h-fb-2" style={{ bottom:'18%', right:'-125px' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <div style={{ width:28, height:28, borderRadius:8, background:'rgba(104,160,99,0.1)', border:'1px solid rgba(104,160,99,0.22)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                      <i className="bx bxl-nodejs" style={{ color:'#68A063', fontSize:16 }} />
-                    </div>
-                    <div>
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:11, fontWeight:700, color:'#F2F2F2', letterSpacing:'0.06em' }}>Node.js</div>
-                      <div style={{ fontFamily:"'Barlow',sans-serif", fontSize:9, color:'#444' }}>Backend</div>
-                    </div>
-                  </div>
+                <img
+                  src="https://i.postimg.cc/W3VBJZ1Q/derpogs-(1).jpg"
+                  alt="Xander Rancap"
+                />
+                <div
+                  className="hero-sticker"
+                  style={{
+                    bottom: -13,
+                    right: -22,
+                    background: "var(--yellow)",
+                    transform: "rotate(-4deg)",
+                  }}
+                >
+                  SAIT · 3.7 GPA
                 </div>
-
-                <div className="h-float-badge h-fb-3" style={{ top:'-8%', right:'-90px' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                    <div style={{ width:5, height:5, borderRadius:'50%', background:'#E10600', boxShadow:'0 0 8px #E10600' }} />
-                    <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:12, color:'#E10600', letterSpacing:'0.1em' }}>SAIT · 3.4 GPA</span>
-                  </div>
+                <div
+                  className="hero-sticker"
+                  style={{
+                    top: 12,
+                    right: -60,
+                    background: "var(--paper)",
+                    color: "#0a0a0e",
+                    transform: "rotate(3deg)",
+                  }}
+                >
+                  <i className="bx bxl-github" style={{ fontSize: 12 }} />{" "}
+                  xndrncp08
                 </div>
-
-                {/* ProfileEffect wrapping the image */}
-                <ProfileEffect color="#E10600" speed={0.9} chaos={0.1} borderRadius={20}>
-                  <div style={{ position:'relative', display:'inline-block' }}>
-                    <img
-                      src="https://i.postimg.cc/W3VBJZ1Q/derpogs-(1).jpg"
-                      alt="Xander Rancap"
-                      style={{ display:'block', width:'clamp(210px,22vw,280px)', height:'clamp(210px,22vw,280px)', objectFit:'cover', borderRadius:20, filter:'contrast(1.08) brightness(0.9)' }}
-                    />
-                    {/* Scan line */}
-                    <div style={{ position:'absolute', inset:0, overflow:'hidden', borderRadius:20, pointerEvents:'none' }}>
-                      <div style={{ position:'absolute', left:0, right:0, height:50, background:'linear-gradient(180deg,transparent,rgba(225,6,0,0.08),transparent)', animation:'h-scan 3.8s ease-in-out infinite' }} />
-                    </div>
-                    {/* GitHub badge inside frame */}
-                    <div style={{ position:'absolute', bottom:-18, left:'50%', transform:'translateX(-50%)', background:'linear-gradient(135deg,rgba(6,6,14,0.96),rgba(12,8,8,0.96))', backdropFilter:'blur(24px)', border:'1px solid rgba(225,6,0,0.3)', borderRadius:100, padding:'6px 18px', display:'flex', alignItems:'center', gap:8, whiteSpace:'nowrap', boxShadow:'0 8px 32px rgba(0,0,0,0.6), 0 0 22px rgba(225,6,0,0.15)', zIndex:10 }}>
-                      <i className="bx bxl-github" style={{ fontSize:14, color:'#E10600' }} />
-                      <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:12, letterSpacing:'0.12em', color:'#F2F2F2' }}>xndrncp08</span>
-                    </div>
-                  </div>
-                </ProfileEffect>
+                <div
+                  className="hero-sticker"
+                  style={{
+                    top: 12,
+                    left: -44,
+                    background: "var(--red)",
+                    color: "white",
+                    transform: "rotate(-5deg)",
+                  }}
+                >
+                  📍 YYC
+                </div>
+                {/* Iron Man easter egg */}
+                <div
+                  className="hero-sticker"
+                  style={{
+                    bottom: -13,
+                    left: -56,
+                    background: "#0e1f38",
+                    color: "rgba(30,200,255,0.8)",
+                    transform: "rotate(4deg)",
+                    fontSize: 9,
+                    border: "2px solid rgba(30,200,255,0.25)",
+                  }}
+                >
+                  ⚙ STARK TECH
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Stats bar */}
+        {/* Stats strip */}
         {mounted && (
-          <div className="h-stat-bar">
-            {stats.map((s, i) => (
-              <div key={s.label} className="h-stat" style={{ animation:`h-up 0.6s ease ${s.delay} both` }}>
-                <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:10, letterSpacing:'0.22em', textTransform:'uppercase', color:'#2A2A2A', marginBottom:5 }}>{s.label}</div>
-                <div style={{ display:'flex', alignItems:'baseline', gap:5 }}>
-                  <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:'clamp(1.4rem,3vw,2rem)', color:'#F2F2F2', lineHeight:1 }}>{s.value}</span>
-                  <span style={{ fontFamily:"'Barlow',sans-serif", fontSize:10, color:'#3A3A3A' }}>{s.sub}</span>
-                </div>
+          <div className="hero-stats">
+            {[
+              { label: "GPA", value: "3.7", sub: "/ 4.0 at SAIT", fill: 85 },
+              {
+                label: "Projects Built",
+                value: "9+",
+                sub: "full-stack",
+                fill: 78,
+              },
+              { label: "Internships", value: "2", sub: "completed", fill: 100 },
+              {
+                label: "Based In",
+                value: "YYC",
+                sub: "Calgary, CA",
+                fill: null,
+              },
+            ].map((s) => (
+              <div key={s.label} className="hero-stat-item">
+                <div className="stat-label">{s.label}</div>
+                <div className="stat-value">{s.value}</div>
+                <div className="stat-sub">{s.sub}</div>
                 {s.fill !== null && (
-                  <div className="h-rpm">
-                    <div className="h-rpm-fill" style={{ width:`${s.fill}%`, animationDelay:`${1.3 + i * 0.13}s`, animationDuration:'1.5s' }} />
+                  <div className="stat-bar">
+                    <div
+                      className="stat-bar-fill"
+                      style={{ width: `${s.fill}%` }}
+                    />
                   </div>
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Scroll hint */}
+        {mounted && (
+          <div className="hero-scroll-hint">
+            <span
+              style={{
+                fontFamily: "var(--font-comic)",
+                fontSize: 9,
+                letterSpacing: "0.22em",
+                color: "rgba(255,255,255,0.7)",
+                textTransform: "uppercase",
+              }}
+            >
+              Turn the page
+            </span>
+            <div
+              style={{
+                width: 2,
+                height: 24,
+                background:
+                  "linear-gradient(to bottom, rgba(255,255,255,0.5), transparent)",
+              }}
+            />
           </div>
         )}
       </section>
