@@ -14,16 +14,17 @@ npm run build   # production build
 
 All copy (bio, projects, story, stack, links) lives in `src/data/content.js`. Components read from it, so you rarely need to touch them.
 
-- **Add a project:** append an object to `projects`. The first four show as large featured cards; the rest go in the list below them.
-- **Images:** project images are loaded from `i.postimg.cc` and `images.unsplash.com`. To use another host, add it to `images.remotePatterns` in `next.config.mjs`, or drop files in `public/` and use a path like `/my-shot.png`.
+- **Add a project:** append an object to `projects`. The first one is the wide hero tile, the next four are large tiles, and the rest are compact tiles. Clicking any tile opens a detail sheet (`approach`, `highlights`, `tags`, `links`).
+- **Project art:** use `logo` for a logo on a near-black tile (put it in `public/projects/`), or `image` for a full-bleed screenshot. `accent` tints the tile glow and the sheet. Remote images must come from a host listed in `images.remotePatterns` in `next.config.mjs`.
+- **Resume:** replace `public/resume.pdf`. It opens in a sheet from the nav, hero and Experience section, and at `/#resume`.
 
 ## Structure
 
 ```
 src/
   app/          layout (fonts, theme script), page, global styles + design tokens
-  components/   one file per section, plus small client pieces (Nav, ThemeToggle, LocalTime, CopyEmail, Reveal)
+  components/   one file per section, plus client pieces (Nav, SheetProvider/Sheet, ThemeToggle, LocalTime, CopyEmail, Reveal)
   data/         content.js
 ```
 
-Theme colors are CSS variables at the top of `src/app/globals.css`, with light and dark sets.
+Colors, the type scale (`t-display`, `t-headline`, `t-title`, `t-lead` …) and materials live in `src/app/globals.css`. Sheets use Motion springs (`src/components/Sheet.jsx`).

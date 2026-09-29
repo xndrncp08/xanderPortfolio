@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import ThemeToggle from "./ThemeToggle";
-import { ResumeButton } from "./ResumeViewer";
+import { ResumeButton } from "./SheetProvider";
 
 const LINKS = [
   { id: "work", label: "Work" },
@@ -16,15 +16,13 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => setScrolled(window.scrollY > 4);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        }
+        for (const entry of entries) if (entry.isIntersecting) setActive(entry.target.id);
       },
       { rootMargin: "-45% 0px -50% 0px" }
     );
@@ -32,7 +30,6 @@ export default function Nav() {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     }
-
     return () => {
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
@@ -40,27 +37,21 @@ export default function Nav() {
   }, []);
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 ${
-        scrolled
-          ? "border-b border-line bg-bg/80 backdrop-blur-md"
-          : "border-b border-transparent"
-      }`}
-    >
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <a href="#top" className="font-serif text-2xl leading-none tracking-tight">
-          Xander<span className="text-accent">.</span>
+    <header className="glass fixed inset-x-0 top-0 z-50">
+      <nav className="mx-auto flex h-12 max-w-[980px] items-center justify-between px-4 sm:px-6">
+        <a href="#top" className="text-[17px] font-semibold tracking-[-0.022em]">
+          Xander Rancap
         </a>
 
-        <div className="flex items-center gap-1 sm:gap-2">
-          <ul className="flex items-center">
+        <div className="flex items-center gap-1">
+          <ul className="mr-2 hidden items-center md:flex">
             {LINKS.map(({ id, label }) => (
-              <li key={id} className={id === "contact" ? "" : "hidden md:block"}>
+              <li key={id}>
                 <a
                   href={`#${id}`}
                   aria-current={active === id ? "true" : undefined}
-                  className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
-                    active === id ? "text-fg" : "text-muted hover:text-fg"
+                  className={`t-caption px-3 py-2 transition-colors duration-200 ${
+                    active === id ? "text-fg" : "text-fg/65 hover:text-fg"
                   }`}
                 >
                   {label}
@@ -68,10 +59,14 @@ export default function Nav() {
               </li>
             ))}
           </ul>
-          <ResumeButton className="press ml-1 rounded-full border border-line px-3.5 py-1.5 text-sm hover:border-fg" />
+          <ResumeButton className="press rounded-full bg-accent px-3.5 py-1 text-[13px] font-medium text-accent-fg hover:bg-accent-hover" />
           <ThemeToggle />
         </div>
       </nav>
+      {/* Scroll edge: a hairline appears only once content passes underneath. */}
+      <div
+        className={`h-px bg-line transition-opacity duration-300 ${scrolled ? "opacity-100" : "opacity-0"}`}
+      />
     </header>
   );
 }

@@ -17,10 +17,10 @@ export default function CopyEmail({ email }) {
     <button
       type="button"
       onClick={copy}
-      className="press inline-flex items-center gap-2 rounded-full border border-bg/20 px-5 py-3 text-sm hover:border-bg/50"
+      className="press inline-flex items-center gap-2 rounded-full bg-tile px-6 py-3 text-[17px] font-medium hover:bg-tile-2"
     >
-      {copied ? <FiCheck /> : <FiCopy />}
-      <span aria-live="polite">{copied ? "Copied" : "Copy email"}</span>
+      {copied ? <FiCheck className="text-[#30d158]" /> : <FiCopy className="text-muted" />}
+      <span aria-live="polite">{copied ? "Copied" : email}</span>
     </button>
   );
 }

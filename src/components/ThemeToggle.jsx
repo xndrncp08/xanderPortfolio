@@ -17,10 +17,10 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Toggle dark mode"
-      className="grid size-9 place-items-center rounded-full text-muted transition-colors hover:bg-surface hover:text-fg"
+      className="press grid size-9 place-items-center rounded-full text-fg/70 hover:text-fg"
     >
-      <FiMoon className="size-4 dark:hidden" />
-      <FiSun className="hidden size-4 dark:block" />
+      <FiMoon className="size-[17px] dark:hidden" />
+      <FiSun className="hidden size-[17px] dark:block" />
     </button>
   );
 }

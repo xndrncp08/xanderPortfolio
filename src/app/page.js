@@ -6,11 +6,11 @@ import Stack from "@/components/Stack";
 import Experience from "@/components/Experience";
 import Contact from "@/components/Contact";
 import Reveal from "@/components/Reveal";
-import ResumeViewer from "@/components/ResumeViewer";
+import SheetProvider from "@/components/SheetProvider";
 
 export default function Home() {
   return (
-    <>
+    <SheetProvider>
       <Nav />
       <main>
         <Hero />
@@ -20,8 +20,7 @@ export default function Home() {
         <Experience />
         <Contact />
       </main>
-      <ResumeViewer />
       <Reveal />
-    </>
+    </SheetProvider>
   );
 }
