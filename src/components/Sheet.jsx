@@ -2,6 +2,7 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { AnimatePresence, motion, useDragControls, useReducedMotion } from "motion/react";
 import { FiX } from "react-icons/fi";
+import { getLenis } from "@/lib/telemetry";
 
 // Critically damped: no overshoot on a sheet that simply opens.
 const SPRING = { type: "spring", bounce: 0, duration: 0.45 };
@@ -43,6 +44,8 @@ export default function Sheet({ open, onClose, origin, label, size = "md", child
     const root = document.documentElement;
     const scrollbar = window.innerWidth - root.clientWidth;
 
+    const lenis = getLenis();
+    lenis?.stop();
     root.style.overflow = "hidden";
     root.style.paddingRight = `${scrollbar}px`;
     if (page) page.inert = true;
@@ -54,6 +57,7 @@ export default function Sheet({ open, onClose, origin, label, size = "md", child
       window.removeEventListener("keydown", onKey);
       root.style.overflow = "";
       root.style.paddingRight = "";
+      lenis?.start();
       if (page) page.inert = false;
       previouslyFocused?.focus?.({ preventScroll: true });
     };
@@ -86,7 +90,7 @@ export default function Sheet({ open, onClose, origin, label, size = "md", child
       {open && (
         <div className="fixed inset-0 z-[100]" key="sheet">
           <motion.div
-            className="absolute inset-0 bg-[var(--scrim)]"
+            className="absolute inset-0 bg-black/75 backdrop-blur-[2px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -111,21 +115,21 @@ export default function Sheet({ open, onClose, origin, label, size = "md", child
               dragElastic={{ top: 0.08, bottom: 1 }}
               dragTransition={{ bounceStiffness: 500, bounceDamping: 45 }}
               onDragEnd={onDragEnd}
-              className={`pointer-events-auto relative flex w-full flex-col overflow-hidden rounded-t-[28px] bg-bg dark:bg-[#1c1c1e] shadow-[0_30px_80px_-20px_rgb(0_0_0/0.45)] sm:rounded-[28px] ${width} ${height}`}
+              className={`pointer-events-auto relative flex w-full flex-col overflow-hidden rounded-t-xl border-t-2 border-red bg-carbon shadow-[0_30px_80px_-20px_rgb(0_0_0/0.8)] ring-1 ring-line sm:rounded-none ${width} ${height}`}
             >
               {/* Drag handle (mobile) — the only area that starts a drag, so content can scroll. */}
               <div
                 onPointerDown={(e) => isMobile && dragControls.start(e)}
                 className="absolute inset-x-0 top-0 z-20 flex h-7 touch-none justify-center pt-2 sm:hidden"
               >
-                <span className="h-1.5 w-10 rounded-full bg-fg/25" />
+                <span className="h-1.5 w-10 rounded-full bg-fg/30" />
               </div>
               <button
                 type="button"
                 data-autofocus
                 onClick={onClose}
                 aria-label="Close"
-                className="press glass absolute top-3 right-3 z-20 grid size-9 place-items-center rounded-full text-fg/80 hover:text-fg"
+                className="press absolute top-3 right-3 z-20 grid size-9 place-items-center bg-ink/80 text-fg/80 ring-1 ring-line-strong backdrop-blur hover:bg-red hover:text-white"
               >
                 <FiX className="size-[18px]" />
               </button>
