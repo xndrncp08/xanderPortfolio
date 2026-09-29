@@ -34,52 +34,61 @@ export const socials = [
   },
 ];
 
-// The first four projects are shown as large featured cards.
-// `image` is optional — projects without one get a typographic cover.
+// The first project is the hero tile; the next four are large tiles.
+// `logo` images sit on a near-black tile; `image` is a full-bleed screenshot.
+// `accent` tints the tile's glow and the project sheet.
 export const projects = [
   {
     title: "Resoniq",
     tech: "Next.js · FastAPI · Librosa",
     year: "2026",
-    tagline: "Upload a song, get back the guitar tone recipe behind it.",
+    tagline: "Upload a song. Get the guitar tone behind it.",
     approach:
-      "A Next.js 16 app plus a Python/FastAPI service that runs real audio-feature extraction with Librosa to infer amp, cab, pickup, EQ, gain and effects chain. Postgres via Prisma, Docker Compose for the stack.",
+      "A Next.js 16 app plus a Python/FastAPI service that runs real audio-feature extraction with Librosa to infer amp voicing, cabinet, pickup position, EQ, gain and effects chain. The heuristics are documented honestly as a starting point to dial in by ear, not a verified gear match.",
+    highlights: [
+      "Separate FastAPI microservice for the signal processing",
+      "Auth, file upload and an animated dashboard for tuning the result",
+      "PostgreSQL via Prisma, files in Supabase Storage, whole stack in Docker Compose",
+    ],
+    logo: "/projects/resoniq.jpg",
+    accent: "#ff6a00",
     tags: ["Next.js", "TypeScript", "FastAPI", "Librosa", "PostgreSQL", "Docker"],
     links: { code: "https://github.com/xndrncp08/Resoniq" },
   },
   {
-    title: "F1Dash",
-    tech: "Next.js · Groq Llama 3",
+    title: "FJuan",
+    tech: "Next.js · Groq · OpenF1",
     year: "2026",
-    tagline: "AI-powered F1 analytics — telemetry, driver comparisons and race predictions.",
+    tagline: "F1 data, without the fluff.",
     approach:
-      "A weighted prediction engine (form, quali pace, circuit history) with Jest-tested maths, plus a Llama 3 chatbot that answers questions from live prediction data.",
-    image: "https://i.postimg.cc/RFx66GfX/image.png",
-    tags: ["Next.js", "TypeScript", "Groq", "React Query", "Jest"],
+      "An F1 platform that pulls race calendars back to 1950, live telemetry, driver comparisons, standings, circuits and news into one place — plus race predictions you can ask questions about.",
+    highlights: [
+      "Weighted prediction engine (form, quali pace, circuit history) with Jest-tested maths",
+      "Groq-powered chat that answers questions from live prediction data",
+      "Live car data from OpenF1 and historical results from Jolpica",
+    ],
+    logo: "/projects/fjuan.jpg",
+    accent: "#e10600",
+    tags: ["Next.js", "TypeScript", "Groq", "OpenF1", "Jest"],
     links: {
-      code: "https://github.com/xndrncp08/f1-stats",
-      live: "https://f1-stats-alpha.vercel.app",
+      code: "https://github.com/xndrncp08/FJuan",
+      live: "https://f-juan.vercel.app",
     },
-  },
-  {
-    title: "YYC Track",
-    tech: "React · Express · Azure",
-    year: "2025–26",
-    tagline: "Calgary CTrain rating platform — SAIT capstone, presented at CapCon 2026.",
-    approach:
-      "Built the React/TypeScript frontend in an Agile team, wrote Cypress and Jest suites run per commit in GitHub Actions, and wired up Azure AI Content Safety to moderate comments.",
-    image: "https://i.postimg.cc/1zpCSYZ0/image.png",
-    tags: ["React", "TypeScript", "MongoDB", "Azure AI", "Cypress"],
-    links: { code: "https://github.com/xndrncp08/yyc-track-backend" },
   },
   {
     title: "BMR Pharmacy",
     tech: "React · Express · Supabase",
     year: "2025–now",
-    tagline: "Replaced a pharmacy's paper sales records. Still in daily production use.",
+    tagline: "Paper sales records, replaced. Used every day.",
     approach:
-      "Live revenue dashboards, ranked product summaries and automated monthly reports. Aggregates are verified against source transactions in Postgres, and I own production defect triage.",
-    image: "https://i.postimg.cc/7LbzW9TW/image.png",
+      "A full-stack sales tracker for a local pharmacy with live revenue dashboards, ranked product summaries and automated monthly reports. It's still in daily production use, and I own its defect triage.",
+    highlights: [
+      "Aggregates verified against source transactions in Postgres, not just the UI",
+      "Cypress end-to-end and Jest unit tests on core dashboard flows",
+      "Locally hosted Ollama assistant, tested for consistency",
+    ],
+    logo: "/projects/bmr.jpg",
+    accent: "#19d39a",
     tags: ["React", "Express", "PostgreSQL", "Cypress", "Ollama"],
     links: { code: "https://github.com/xndrncp08/bmr-pharmacy" },
   },
@@ -87,41 +96,72 @@ export const projects = [
     title: "WMBA?",
     tech: "Next.js · Express · Prisma",
     year: "2026",
-    tagline: "Where My Bus At — tracks 600+ live Calgary buses across 530+ routes.",
+    tagline: "600+ live Calgary buses. One map.",
     approach:
-      "Ingests Calgary Transit's GTFS-realtime feed every 60s, computes speeds with Haversine, keeps a rolling 25-hour history, and renders heatmaps and trails on Leaflet.",
-    image: "https://i.postimg.cc/TPgZcMn1/WMBA.png",
-    tags: ["Next.js", "Prisma", "Leaflet", "GTFS"],
+      "Where My Bus At ingests Calgary Transit's GTFS-realtime feed every 60 seconds and turns it into a command-centre map with heatmaps, trails and route analytics.",
+    highlights: [
+      "Tracks 600+ active buses across 530+ routes",
+      "Haversine speeds and a rolling 25-hour vehicle history",
+      "Leaflet heatmaps, 1-hour trails and Recharts trend dashboards",
+    ],
+    logo: "/projects/wmba.jpg",
+    accent: "#f47b20",
+    tags: ["Next.js", "Express", "Prisma", "Leaflet", "GTFS"],
+  },
+  {
+    title: "YYC Track",
+    tech: "React · Express · Azure",
+    year: "2025–26",
+    tagline: "Rate the CTrain. SAIT capstone, shown at CapCon 2026.",
+    approach:
+      "A civic feedback platform for Calgary's CTrain built in an Agile team. I built the React/TypeScript frontend and owned a big share of the testing.",
+    highlights: [
+      "Cypress regression suites and Jest units, run per commit in GitHub Actions",
+      "Azure AI Content Safety and sentiment analysis to moderate comments",
+      "Defects triaged and tracked in Jira through sprint planning and stand-ups",
+    ],
+    image: "https://i.postimg.cc/1zpCSYZ0/image.png",
+    accent: "#2f7bff",
+    tags: ["React", "TypeScript", "MongoDB", "Azure AI", "Cypress"],
+    links: { code: "https://github.com/xndrncp08/yyc-track-backend" },
   },
   {
     title: "Apex F1",
     tech: "Python ML · Next.js",
     year: "2026",
-    tagline: "Win and podium probabilities from a Python-trained ML model.",
+    tagline: "Win and podium odds from a trained model.",
     approach:
-      "Built the web layer around the model — schema, REST API and a React UI showing predictions alongside historical accuracy.",
-    image: "https://i.postimg.cc/Y0tqJ2sF/image.png",
-    tags: ["Python", "Next.js", "Supabase"],
+      "The full web layer around a Python-trained race prediction model: schema, REST API and a React UI showing probabilities next to historical accuracy.",
+    highlights: [
+      "API tested against incomplete, delayed and malformed inputs",
+      "Degrades predictably instead of failing silently",
+    ],
+    logo: "/projects/apexf1.jpg",
+    accent: "#ff3b1f",
+    tags: ["Python", "Next.js", "Express", "Supabase"],
     links: { code: "https://github.com/xndrncp08/ApexF1" },
   },
   {
     title: "FitZone",
     tech: ".NET MAUI Blazor",
     year: "2024",
-    tagline: "Cross-platform gym management — led a small team to a working demo.",
+    tagline: "Gym management, on desktop and mobile.",
     approach:
-      "Auth, memberships and scheduling in C#, on a MariaDB schema I designed.",
-    image: "https://i.postimg.cc/t4trHsnd/FitZone.png",
+      "Led a small team building auth, memberships and scheduling in C# with .NET MAUI Blazor Hybrid, on a MariaDB schema I designed.",
+    highlights: ["One codebase for mobile and desktop", "Took it from setup to a working demo"],
+    logo: "/projects/fitzone.jpg",
+    accent: "#ff5a1f",
     tags: ["C#", ".NET MAUI", "MariaDB"],
   },
   {
     title: "Basketbol",
     tech: "Next.js",
     year: "2025",
-    tagline: "NBA games, teams and player stats in one clean interface.",
+    tagline: "NBA games, teams and players, cleanly.",
     approach:
       "Normalised the ESPN and BallDontLie APIs into a single data layer for a responsive NBA hub.",
     image: "https://i.postimg.cc/cL8LRwdT/image.png",
+    accent: "#f7931a",
     tags: ["Next.js", "ESPN API"],
     links: {
       code: "https://github.com/xndrncp08/cprg306_basketbol",
@@ -132,10 +172,11 @@ export const projects = [
     title: "NV Closet",
     tech: "Figma · UI/UX",
     year: "2025",
-    tagline: "Digital wardrobe app with AI outfit recommendations.",
+    tagline: "A wardrobe app that dresses you.",
     approach:
-      "Started from user flows, explored several layouts, and landed on a high-fidelity prototype.",
+      "A digital wardrobe with AI outfit recommendations. Started from user flows, explored several layouts, and landed on a high-fidelity prototype.",
     image: "https://i.postimg.cc/Kj2kF8ML/NV.png",
+    accent: "#f472b6",
     tags: ["Figma", "Prototyping"],
   },
 ];

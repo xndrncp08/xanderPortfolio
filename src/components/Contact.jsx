@@ -6,67 +6,52 @@ export default function Contact() {
   const year = new Date().getFullYear();
 
   return (
-    <section id="contact" className="bg-fg text-bg">
-      <div className="mx-auto max-w-6xl px-4 pt-24 pb-10 sm:px-6 sm:pt-32">
-        <p data-reveal className="font-mono text-xs text-accent">
-          05 — Contact
-        </p>
-        <h2
-          data-reveal
-          className="mt-6 font-serif text-[clamp(3.5rem,11vw,9rem)] leading-[0.9] tracking-[-0.03em]"
-        >
-          Let&apos;s build
-          <br />
-          <em className="text-accent">something.</em>
+    <section id="contact" className="px-4 pt-24 sm:px-6 sm:pt-32">
+      <div data-reveal className="mx-auto max-w-[980px] text-center">
+        <p className="t-eyebrow text-accent">Contact</p>
+        <h2 className="t-display mt-3">
+          Let&apos;s build <span className="text-gradient">something.</span>
         </h2>
+        <p className="t-lead mx-auto mt-6 max-w-xl text-muted">
+          Open to new roles, freelance work and anything interesting. Based in Calgary — say the
+          word.
+        </p>
 
-        <div data-reveal className="mt-12 grid gap-12 md:grid-cols-2 md:items-end">
-          <div>
-            <p className="max-w-md text-lg leading-relaxed opacity-70">
-              I&apos;m open to new roles, freelance work and anything interesting. Based in
-              Calgary — say the word.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a
-                href={`mailto:${profile.email}`}
-                className="press group inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-medium text-accent-fg hover:-translate-y-0.5"
-              >
-                {profile.email}
-                <FiArrowUpRight className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </a>
-              <CopyEmail email={profile.email} />
-            </div>
-          </div>
-
-          <ul className="md:justify-self-end">
-            {socials.map((s) => (
-              <li key={s.label}>
-                <a
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center justify-between gap-10 border-b border-bg/15 py-3 md:min-w-72"
-                >
-                  <span className="text-lg">{s.label}</span>
-                  <span className="flex items-center gap-2 font-mono text-xs opacity-60 transition-opacity group-hover:opacity-100">
-                    {s.handle}
-                    <FiArrowUpRight />
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href={`mailto:${profile.email}`}
+            className="press rounded-full bg-accent px-6 py-3 text-[17px] font-medium text-accent-fg hover:bg-accent-hover"
+          >
+            Email me
+          </a>
+          <CopyEmail email={profile.email} />
         </div>
 
-        <footer className="mt-28 flex flex-col gap-2 border-t border-bg/15 pt-6 font-mono text-xs opacity-60 sm:flex-row sm:justify-between">
-          <span>
-            © {year} {profile.name}
-          </span>
-          <a href="#top" className="link-underline self-start">
-            Back to top ↑
-          </a>
-        </footer>
+        <ul className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-3">
+          {socials.map((s) => (
+            <li key={s.label}>
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-1 text-accent hover:underline"
+              >
+                {s.label}
+                <FiArrowUpRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
+
+      <footer className="t-caption mx-auto mt-28 flex max-w-[980px] flex-col gap-2 border-t border-line py-5 text-muted sm:flex-row sm:justify-between">
+        <span>
+          Copyright © {year} {profile.name}. Designed and built in Calgary.
+        </span>
+        <a href="#top" className="hover:text-fg">
+          Back to top
+        </a>
+      </footer>
     </section>
   );
 }
