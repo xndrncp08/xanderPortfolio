@@ -12,6 +12,10 @@ export const profile = {
   intro:
     "I build full-stack things where clean design meets solid engineering, and I test them properly. I try stuff, break it, learn something, and redo it until it's right.",
   status: "Open to roles, freelance and anything interesting",
+  raceNumber: "08",
+  origin: "Manila, PH",
+  base: "Calgary, CA",
+  coords: "51.0447° N, 114.0719° W",
 };
 
 export const stats = [
@@ -34,12 +38,13 @@ export const socials = [
   },
 ];
 
-// The first project is the hero tile; the next four are large tiles.
-// `logo` images sit on a near-black tile; `image` is a full-bleed screenshot.
-// `accent` tints the tile's glow and the project sheet.
+// Order is grid order: the first three are the podium (P1, P2, P3), the rest
+// run in the Grand Prix calendar. `logo` art sits on a near-black panel;
+// `image` is a screenshot. `metric` is the "top speed" readout — keep it factual.
 export const projects = [
   {
     title: "Resoniq",
+    metric: { value: "6", label: "tone parameters inferred per song" },
     tech: "Next.js · FastAPI · Librosa",
     year: "2026",
     tagline: "Upload a song. Get the guitar tone behind it.",
@@ -57,6 +62,7 @@ export const projects = [
   },
   {
     title: "FJuan",
+    metric: { value: "350+", label: "race records, searchable" },
     tech: "Next.js · Groq · OpenF1",
     year: "2026",
     tagline: "F1 data, without the fluff.",
@@ -77,6 +83,7 @@ export const projects = [
   },
   {
     title: "BMR Pharmacy",
+    metric: { value: "Daily", label: "production use since launch" },
     tech: "React · Express · Supabase",
     year: "2025–now",
     tagline: "Paper sales records, replaced. Used every day.",
@@ -94,6 +101,7 @@ export const projects = [
   },
   {
     title: "WMBA?",
+    metric: { value: "600+", label: "live buses tracked every 60s" },
     tech: "Next.js · Express · Prisma",
     year: "2026",
     tagline: "600+ live Calgary buses. One map.",
@@ -110,6 +118,7 @@ export const projects = [
   },
   {
     title: "YYC Track",
+    metric: { value: "CapCon", label: "presented at SAIT CapCon 2026" },
     tech: "React · Express · Azure",
     year: "2025–26",
     tagline: "Rate the CTrain. SAIT capstone, shown at CapCon 2026.",
@@ -127,6 +136,7 @@ export const projects = [
   },
   {
     title: "Apex F1",
+    metric: { value: "ML", label: "win and podium probabilities" },
     tech: "Python ML · Next.js",
     year: "2026",
     tagline: "Win and podium odds from a trained model.",
@@ -143,6 +153,7 @@ export const projects = [
   },
   {
     title: "FitZone",
+    metric: { value: "Lead", label: "ran a small dev team" },
     tech: ".NET MAUI Blazor",
     year: "2024",
     tagline: "Gym management, on desktop and mobile.",
@@ -155,6 +166,7 @@ export const projects = [
   },
   {
     title: "Basketbol",
+    metric: { value: "2 → 1", label: "APIs normalised into one layer" },
     tech: "Next.js",
     year: "2025",
     tagline: "NBA games, teams and players, cleanly.",
@@ -170,6 +182,7 @@ export const projects = [
   },
   {
     title: "NV Closet",
+    metric: { value: "Hi-fi", label: "prototype from user flows up" },
     tech: "Figma · UI/UX",
     year: "2025",
     tagline: "A wardrobe app that dresses you.",
@@ -245,4 +258,31 @@ export const stack = [
   { group: "AI", items: ["Anthropic API", "Groq Llama 3", "Ollama", "Librosa"] },
   { group: "Testing", items: ["Cypress", "Jest", "JMeter", "GitHub Actions"] },
   { group: "Cloud & tools", items: ["Azure", "Docker", "Terraform", "Vercel", "Git", "Jira", "Figma"] },
+];
+
+// "Race season" — chronological, from the master resume.
+// type: "start" | "race" | "podium" | "flag"
+export const season = [
+  { date: "2024", title: "Lights out at SAIT", detail: "Started the Software Development diploma.", type: "start" },
+  { date: "2024", title: "First Eduspec internship", detail: "15+ Arduino circuits and a greenhouse automation prototype. Won an innovation award.", type: "podium" },
+  { date: "2024", title: "FitZone", detail: "Led a small team to a working .NET MAUI Blazor gym system.", type: "race" },
+  { date: "2025", title: "Cloud security & load testing", detail: "JMeter, Terraform and Azure API Management coursework.", type: "race" },
+  { date: "Sep 2025", title: "YYC Track kicks off", detail: "SAIT capstone in an Agile team, Cypress and Jest in CI.", type: "race" },
+  { date: "Nov 2025", title: "BMR Pharmacy goes live", detail: "Replaced paper sales records. Still in daily production use.", type: "podium" },
+  { date: "Jan 2026", title: "FJuan and Apex F1", detail: "F1 analytics, a prediction engine and an ML race model.", type: "race" },
+  { date: "Feb 2026", title: "WMBA?", detail: "Live GTFS pipeline tracking 600+ Calgary buses.", type: "race" },
+  { date: "Apr 2026", title: "CapCon 2026", detail: "Presented YYC Track, deployed on Azure.", type: "podium" },
+  { date: "2026", title: "Chequered flag", detail: "Graduated from SAIT with a 3.61 GPA.", type: "flag" },
+  { date: "Now", title: "Resoniq", detail: "Guitar tone analysis with a FastAPI + Librosa engine. In progress.", type: "race" },
+];
+
+// Telemetry: each discipline is measured by how many projects above use it.
+// `match` is tested against each project's tags and tech string.
+export const disciplines = [
+  { key: "frontend", label: "Aero", sub: "Frontend", match: ["React", "Next.js", "Vite", "Figma"] },
+  { key: "backend", label: "Engine", sub: "Backend", match: ["Express", "Node.js", "FastAPI", ".NET", "C#"] },
+  { key: "data", label: "Fuel", sub: "Data", match: ["PostgreSQL", "Prisma", "Supabase", "MongoDB", "MariaDB"] },
+  { key: "testing", label: "Scrutineering", sub: "Testing", match: ["Cypress", "Jest"] },
+  { key: "ai", label: "Strategy", sub: "AI / ML", match: ["Groq", "Ollama", "Librosa", "Machine Learning", "Azure AI", "ML"] },
+  { key: "cloud", label: "Pit ops", sub: "Cloud & infra", match: ["Docker", "Azure"] },
 ];

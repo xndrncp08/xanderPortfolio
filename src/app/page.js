@@ -1,24 +1,30 @@
-import Nav from "@/components/Nav";
-import Hero from "@/components/Hero";
-import Work from "@/components/Work";
-import About from "@/components/About";
-import Stack from "@/components/Stack";
-import Experience from "@/components/Experience";
-import Contact from "@/components/Contact";
-import Reveal from "@/components/Reveal";
 import SheetProvider from "@/components/SheetProvider";
+import Reveal from "@/components/Reveal";
+import LightsOut from "@/components/race/LightsOut";
+import SmoothScroll from "@/components/race/SmoothScroll";
+import SpeedLines from "@/components/race/SpeedLines";
+import Reticle from "@/components/race/Reticle";
+import Hud from "@/components/race/Hud";
+import Hero from "@/components/race/Hero";
+import Podium from "@/components/race/Podium";
+import Driver from "@/components/race/Driver";
+import Season from "@/components/race/Season";
+import PitWall from "@/components/race/PitWall";
 
 export default function Home() {
   return (
     <SheetProvider>
-      <Nav />
-      <main>
+      <LightsOut />
+      <SmoothScroll />
+      <SpeedLines />
+      <Reticle />
+      <Hud />
+      <main className="relative z-[2]">
         <Hero />
-        <Work />
-        <About />
-        <Stack />
-        <Experience />
-        <Contact />
+        <Podium />
+        <Driver />
+        <Season />
+        <PitWall />
       </main>
       <Reveal />
     </SheetProvider>
