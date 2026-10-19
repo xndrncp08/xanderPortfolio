@@ -195,6 +195,24 @@ export const projects = [
     links: { code: "https://github.com/xndrncp08/Overclocked" },
   },
   {
+    title: "Chrono Breakers",
+    metric: { value: "215", label: "offline gameplay tests, 0 failing" },
+    tech: "Luau · Roblox · Rojo",
+    year: "2026",
+    tagline: "1 Time-Keeper vs 4 Infiltrators. A Roblox survival-horror heist.",
+    approach:
+      "An asymmetrical multiplayer game: Infiltrators hack terminals, break chases and rescue each other before the Temporal Collapse, while the Time-Keeper hunts them. Server-authoritative, with every gameplay rule in a pure core that never touches Roblox instances. In progress: not published yet.",
+    highlights: [
+      "Strict-typed Luau with no third-party runtime dependencies",
+      "Pure rules core takes time as an argument, so every rule runs under Lune tests offline",
+      "Rate-limited, validated remotes and idempotent reward payouts",
+    ],
+    logo: "/projects/chronobreakers.jpg",
+    accent: "#5eead4",
+    tags: ["Luau", "Roblox", "Rojo", "Lune"],
+    links: { code: "https://github.com/xndrncp08/chrono-breakers" },
+  },
+  {
     title: "YYC Track",
     metric: { value: "CapCon", label: "presented at SAIT CapCon 2026" },
     tech: "React · Express · Azure",
@@ -372,6 +390,7 @@ export const season = [
   { date: "Jul 2026", title: "Resoniq", detail: "Guitar tone analysis with a FastAPI + Librosa engine.", type: "race" },
   { date: "Sep 2026", title: "Job Hunter, Overclocked, BullScript", detail: "Resume-ranked job search, a 10k/s telemetry pipeline and a self-retraining market terminal.", type: "race" },
   { date: "Oct 2026", title: "Master M goes live", detail: "Booking site for a Calgary barbershop.", type: "podium" },
+  { date: "Oct 2026", title: "Chrono Breakers", detail: "Asymmetrical Roblox survival-horror heist in strict Luau. In progress.", type: "race" },
   { date: "Now", title: "Diskarte", detail: "An open-source Discord alternative for the Philippines. In progress.", type: "race" },
 ];
 
