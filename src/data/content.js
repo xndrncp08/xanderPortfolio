@@ -43,6 +43,24 @@ export const socials = [
 // `image` is a screenshot. `metric` is the "top speed" readout — keep it factual.
 export const projects = [
   {
+    title: "Diskarte",
+    metric: { value: "₱0", label: "to self-host chat, voice and video" },
+    tech: "Next.js · Supabase · LiveKit",
+    year: "2026",
+    tagline: "An open-source Discord alternative, made for the Philippines.",
+    approach:
+      "Tambayans (servers) with realtime chat, LiveKit voice, video and screen share, friends and DMs, and Bantay-Bayan moderation — built for Filipino gamers, student orgs and creators, and cheap enough to run for free.",
+    highlights: [
+      "Row Level Security on every table, nonce-based CSP, CSRF checks and server-minted LiveKit tokens",
+      "Auto-mod for spam, phishing domains and hate speech, plus bans, slow mode and an audit log",
+      "Installable PWA with offline queued sends; Vitest, PGlite RLS tests, Playwright and axe-core audits",
+    ],
+    logo: "/projects/diskarte.jpg",
+    accent: "#eab308",
+    tags: ["Next.js", "TypeScript", "Supabase", "PostgreSQL", "LiveKit", "Playwright", "Docker"],
+    links: { code: "https://github.com/xndrncp08/Diskarte" },
+  },
+  {
     title: "Resoniq",
     metric: { value: "6", label: "tone parameters inferred per song" },
     tech: "Next.js · FastAPI · Librosa",
@@ -58,7 +76,10 @@ export const projects = [
     logo: "/projects/resoniq.jpg",
     accent: "#ff6a00",
     tags: ["Next.js", "TypeScript", "FastAPI", "Librosa", "PostgreSQL", "Docker"],
-    links: { code: "https://github.com/xndrncp08/Resoniq" },
+    links: {
+      code: "https://github.com/xndrncp08/Resoniq",
+      live: "https://resoniq-two.vercel.app",
+    },
   },
   {
     title: "FJuan",
@@ -100,6 +121,45 @@ export const projects = [
     links: { code: "https://github.com/xndrncp08/bmr-pharmacy" },
   },
   {
+    title: "BullScript",
+    metric: { value: "3", label: "forecast horizons, scored vs a random walk" },
+    tech: "FastAPI · XGBoost · FinBERT",
+    year: "2026",
+    tagline: "A market terminal that's honest about what it can't predict.",
+    approach:
+      "Live quotes, candlestick charts, 5/14/30-day price forecasts and FinBERT news sentiment in a dense, keyboard-first workspace. Forecasts are scored against a random walk, and the UI shows when a model has no real edge.",
+    highlights: [
+      "XGBoost on 16 scale-free features with a purged train / calibration / holdout split",
+      "Self-retraining loop that watches live skill and feature drift, then promotes new models",
+      "Shrinkage-calibrated forecasts fall back to \"no change\" instead of a confident wrong call",
+    ],
+    logo: "/projects/bullscript.jpg",
+    accent: "#22c55e",
+    tags: ["Python", "FastAPI", "XGBoost", "FinBERT", "React", "TypeScript"],
+    links: { code: "https://github.com/xndrncp08/Bullscript" },
+  },
+  {
+    title: "Master M",
+    metric: { value: "Live", label: "booking site for a Calgary barbershop" },
+    tech: "Next.js · TypeScript · Zod",
+    year: "2026",
+    tagline: "A real shop's website, with online booking.",
+    approach:
+      "The client-facing site for Master M Barbershop: services, hours, contact and a multi-step booking flow with a live slot picker. Hours drive everything from the open/closed badge to the bookable slots.",
+    highlights: [
+      "Zod-validated booking API and Server Action, both rate-limited",
+      "Locked-down CSP, sitemap and JSON-LD for local search",
+      "Vitest unit and component tests, Playwright end-to-end",
+    ],
+    logo: "/projects/masterm.jpg",
+    accent: "#d4a537",
+    tags: ["Next.js", "TypeScript", "Tailwind CSS", "Zod", "Vitest", "Playwright"],
+    links: {
+      code: "https://github.com/xndrncp08/Master-M_Barbershop",
+      live: "https://master-m-barbershop.vercel.app",
+    },
+  },
+  {
     title: "WMBA?",
     metric: { value: "600+", label: "live buses tracked every 60s" },
     tech: "Next.js · Express · Prisma",
@@ -115,6 +175,24 @@ export const projects = [
     logo: "/projects/wmba.jpg",
     accent: "#f47b20",
     tags: ["Next.js", "Express", "Prisma", "Leaflet", "GTFS"],
+  },
+  {
+    title: "Overclocked",
+    metric: { value: "10k/s", label: "UDP telemetry packets, the design target" },
+    tech: "Node.js · RxJS · DuckDB",
+    year: "2026",
+    tagline: "F1-style telemetry, ingested without dropping a packet.",
+    approach:
+      "A real-time pipeline for high-frequency car telemetry. UDP ingestion runs on its own worker thread and hands packets to the main thread through a lock-free ring buffer, so slow processing never stalls the socket. In progress: the terminal dashboard is next.",
+    highlights: [
+      "SPSC ring buffer on SharedArrayBuffer + Atomics, with no copying between threads",
+      "Compact 80-byte binary wire format instead of JSON",
+      "RxJS sliding-window stats and anomaly detection, batch-flushed to DuckDB; Vitest per phase",
+    ],
+    logo: "/projects/overclocked.jpg",
+    accent: "#00d1ff",
+    tags: ["TypeScript", "Node.js", "RxJS", "DuckDB", "Vitest"],
+    links: { code: "https://github.com/xndrncp08/Overclocked" },
   },
   {
     title: "YYC Track",
@@ -133,6 +211,24 @@ export const projects = [
     accent: "#2f7bff",
     tags: ["React", "TypeScript", "MongoDB", "Azure AI", "Cypress"],
     links: { code: "https://github.com/xndrncp08/yyc-track-backend" },
+  },
+  {
+    title: "Job Hunter",
+    metric: { value: "0–100", label: "match score from 4 weighted signals" },
+    tech: "FastAPI · React · ChromaDB",
+    year: "2026",
+    tagline: "My job search, ranked against my own resume.",
+    approach:
+      "A local-first dashboard that searches job boards on a schedule, scores each posting against an uploaded resume and tracks applications. Everything runs on my machine; the score is labelled as an estimate for triage.",
+    highlights: [
+      "Local embeddings (all-MiniLM-L6-v2) in ChromaDB for semantic similarity",
+      "Score blends similarity, skill overlap, seniority and location fit",
+      "Optional Claude-powered resume tailoring per posting",
+    ],
+    logo: "/projects/jobhunter.jpg",
+    accent: "#a78bfa",
+    tags: ["Python", "FastAPI", "React", "SQLite", "ChromaDB", "Embeddings"],
+    links: { code: "https://github.com/xndrncp08/Jab-Hant" },
   },
   {
     title: "Apex F1",
@@ -254,9 +350,9 @@ export const offTheClock = [
 export const stack = [
   { group: "Languages", items: ["TypeScript", "JavaScript", "Python", "C#", "Java", "SQL"] },
   { group: "Frontend", items: ["React", "Next.js", "Vite", "Tailwind CSS", "Recharts", "Leaflet"] },
-  { group: "Backend & data", items: ["Node.js", "Express", "FastAPI", "Prisma", "PostgreSQL", "MongoDB", "Supabase"] },
-  { group: "AI", items: ["Anthropic API", "Groq Llama 3", "Ollama", "Librosa"] },
-  { group: "Testing", items: ["Cypress", "Jest", "JMeter", "GitHub Actions"] },
+  { group: "Backend & data", items: ["Node.js", "Express", "FastAPI", "Prisma", "PostgreSQL", "MongoDB", "Supabase", "LiveKit"] },
+  { group: "AI", items: ["Anthropic API", "Groq Llama 3", "Ollama", "Librosa", "XGBoost"] },
+  { group: "Testing", items: ["Cypress", "Jest", "Vitest", "Playwright", "JMeter", "GitHub Actions"] },
   { group: "Cloud & tools", items: ["Azure", "Docker", "Terraform", "Vercel", "Git", "Jira", "Figma"] },
 ];
 
@@ -273,7 +369,10 @@ export const season = [
   { date: "Feb 2026", title: "WMBA?", detail: "Live GTFS pipeline tracking 600+ Calgary buses.", type: "race" },
   { date: "Apr 2026", title: "CapCon 2026", detail: "Presented YYC Track, deployed on Azure.", type: "podium" },
   { date: "2026", title: "Chequered flag", detail: "Graduated from SAIT with a 3.61 GPA.", type: "flag" },
-  { date: "Now", title: "Resoniq", detail: "Guitar tone analysis with a FastAPI + Librosa engine. In progress.", type: "race" },
+  { date: "Jul 2026", title: "Resoniq", detail: "Guitar tone analysis with a FastAPI + Librosa engine.", type: "race" },
+  { date: "Sep 2026", title: "Job Hunter, Overclocked, BullScript", detail: "Resume-ranked job search, a 10k/s telemetry pipeline and a self-retraining market terminal.", type: "race" },
+  { date: "Oct 2026", title: "Master M goes live", detail: "Booking site for a Calgary barbershop.", type: "podium" },
+  { date: "Now", title: "Diskarte", detail: "An open-source Discord alternative for the Philippines. In progress.", type: "race" },
 ];
 
 // Telemetry: each discipline is measured by how many projects above use it.
@@ -281,8 +380,8 @@ export const season = [
 export const disciplines = [
   { key: "frontend", label: "Aero", sub: "Frontend", match: ["React", "Next.js", "Vite", "Figma"] },
   { key: "backend", label: "Engine", sub: "Backend", match: ["Express", "Node.js", "FastAPI", ".NET", "C#"] },
-  { key: "data", label: "Fuel", sub: "Data", match: ["PostgreSQL", "Prisma", "Supabase", "MongoDB", "MariaDB"] },
-  { key: "testing", label: "Scrutineering", sub: "Testing", match: ["Cypress", "Jest"] },
-  { key: "ai", label: "Strategy", sub: "AI / ML", match: ["Groq", "Ollama", "Librosa", "Machine Learning", "Azure AI", "ML"] },
+  { key: "data", label: "Fuel", sub: "Data", match: ["PostgreSQL", "Prisma", "Supabase", "MongoDB", "MariaDB", "SQLite", "DuckDB", "ChromaDB"] },
+  { key: "testing", label: "Scrutineering", sub: "Testing", match: ["Cypress", "Jest", "Vitest", "Playwright"] },
+  { key: "ai", label: "Strategy", sub: "AI / ML", match: ["Groq", "Ollama", "Librosa", "Machine Learning", "Azure AI", "ML", "XGBoost", "FinBERT", "Embeddings"] },
   { key: "cloud", label: "Pit ops", sub: "Cloud & infra", match: ["Docker", "Azure"] },
 ];
