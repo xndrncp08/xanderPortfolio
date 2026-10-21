@@ -42,7 +42,7 @@ export default function ContributionGraph({ days, label }) {
         </div>
         {tip && (
           <p
-            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-[3px] bg-fg px-2.5 py-1.5 text-xs whitespace-nowrap text-bg"
+            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-sm bg-volt px-2.5 py-1.5 text-xs whitespace-nowrap text-[#0f0f0e]"
             style={{ left: tip.x, top: tip.y - 6 }}
           >
             {tip.text}

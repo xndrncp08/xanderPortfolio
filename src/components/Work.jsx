@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { projects } from "@/data/content";
+import ArchiveList from "./ArchiveList";
 import ProjectPlate from "./ProjectPlate";
 import Section from "./Section";
+import TiltCard from "./TiltCard";
 
 const featured = projects.filter((p) => p.featured);
 const archive = projects.filter((p) => !p.featured);
 
-function ExternalLinks({ links }) {
+export function ExternalLinks({ links }) {
   if (!links) return null;
   return (
     <>
@@ -28,28 +30,40 @@ function Feature({ project, index }) {
   const href = `/work/${project.slug}`;
   const flip = index % 2 === 1;
   return (
-    <article className="group grid gap-8 border-t border-line py-12 first:border-t-0 first:pt-0 lg:grid-cols-12 lg:gap-12 lg:py-16">
-      <Link href={href} tabIndex={-1} aria-hidden className={`lg:col-span-7 ${flip ? "lg:order-2" : ""}`}>
-        <ProjectPlate project={project} sizes="(min-width: 1024px) 58vw, 100vw" priority={index === 0} />
+    <article className="group grid gap-8 border-t border-line py-12 lg:grid-cols-12 lg:gap-14 lg:py-20">
+      <Link
+        href={href}
+        tabIndex={-1}
+        aria-hidden
+        className={`reveal block lg:col-span-7 ${flip ? "lg:order-2" : ""}`}
+      >
+        <TiltCard>
+          <ProjectPlate project={project} sizes="(min-width: 1024px) 58vw, 100vw" priority={index === 0} />
+        </TiltCard>
       </Link>
-      <div className="flex flex-col lg:col-span-5">
-        <p className="label">
-          {String(index + 1).padStart(2, "0")} · {project.kind} · {project.year}
-          {project.status && <span className="text-accent"> · {project.status}</span>}
+      <div className="reveal flex flex-col lg:col-span-5" style={{ "--d": "80ms" }}>
+        <p className="label flex flex-wrap gap-x-3">
+          <span className="text-fg">{String(index + 1).padStart(2, "0")}</span>
+          <span>{project.kind}</span>
+          <span>{project.year}</span>
+          {project.status && <span className="mark">{project.status}</span>}
         </p>
-        <h3 className="display mt-4 text-5xl">
-          <Link href={href} className="hover:text-accent">
+        <h3 className="display mt-5 text-6xl sm:text-7xl">
+          <Link href={href} className="transition-opacity hover:opacity-70">
             {project.title}
           </Link>
         </h3>
-        <p className="mt-3 text-xl">{project.tagline}</p>
-        <p className="mt-4 text-muted">{project.approach}</p>
-        <p className="mt-6 flex items-baseline gap-3 border-t border-line pt-4">
-          <span className="display text-4xl text-accent">{project.metric.value}</span>
+        <p className="mt-4 text-xl font-medium tracking-[-0.01em]">{project.tagline}</p>
+        {project.aside && <p className="aside mt-3 text-xl text-muted">{project.aside}</p>}
+        <p className="mt-5 text-muted">{project.approach}</p>
+        <p className="mt-7 flex items-baseline gap-3 border-t border-line pt-5">
+          <span className="display text-4xl">
+            <span className="mark">{project.metric.value}</span>
+          </span>
           <span className="text-muted">{project.metric.label}</span>
         </p>
-        <p className="label mt-4">{project.tags.join(" · ")}</p>
-        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+        <p className="label mt-5">{project.tags.join(" · ")}</p>
+        <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
           <Link href={href} className="link font-medium">
             Read the case study<span aria-hidden className="arrow"> →</span>
           </Link>
@@ -67,8 +81,8 @@ export default function Work() {
         id="work"
         index="01"
         label="Selected work"
-        title="Things I've built, and why they hold up."
-        intro="Four projects I'd walk you through first: a realtime platform, an audio-analysis pipeline, a sports data product and a system a business runs on every day."
+        title="Things I built that didn't fall over."
+        intro="Four I'd walk you through first: a realtime platform, an audio pipeline, a sports data product and a system a business runs on every day."
       >
         {featured.map((project, i) => (
           <Feature key={project.slug} project={project} index={i} />
@@ -78,27 +92,12 @@ export default function Work() {
       <Section
         id="archive"
         index="02"
-        label="Archive"
-        title="More work"
-        intro="Client sites, experiments, coursework and team projects. Each has a short write-up."
+        label="The archive"
+        title="More work."
+        intro="Client sites, experiments, coursework and one Roblox heist. Hover for a peek; click for the write-up."
+        className="border-t border-line"
       >
-        <ul className="border-t border-line">
-          {archive.map((p) => (
-            <li key={p.slug}>
-              <Link
-                href={`/work/${p.slug}`}
-                className="group grid grid-cols-[1fr_auto] items-baseline gap-x-6 gap-y-1 border-b border-line py-5 transition-colors hover:bg-surface sm:grid-cols-[5.5rem_minmax(0,14rem)_1fr_auto] sm:px-3"
-              >
-                <span className="label order-3 sm:order-none">{p.year}</span>
-                <span className="display text-3xl group-hover:text-accent">{p.title}</span>
-                <span className="order-4 col-span-2 text-muted sm:order-none sm:col-span-1">{p.tagline}</span>
-                <span className="label hidden sm:inline">
-                  {p.kind} <span aria-hidden className="arrow">→</span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <ArchiveList projects={archive} />
       </Section>
     </>
   );

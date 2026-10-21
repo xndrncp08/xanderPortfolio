@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProjectPlate from "@/components/ProjectPlate";
+import TiltCard from "@/components/TiltCard";
 import { projects } from "@/data/content";
 
 export const dynamicParams = false;
@@ -38,14 +39,17 @@ export default async function CaseStudy({ params }) {
         </Link>
         <p className="label mt-12">
           {project.kind} · {project.year}
-          {project.status && <span className="text-accent"> · {project.status}</span>}
+          {project.status && <span className="mark ml-2">{project.status}</span>}
         </p>
-        <h1 className="display mt-4 text-6xl sm:text-8xl">{project.title}</h1>
-        <p className="prose-measure mt-5 text-xl sm:text-2xl">{project.tagline}</p>
+        <h1 className="display mt-5 text-7xl uppercase sm:text-[9rem]">{project.title}</h1>
+        <p className="prose-measure mt-6 text-xl font-medium sm:text-2xl">{project.tagline}</p>
+        {project.aside && <p className="aside prose-measure mt-3 text-xl text-muted sm:text-2xl">{project.aside}</p>}
       </header>
 
       <div className="wrap">
-        <ProjectPlate project={project} sizes="(min-width: 1240px) 1160px, 100vw" priority className="aspect-[16/9]" />
+        <TiltCard>
+          <ProjectPlate project={project} sizes="(min-width: 1320px) 1240px, 100vw" priority className="aspect-[16/9]" />
+        </TiltCard>
       </div>
 
       <div className="wrap grid gap-12 py-16 sm:py-24 lg:grid-cols-12">
@@ -53,7 +57,9 @@ export default async function CaseStudy({ params }) {
           <div>
             <dt className="label">Outcome</dt>
             <dd className="mt-1">
-              <span className="display block text-4xl text-accent">{project.metric.value}</span>
+              <span className="display block text-5xl">
+                <span className="mark">{project.metric.value}</span>
+              </span>
               <span className="text-muted">{project.metric.label}</span>
             </dd>
           </div>
@@ -100,10 +106,10 @@ export default async function CaseStudy({ params }) {
         </div>
       </div>
 
-      <nav aria-label="Next project" className="border-t border-line">
+      <nav aria-label="Next project" className="carbon">
         <Link href={`/work/${next.slug}`} className="wrap group flex items-baseline justify-between gap-6 py-12 sm:py-16">
           <span className="label">Next project</span>
-          <span className="display text-4xl group-hover:text-accent sm:text-6xl">
+          <span className="display text-5xl uppercase transition-colors group-hover:text-volt sm:text-7xl">
             {next.title} <span aria-hidden className="arrow">→</span>
           </span>
         </Link>

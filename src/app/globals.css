@@ -1,29 +1,35 @@
 @import "tailwindcss";
 
-/* Warm paper and ink, one oxide accent. Dark mode follows the system. */
+/* Bone and carbon, one volt accent. The accent is a highlighter, not a text
+   colour, in light mode: ink sits on it, so contrast always holds. */
 :root {
-  --bg: #f4f1ea;
-  --surface: #ebe7de;
-  --fg: #1b1a17;
-  --muted: #5d594f;
-  --line: #dcd6c9;
-  --line-strong: #b8b1a1;
-  --accent: #9f4220;
-  --plate: #0b0b0a;
+  --bg: #f1efe9;
+  --surface: #e7e4dc;
+  --fg: #0f0f0e;
+  --muted: #5a574f;
+  --line: #d6d2c7;
+  --line-strong: #aca69a;
+  --volt: #d4ff3a;
+  --accent-text: #0f0f0e; /* text "in accent" — ink on light, volt on dark */
+  --carbon: #0d0d0c;
+  --carbon-2: #1a1a18;
+  --on-carbon: #f1efe9;
+  --on-carbon-muted: #9b978d;
   --ease: cubic-bezier(0.23, 1, 0.32, 1);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #12110f;
-    --surface: #1b1a17;
-    --fg: #ece8df;
-    --muted: #a39d90;
-    --line: #2a2824;
-    --line-strong: #45413a;
-    --accent: #e27c55;
-    --plate: #070706;
+    --bg: #0d0d0c;
+    --surface: #171715;
+    --fg: #efede7;
+    --muted: #a19d93;
+    --line: #262623;
+    --line-strong: #3f3e3a;
+    --accent-text: #d4ff3a;
+    --carbon: #050505;
+    --carbon-2: #121211;
     color-scheme: dark;
   }
 }
@@ -35,8 +41,13 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
-  --color-accent: var(--accent);
-  --color-plate: var(--plate);
+  --color-volt: var(--volt);
+  --color-accent: var(--accent-text);
+  --color-carbon: var(--carbon);
+  --color-carbon-2: var(--carbon-2);
+  --color-on-carbon: var(--on-carbon);
+  --color-on-carbon-muted: var(--on-carbon-muted);
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
   --font-serif: var(--font-instrument), "Iowan Old Style", Georgia, serif;
   --font-sans: var(--font-geist), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -46,16 +57,6 @@ html {
   background: var(--bg);
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
-}
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-  }
 }
 
 body {
@@ -69,111 +70,175 @@ body {
 }
 
 ::selection {
-  background: var(--accent);
-  color: var(--bg);
+  background: var(--volt);
+  color: #0f0f0e;
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid currentColor;
   outline-offset: 3px;
   border-radius: 2px;
 }
 
 /* ───────── Type ───────── */
 .display {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: -0.015em;
-  line-height: 1.02;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 80, "opsz" 96;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
   text-wrap: balance;
+}
+.aside {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
 }
 .label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   line-height: 1.4;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
 .prose-measure {
-  max-width: 62ch;
+  max-width: 60ch;
   text-wrap: pretty;
+}
+/* Highlighter: the only place the volt shows up on light backgrounds. */
+.mark {
+  background: linear-gradient(transparent 12%, var(--volt) 12%, var(--volt) 88%, transparent 88%);
+  color: #0f0f0e;
+  padding-inline: 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 /* ───────── Layout ───────── */
 .wrap {
   margin-inline: auto;
-  max-width: 1240px;
+  max-width: 1320px;
   padding-inline: 1rem;
 }
 @media (min-width: 640px) {
-  .wrap {
-    padding-inline: 1.5rem;
-  }
+  .wrap { padding-inline: 1.5rem; }
 }
 @media (min-width: 1024px) {
-  .wrap {
-    padding-inline: 2.5rem;
-  }
+  .wrap { padding-inline: 2.5rem; }
 }
 
-/* ───────── Links ───────── */
-/* Underline that thickens on hover — the one hover idiom used everywhere. */
+.carbon {
+  background: var(--carbon);
+  color: var(--on-carbon);
+  --fg: var(--on-carbon);
+  --bg: var(--carbon);
+  --muted: var(--on-carbon-muted);
+  --line: #262623;
+  --line-strong: #3f3e3a;
+  --accent-text: var(--volt);
+  --surface: var(--carbon-2);
+}
+
+/* ───────── Links & buttons ───────── */
 .link {
   text-decoration: underline;
   text-decoration-color: var(--line-strong);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.22em;
-  transition: text-decoration-color 0.2s var(--ease), color 0.2s var(--ease);
+  transition: text-decoration-color 0.2s var(--ease);
 }
-.link:hover {
-  text-decoration-color: currentColor;
-}
+.link:hover { text-decoration-color: currentColor; }
+
 .arrow {
   display: inline-block;
   transition: transform 0.25s var(--ease);
 }
-a:hover .arrow {
-  transform: translateX(3px);
-}
-a:hover .arrow-ne {
-  transform: translate(2px, -2px);
-}
+a:hover .arrow { transform: translateX(3px); }
+a:hover .arrow-ne { transform: translate(2px, -2px); }
 
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   border-radius: 999px;
-  padding: 0.75rem 1.25rem;
+  padding: 0.8rem 1.3rem;
   font-size: 0.95rem;
   font-weight: 500;
-  border: 1px solid var(--fg);
-  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  border: 1px solid currentColor;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease),
+    transform 0.16s var(--ease);
 }
-.btn-solid {
-  background: var(--fg);
-  color: var(--bg);
+.btn:active { transform: scale(0.97); }
+.btn-volt {
+  background: var(--volt);
+  border-color: var(--volt);
+  color: #0f0f0e;
 }
-.btn-solid:hover {
-  background: var(--accent);
-  border-color: var(--accent);
+.btn-volt:hover { background: #c3f01f; border-color: #c3f01f; }
+.btn-ghost:hover { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+/* ───────── Motion ───────── */
+/* Content reveals once as it scrolls in. Without JS the class never lands
+   (html.js gates it), so nothing stays hidden. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+  transition-delay: var(--d, 0ms);
 }
-.btn-ghost:hover {
-  background: var(--fg);
-  color: var(--bg);
+.js .reveal.in {
+  opacity: 1;
+  transform: none;
 }
 
-/* Project art zooms a touch on hover; nothing else moves. */
-.plate img {
-  transition: transform 0.7s var(--ease);
+@keyframes rise {
+  from { transform: translateY(105%); }
+  to { transform: none; }
 }
-.group:hover .plate img {
-  transform: scale(1.025);
+.rise {
+  display: inline-block;
+  animation: rise 1s var(--ease) both;
+  animation-delay: var(--d, 0ms);
 }
 
-/* ───────── Contribution calendar ───────── */
-/* Weeks are columns, weekdays rows — the same shape as GitHub's graph. */
+@keyframes blink {
+  50% { opacity: 0.25; }
+}
+.live-dot {
+  animation: blink 1.6s steps(1) infinite;
+}
+
+/* Project art leans toward the pointer; set by TiltCard. */
+.tilt {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.5s var(--ease);
+  will-change: transform;
+}
+.tilt img { transition: transform 0.8s var(--ease); }
+.group:hover .tilt img { transform: scale(1.03); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .js .reveal { opacity: 1; transform: none; }
+  .tilt { transform: none; }
+}
+
+/* ───────── Checkered rule ───────── */
+.checker {
+  height: 10px;
+  background: repeating-conic-gradient(var(--fg) 0 25%, transparent 0 50%) 0 0 / 10px 10px;
+  opacity: 0.9;
+}
+
+/* ───────── Contribution calendar (flat view) ───────── */
 .cal {
   display: grid;
   grid-template-rows: repeat(7, auto);
@@ -185,8 +250,22 @@ a:hover .arrow-ne {
   aspect-ratio: 1;
   border-radius: 2px;
 }
-.l0 { background: color-mix(in oklab, var(--line) 75%, var(--surface)); }
-.l1 { background: color-mix(in oklab, var(--accent) 28%, var(--surface)); }
-.l2 { background: color-mix(in oklab, var(--accent) 52%, var(--surface)); }
-.l3 { background: color-mix(in oklab, var(--accent) 76%, var(--surface)); }
-.l4 { background: var(--accent); }
+.l0 { background: #1f1f1d; }
+.l1 { background: color-mix(in oklab, var(--volt) 28%, #1f1f1d); }
+.l2 { background: color-mix(in oklab, var(--volt) 52%, #1f1f1d); }
+.l3 { background: color-mix(in oklab, var(--volt) 76%, #1f1f1d); }
+.l4 { background: var(--volt); }
+
+/* ───────── Strings ───────── */
+@keyframes wobble {
+  0% { transform: translateY(0); }
+  12% { transform: translateY(var(--amp)); }
+  28% { transform: translateY(calc(var(--amp) * -0.7)); }
+  44% { transform: translateY(calc(var(--amp) * 0.45)); }
+  60% { transform: translateY(calc(var(--amp) * -0.25)); }
+  80% { transform: translateY(calc(var(--amp) * 0.1)); }
+  100% { transform: translateY(0); }
+}
+.string-line.plucked {
+  animation: wobble 0.7s linear;
+}
