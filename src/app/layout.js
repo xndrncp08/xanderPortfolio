@@ -1,46 +1,48 @@
-import { JetBrains_Mono, Saira_Condensed, Titillium_Web } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { profile, site } from "@/data/content";
 import "./globals.css";
 
-const saira = Saira_Condensed({
-  subsets: ["latin"],
-  weight: ["700", "800", "900"],
-  variable: "--font-saira",
-});
-const titillium = Titillium_Web({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-titillium",
-});
-const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
+const serif = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-instrument" });
+const sans = Geist({ subsets: ["latin"], variable: "--font-geist" });
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 export const metadata = {
-  title: "Xander Rancap #08 — Full-stack developer",
-  description:
-    "Full-stack developer in Calgary. Race-tested software: production systems, live telemetry and properly tested code.",
+  metadataBase: new URL(site.url),
+  title: { default: site.title, template: `%s — ${profile.name}` },
+  description: site.description,
+  authors: [{ name: profile.name, url: site.url }],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: profile.name,
+    title: site.title,
+    description: site.description,
+    url: site.url,
+    locale: "en_CA",
+  },
+  twitter: { card: "summary_large_image", title: site.title, description: site.description },
 };
 
 export const viewport = {
-  themeColor: "#0a0a0c",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f1ea" },
+    { media: "(prefers-color-scheme: dark)", color: "#12110f" },
+  ],
 };
-
-// Before first paint: skip the start lights for repeat visits and reduced
-// motion. A failsafe starts the race after 8s even if the app bundle fails.
-const raceScript = `(function(){var d=document.documentElement;try{if(sessionStorage.getItem('lights')==='done'||matchMedia('(prefers-reduced-motion: reduce)').matches){d.dataset.race='go';d.dataset.lights='skip'}}catch(e){d.dataset.race='go';d.dataset.lights='skip'}setTimeout(function(){d.dataset.race='go'},8000)})()`;
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${saira.variable} ${titillium.variable} ${jetbrains.variable}`}
-    >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: raceScript }} />
-        <noscript>
-          <style>{`.lights{display:none}.kinetic>span,.after-go{animation:none!important}`}</style>
-        </noscript>
-      </head>
-      <body>{children}</body>
+    <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`}>
+      <body>
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-fg focus:px-4 focus:py-2 focus:text-bg">
+          Skip to content
+        </a>
+        <Header />
+        <main id="main">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }

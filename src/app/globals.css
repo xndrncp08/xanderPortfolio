@@ -1,401 +1,192 @@
 @import "tailwindcss";
 
-/* ───────── Tokens: stealth black, Rosso Corsa, Gulf cyan, Pirelli yellow ───────── */
+/* Warm paper and ink, one oxide accent. Dark mode follows the system. */
 :root {
-  --ink: #0a0a0c;
-  --carbon: #101013;
-  --panel: #131317;
-  --panel-2: #1b1b21;
-  --fg: #f2f1ec;
-  --muted: #8b8b95;
-  --dim: #55555e;
-  --line: rgb(255 255 255 / 0.08);
-  --line-strong: rgb(255 255 255 / 0.18);
-  --red: #ff2800;
-  --cyan: #29d3ff;
-  --yellow: #ffd100;
-  --green: #22e07a;
-  --purple: #b36bff;
-  --logo-bg: #070707;
+  --bg: #f4f1ea;
+  --surface: #ebe7de;
+  --fg: #1b1a17;
+  --muted: #5d594f;
+  --line: #dcd6c9;
+  --line-strong: #b8b1a1;
+  --accent: #9f4220;
+  --plate: #0b0b0a;
   --ease: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  color-scheme: dark;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12110f;
+    --surface: #1b1a17;
+    --fg: #ece8df;
+    --muted: #a39d90;
+    --line: #2a2824;
+    --line-strong: #45413a;
+    --accent: #e27c55;
+    --plate: #070706;
+    color-scheme: dark;
+  }
 }
 
 @theme inline {
-  --color-ink: var(--ink);
-  --color-carbon: var(--carbon);
-  --color-panel: var(--panel);
-  --color-panel-2: var(--panel-2);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
   --color-fg: var(--fg);
   --color-muted: var(--muted);
-  --color-dim: var(--dim);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
-  --color-red: var(--red);
-  --color-cyan: var(--cyan);
-  --color-yellow: var(--yellow);
-  --color-green: var(--green);
-  --color-purple: var(--purple);
-  --color-logo: var(--logo-bg);
-  --font-display: var(--font-saira), "Arial Narrow", sans-serif;
-  --font-sans: var(--font-titillium), system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --color-accent: var(--accent);
+  --color-plate: var(--plate);
+  --font-serif: var(--font-instrument), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-geist), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-/* ───────── Base ───────── */
 html {
-  background: var(--ink);
+  background: var(--bg);
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-.lenis.lenis-stopped {
-  overflow: clip;
-}
-[data-lenis-prevent] {
-  overscroll-behavior: contain;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
+  background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
   font-size: 1.0625rem;
-  line-height: 1.55;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* Carbon weave + engineering grid, both static and cheap. */
-  background-color: var(--ink);
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px),
-    repeating-linear-gradient(45deg, rgb(255 255 255 / 0.012) 0 2px, transparent 2px 4px),
-    repeating-linear-gradient(-45deg, rgb(0 0 0 / 0.25) 0 2px, transparent 2px 4px);
-  background-size:
-    96px 96px,
-    96px 96px,
-    auto,
-    auto;
-  background-position: center top;
 }
 
 ::selection {
-  background: var(--red);
-  color: #fff;
+  background: var(--accent);
+  color: var(--bg);
 }
 
 :focus-visible {
-  outline: 2px solid var(--yellow);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--ink);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--panel-2);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--red);
+  border-radius: 2px;
 }
 
 /* ───────── Type ───────── */
-.t-mega {
-  font-family: var(--font-display);
-  font-weight: 900;
-  text-transform: uppercase;
-  font-size: clamp(4.25rem, 15.5vw, 14rem);
-  line-height: 0.8;
-  letter-spacing: -0.012em;
+.display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  text-wrap: balance;
 }
-.t-display {
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
-  font-size: clamp(2.75rem, 7.2vw, 6.25rem);
-  line-height: 0.86;
-  letter-spacing: -0.005em;
-}
-.t-title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  line-height: 0.92;
-}
-.t-label {
+.label {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  line-height: 1.3;
-  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: var(--muted);
 }
-.t-data {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-}
-.slant {
-  display: inline-block;
-  transform: skewX(-9deg);
-}
-.outline-text {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--line-strong);
+.prose-measure {
+  max-width: 62ch;
+  text-wrap: pretty;
 }
 
-/* ───────── HUD surfaces ───────── */
-.chamfer {
-  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+/* ───────── Layout ───────── */
+.wrap {
+  margin-inline: auto;
+  max-width: 1240px;
+  padding-inline: 1rem;
 }
-.chamfer-sm {
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+@media (min-width: 640px) {
+  .wrap {
+    padding-inline: 1.5rem;
+  }
 }
-/* Four corner brackets, drawn with gradients — no extra DOM. */
-.brackets {
-  --b: var(--line-strong);
-  --s: 14px;
-  background:
-    linear-gradient(var(--b), var(--b)) top left / var(--s) 1px,
-    linear-gradient(var(--b), var(--b)) top left / 1px var(--s),
-    linear-gradient(var(--b), var(--b)) top right / var(--s) 1px,
-    linear-gradient(var(--b), var(--b)) top right / 1px var(--s),
-    linear-gradient(var(--b), var(--b)) bottom left / var(--s) 1px,
-    linear-gradient(var(--b), var(--b)) bottom left / 1px var(--s),
-    linear-gradient(var(--b), var(--b)) bottom right / var(--s) 1px,
-    linear-gradient(var(--b), var(--b)) bottom right / 1px var(--s);
-  background-repeat: no-repeat;
-}
-.chequer {
-  background-image: conic-gradient(var(--fg) 25%, transparent 0 50%, var(--fg) 0 75%, transparent 0);
-  background-size: 16px 16px;
-}
-.hazard {
-  background-image: repeating-linear-gradient(-45deg, var(--yellow) 0 10px, var(--ink) 10px 20px);
+@media (min-width: 1024px) {
+  .wrap {
+    padding-inline: 2.5rem;
+  }
 }
 
-@keyframes led {
-  0%,
-  100% {
-    opacity: 1;
-    box-shadow: 0 0 0 0 color-mix(in oklab, currentColor 70%, transparent), 0 0 12px currentColor;
-  }
-  50% {
-    opacity: 0.55;
-    box-shadow: 0 0 0 5px transparent, 0 0 4px currentColor;
-  }
+/* ───────── Links ───────── */
+/* Underline that thickens on hover — the one hover idiom used everywhere. */
+.link {
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 0.2s var(--ease), color 0.2s var(--ease);
 }
-.led {
+.link:hover {
+  text-decoration-color: currentColor;
+}
+.arrow {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  transition: transform 0.25s var(--ease);
+}
+a:hover .arrow {
+  transform: translateX(3px);
+}
+a:hover .arrow-ne {
+  transform: translate(2px, -2px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   border-radius: 999px;
-  background: currentColor;
-  animation: led 1.6s ease-in-out infinite;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: 1px solid var(--fg);
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+.btn-solid {
+  background: var(--fg);
+  color: var(--bg);
+}
+.btn-solid:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.btn-ghost:hover {
+  background: var(--fg);
+  color: var(--bg);
 }
 
-/* ───────── Race start gating ─────────
-   Kinetic content waits, paused, until the lights go out (html[data-race=go]). */
-@keyframes kinetic {
-  from {
-    opacity: 0;
-    transform: translateX(-0.6em) skewX(-22deg);
-    filter: blur(6px);
-  }
+/* Project art zooms a touch on hover; nothing else moves. */
+.plate img {
+  transition: transform 0.7s var(--ease);
 }
-.kinetic > span {
-  display: inline-block;
-  animation: kinetic 0.8s var(--ease) both paused;
-  animation-delay: calc(var(--i, 0) * 38ms + var(--base, 0ms));
-}
-@keyframes enter {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-}
-.after-go {
-  animation: enter 0.9s var(--ease) both paused;
-  animation-delay: var(--base, 0ms);
-}
-html[data-race="go"] .kinetic > span,
-html[data-race="go"] .after-go {
-  animation-play-state: running;
+.group:hover .plate img {
+  transform: scale(1.025);
 }
 
-/* ───────── Start lights overlay ───────── */
-.lights {
-  transition:
-    opacity 0.5s var(--ease),
-    visibility 0.5s;
+/* ───────── Contribution calendar ───────── */
+/* Weeks are columns, weekdays rows — the same shape as GitHub's graph. */
+.cal {
+  display: grid;
+  grid-template-rows: repeat(7, auto);
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 3px;
 }
-html[data-lights="skip"] .lights {
-  display: none;
+.cal > span {
+  aspect-ratio: 1;
+  border-radius: 2px;
 }
-html[data-race="go"] .lights {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-.light {
-  background: #1a0806;
-  box-shadow: inset 0 0 0 2px #2a2a30;
-  transition:
-    background-color 90ms linear,
-    box-shadow 90ms linear;
-}
-.light[data-on="true"] {
-  background: var(--red);
-  box-shadow:
-    inset 0 0 0 2px #ff6a4d,
-    0 0 28px 4px rgb(255 40 0 / 0.65),
-    0 0 90px 12px rgb(255 40 0 / 0.25);
-}
-
-/* ───────── Scroll reveal: enters like a car into frame ───────── */
-.reveal {
-  opacity: 0;
-  transform: translateX(-36px) skewX(-6deg);
-  transition:
-    opacity 0.8s var(--ease),
-    transform 0.8s var(--ease);
-  transition-delay: var(--delay, 0ms);
-}
-.reveal.is-visible {
-  opacity: 1;
-  transform: none;
-}
-
-/* ───────── Press feedback ───────── */
-.press {
-  transition:
-    scale 140ms var(--ease),
-    background-color 180ms ease,
-    color 180ms ease,
-    border-color 180ms ease,
-    box-shadow 240ms var(--ease);
-}
-.press:active {
-  scale: 0.96;
-  transition-duration: 70ms;
-}
-
-/* ───────── Project art: RGB-split "shader" on hover (transform-only) ───────── */
-.rgb-split {
-  position: relative;
-  isolation: isolate;
-}
-.rgb-split .ch {
-  position: absolute;
-  inset: 0;
-  mix-blend-mode: screen;
-  opacity: 0;
-  transition:
-    transform 450ms var(--ease),
-    opacity 300ms ease;
-}
-/* Tinted copies of the art, screen-blended: on black only the bright
-   strokes ghost, which reads as chromatic aberration. */
-.rgb-split .ch-r {
-  filter: sepia(1) saturate(9) hue-rotate(-40deg) brightness(0.9);
-}
-.rgb-split .ch-c {
-  filter: sepia(1) saturate(9) hue-rotate(150deg) brightness(0.9);
-}
-.group:hover .rgb-split .ch-r,
-.group:focus-visible .rgb-split .ch-r {
-  opacity: 1;
-  transform: translateX(-6px) skewX(-4deg);
-}
-.group:hover .rgb-split .ch-c,
-.group:focus-visible .rgb-split .ch-c {
-  opacity: 1;
-  transform: translateX(6px) skewX(4deg);
-}
-@keyframes streak {
-  from {
-    transform: translateX(-120%);
-  }
-  to {
-    transform: translateX(220%);
-  }
-}
-.streaks::before,
-.streaks::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  width: 45%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--fg), transparent);
-  opacity: 0;
-  pointer-events: none;
-}
-.streaks::before {
-  top: 38%;
-}
-.streaks::after {
-  top: 64%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--red), transparent);
-}
-.group:hover .streaks::before {
-  opacity: 0.7;
-  animation: streak 0.7s var(--ease) infinite;
-}
-.group:hover .streaks::after {
-  opacity: 0.8;
-  animation: streak 0.9s var(--ease) 0.15s infinite;
-}
-
-@keyframes wave {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* ───────── Reticle cursor (fine pointers only; set by Reticle.jsx) ───────── */
-html.has-reticle,
-html.has-reticle * {
-  cursor: none;
-}
-html.has-reticle input,
-html.has-reticle textarea {
-  cursor: text;
-}
-
-/* ───────── Reduced motion: keep fades, drop movement ───────── */
-@keyframes fade {
-  from {
-    opacity: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .kinetic > span,
-  .after-go {
-    animation-name: fade;
-    animation-duration: 0.3s;
-  }
-  .reveal {
-    transform: none;
-    transition: opacity 0.3s ease;
-  }
-  .led,
-  .streaks::before,
-  .streaks::after {
-    animation: none !important;
-  }
-  .rgb-split .ch {
-    transform: none !important;
-  }
-  .press:active {
-    scale: 1;
-  }
-}
+.l0 { background: color-mix(in oklab, var(--line) 75%, var(--surface)); }
+.l1 { background: color-mix(in oklab, var(--accent) 28%, var(--surface)); }
+.l2 { background: color-mix(in oklab, var(--accent) 52%, var(--surface)); }
+.l3 { background: color-mix(in oklab, var(--accent) 76%, var(--surface)); }
+.l4 { background: var(--accent); }
