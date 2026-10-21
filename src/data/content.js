@@ -13,14 +13,15 @@ export const profile = {
   role: "Software developer",
   location: "Calgary, Alberta",
   origin: "Manila, Philippines",
+  timeZone: "America/Edmonton",
   email: "xander.rancap8@gmail.com",
-  photo: "https://i.postimg.cc/W3VBJZ1Q/derpogs-(1).jpg",
+  photo: "/me/portrait.jpg",
+  gradPhoto: "/me/grad.jpg",
   resume: "/resume.pdf",
   github: "xndrncp08",
   status: "Open to full-time roles, contracts and freelance work.",
-  headline: "I build full-stack applications, and I test them like someone depends on them.",
   intro:
-    "Recent Software Development graduate from SAIT. I like owning things end to end: a pharmacy's daily sales tracker, an open-source Discord alternative for the Philippines, a tool that hears a guitar tone and tells you how to dial it in.",
+    "SAIT Software Development grad, now building in Calgary. I like owning things end to end: a pharmacy's daily sales tracker, an open-source Discord alternative for the Philippines, and a tool that hears a guitar tone and tells you how to dial it in.",
 };
 
 export const socials = [
@@ -42,6 +43,7 @@ export const projects = [
     metric: { value: "₱0", label: "to self-host chat, voice and video" },
     year: "2026",
     tagline: "An open-source Discord alternative, made for the Philippines.",
+    aside: "Named after the Filipino art of making it work with what you have. Fitting, given the budget.",
     approach:
       "Tambayans (servers) with realtime chat, LiveKit voice, video and screen share, friends and DMs, and Bantay-Bayan moderation — built for Filipino gamers, student orgs and creators, and cheap enough to run for free.",
     highlights: [
@@ -61,6 +63,7 @@ export const projects = [
     metric: { value: "6", label: "tone parameters inferred per song" },
     year: "2026",
     tagline: "Upload a song. Get the guitar tone behind it.",
+    aside: "Built because I was tired of buying pedals to find out I needed a different pedal.",
     approach:
       "A Next.js 16 app plus a Python/FastAPI service that runs real audio-feature extraction with Librosa to infer amp voicing, cabinet, pickup position, EQ, gain and effects chain. The heuristics are documented honestly as a starting point to dial in by ear, not a verified gear match.",
     highlights: [
@@ -80,6 +83,7 @@ export const projects = [
     metric: { value: "350+", label: "race records, searchable" },
     year: "2026",
     tagline: "Formula 1 data, without the fluff.",
+    aside: "For when the TV graphics say \"box, box\" and you want the actual numbers.",
     approach:
       "An F1 platform that pulls race calendars back to 1950, live telemetry, driver comparisons, standings, circuits and news into one place — plus race predictions you can ask questions about.",
     highlights: [
@@ -99,6 +103,7 @@ export const projects = [
     metric: { value: "Daily", label: "production use since launch" },
     year: "2025–now",
     tagline: "Paper sales records, replaced. Used every day.",
+    aside: "The project with real users, which means the project with real bug reports.",
     approach:
       "A full-stack sales tracker for a local pharmacy with live revenue dashboards, ranked product summaries and automated monthly reports. It's still in daily production use, and I own its defect triage.",
     highlights: [
@@ -117,6 +122,7 @@ export const projects = [
     metric: { value: "CapCon", label: "presented at SAIT CapCon 2026" },
     year: "2025–26",
     tagline: "Rate the CTrain. SAIT capstone, shown at CapCon 2026.",
+    aside: "Civic feedback, moderated by AI so the comments stay mostly printable.",
     approach:
       "A civic feedback platform for Calgary's CTrain built in an Agile team. I built the React/TypeScript frontend and owned a big share of the testing.",
     highlights: [
@@ -135,6 +141,7 @@ export const projects = [
     metric: { value: "3", label: "forecast horizons, scored vs a random walk" },
     year: "2026",
     tagline: "A market terminal that's honest about what it can't predict.",
+    aside: "If a model can't beat a random walk, the UI says so. Rare honesty in finance.",
     approach:
       "Live quotes, candlestick charts, 5/14/30-day price forecasts and FinBERT news sentiment in a dense, keyboard-first workspace. Forecasts are scored against a random walk, and the UI shows when a model has no real edge.",
     highlights: [
@@ -174,6 +181,7 @@ export const projects = [
     metric: { value: "600+", label: "live buses tracked every 60s" },
     year: "2026",
     tagline: "600+ live Calgary buses. One map.",
+    aside: "Answers the question every Calgarian has asked at a bus stop in January.",
     approach:
       "Ingests Calgary Transit's GTFS-realtime feed every 60 seconds and turns it into a command-centre map with heatmaps, trails and route analytics.",
     highlights: [
@@ -210,6 +218,7 @@ export const projects = [
     metric: { value: "0–100", label: "match score from 4 weighted signals" },
     year: "2026",
     tagline: "My job search, ranked against my own resume.",
+    aside: "Yes, I automated the job hunt. No, it doesn't apply for me. I have some dignity.",
     approach:
       "A local-first dashboard that searches job boards on a schedule, scores each posting against an uploaded resume and tracks applications. Everything runs on my machine; the score is labelled as an estimate for triage.",
     highlights: [
@@ -303,40 +312,39 @@ export const projects = [
 export const story = [
   {
     title: "Where I started",
-    body: "I grew up in Manila — heat, humidity, and a city that never really slows down. My first real taste of building things was an internship there in 2022, programming Arduino circuits for a greenhouse automation prototype. Then I moved to Calgary to study, which still feels like a strange trade sometimes. The winters are unnecessarily aggressive.",
+    body: "Manila: heat, humidity, and traffic with its own weather system. My first real taste of building things was a 2022 internship there, programming Arduino circuits for a greenhouse automation prototype. It won an innovation award, which I bring up only every time it's relevant. And sometimes when it isn't.",
   },
   {
-    title: "How it stuck",
-    body: "I didn't have some big plan. I kept messing around with things until coding stuck longer than everything else — which surprised me more than anyone.",
+    title: "Then, Calgary",
+    body: "I moved to Calgary to study Software Development at SAIT (2024–2026) and traded 33°C for −33°C. Nobody warns you a city can be sunny and hostile at the same time. I graduated with a 3.61 GPA and a deep respect for block heaters.",
   },
   {
     title: "How I work",
-    body: "I hold problems in my head longer than I probably need to. Not stuck — thinking. Then I build, come back later, and immediately see five things I'd change. I've accepted that the cringe is the compass. It means I'm getting better.",
+    body: "I hold a problem in my head longer than is probably healthy. Not stuck, thinking. Then I build it, come back a week later and immediately see five things I'd change. I've made peace with that. The cringe is the compass: it means I'm getting better.",
   },
 ];
 
-// Beyond the code. `image` is optional — drop a photo in public/life/ and
-// point to it here; without one the entry is set as type only.
+// Beyond the code. Kept short and true; nothing here is a stat I can't back up.
 export const interests = [
   {
     title: "Running",
-    note: "Endurance",
-    body: "Clears my head better than anything. Long runs are where half-formed ideas finally settle — the same patience that keeps a debugging session from turning into guesswork.",
+    note: "Cardio, but make it debugging",
+    body: "The only time I voluntarily go in circles. Long runs are where half-formed ideas finally settle. A worrying number of my bugs have been solved somewhere around kilometre four.",
   },
   {
     title: "Sports",
-    note: "Competition & teamwork",
-    body: "Grew up playing, still do. Sport taught me how good teams talk: call things early, cover for each other, and keep the score honest.",
+    note: "Competitive, emotionally",
+    body: "Grew up playing, still do, and watch far more than I'll admit. Formula 1 is directly responsible for at least two projects on this page, so technically it's professional development.",
   },
   {
     title: "Music",
-    note: "Always on",
-    body: "I go wide on genres and usually have something playing — especially when I'm stuck on a problem.",
+    note: "Genre loyalty: none",
+    body: "Something is always playing. The queue can go from slow R&B to something with a breakdown in three songs, and I refuse to explain myself.",
   },
   {
     title: "Guitar & bass",
-    note: "Electric, four strings and six",
-    body: "Bass taught me to sit in the pocket; electric guitar sent me chasing tones. That chase is the reason Resoniq exists.",
+    note: "Four strings and six",
+    body: "Bass taught me to sit in the pocket and make everyone else sound good. Electric guitar sent me chasing tones, and that chase is why Resoniq exists.",
   },
 ];
 
@@ -355,7 +363,7 @@ export const path = [
     date: "Then",
     place: "Manila → Calgary",
     title: "Moved to Canada",
-    detail: "Left the Philippines to study software development in Calgary.",
+    detail: "Left the Philippines to study software development in Calgary. Bought my first real winter jacket. Then a second one.",
     kind: "move",
   },
   {
@@ -376,7 +384,7 @@ export const path = [
     date: "Nov 2025",
     place: "Calgary",
     title: "BMR Pharmacy goes live",
-    detail: "Replaced paper sales records for a local pharmacy. Still in daily use; I maintain it.",
+    detail: "Replaced paper sales records for a local pharmacy. Still in daily use, and I still answer when it misbehaves.",
     kind: "work",
   },
   {
@@ -390,7 +398,7 @@ export const path = [
     date: "2026",
     place: "Calgary",
     title: "Graduated from SAIT",
-    detail: "Diploma in Software Development, 3.61 GPA.",
+    detail: "Diploma in Software Development, 3.61 GPA. Photographic evidence below.",
     kind: "school",
   },
   {
@@ -435,32 +443,32 @@ export const education = [
 export const skills = [
   {
     group: "Building interfaces",
-    note: "Where most of my projects start.",
+    note: "Where most of my projects start, and where most of my opinions live.",
     items: ["TypeScript", "React", "Next.js", "Vite", "Tailwind CSS", "Recharts", "Leaflet"],
   },
   {
     group: "Services & data",
-    note: "APIs, schemas and the boring parts that must not break.",
+    note: "APIs, schemas and the boring parts that must never, ever break.",
     items: ["Node.js", "Express", "Python", "FastAPI", "Prisma", "PostgreSQL", "Supabase", "MongoDB", "MariaDB"],
   },
   {
     group: "Testing & quality",
-    note: "Unit, end-to-end, load and accessibility, run in CI.",
+    note: "Unit, end-to-end, load and accessibility. I like a green pipeline the way some people like a clean kitchen.",
     items: ["Vitest", "Jest", "Cypress", "Playwright", "JMeter", "GitHub Actions"],
   },
   {
     group: "AI & signal",
-    note: "Used where it earns its place, labelled honestly when it doesn't.",
+    note: "Used where it earns its place. Labelled honestly when it doesn't.",
     items: ["Anthropic API", "Groq", "Ollama", "Librosa", "XGBoost", "Embeddings"],
   },
   {
     group: "Cloud & tooling",
-    note: "Shipping and running it.",
+    note: "Shipping it, then keeping it shipped.",
     items: ["Azure", "Docker", "Terraform", "Vercel", "Git", "Jira", "Figma"],
   },
   {
     group: "Also fluent in",
-    note: "From coursework and team projects.",
+    note: "From coursework, team projects and one Roblox game I take very seriously.",
     items: ["C#", ".NET MAUI", "Java", "SQL", "Luau"],
   },
 ];

@@ -1,6 +1,6 @@
 import { getGitHubActivity } from "@/lib/github";
 import { profile } from "@/data/content";
-import ContributionGraph from "./ContributionGraph";
+import ContributionViews from "./ContributionViews";
 import Section from "./Section";
 
 const num = new Intl.NumberFormat("en-CA");
@@ -20,52 +20,46 @@ export default async function GitHubActivity() {
 
   return (
     <Section
-      id="activity"
+      id="receipts"
       index="07"
-      label="On GitHub"
-      title="Where the work actually happens."
-      intro={`Contribution activity from github.com/${profile.github} over the last twelve months, refreshed twice a day.`}
+      label={`github.com/${profile.github}`}
+      title="Receipts."
+      intro="Real contributions from the last twelve months, fetched from GitHub and refreshed twice a day. Not a screenshot, not vibes."
+      className="carbon"
     >
       {summary ? (
         <>
-          <dl className="grid grid-cols-2 gap-6 border-t border-line pt-6 lg:grid-cols-4">
+          <dl className="grid grid-cols-2 gap-6 lg:grid-cols-4">
             {[
               ["Contributions", num.format(summary.total)],
               ["Active days", num.format(summary.active)],
-              ["Longest streak", `${summary.longest} day${summary.longest === 1 ? "" : "s"}`],
+              ["Longest streak", `${summary.longest}d`],
               ["Busiest day", summary.busiest?.count || "—", summary.busiest?.count ? dayName(summary.busiest.date) : null],
-            ].map(([term, value, note]) => (
-              <div key={term}>
-                <dt className="label">{term}</dt>
-                <dd className="display mt-1 text-4xl">
-                  {value}
-                  {note && <span className="label ml-2 align-middle">{note}</span>}
-                </dd>
+            ].map(([term, value, note], i) => (
+              <div key={term} className="reveal flex flex-col-reverse border-t border-line pt-4" style={{ "--d": `${i * 60}ms` }}>
+                <dt className="label mt-2">
+                  {term}
+                  {note && ` · ${note}`}
+                </dt>
+                <dd className="display text-5xl text-volt tabular-nums sm:text-6xl">{value}</dd>
               </div>
             ))}
           </dl>
 
-          <div className="mt-12">
-            <ContributionGraph
+          <div className="reveal mt-12">
+            <ContributionViews
               days={days}
-              label={`Contribution calendar: ${num.format(summary.total)} contributions on ${summary.active} days in the last year.`}
+              label={`${num.format(summary.total)} contributions on ${summary.active} days in the last year.`}
             />
-            <div className="label mt-3 flex items-center justify-end gap-1.5">
-              <span className="mr-1">Less</span>
-              {[0, 1, 2, 3, 4].map((l) => (
-                <span key={l} aria-hidden className={`l${l} size-2.5 rounded-[2px]`} />
-              ))}
-              <span className="ml-1">More</span>
-            </div>
           </div>
 
-          <h3 className="label mt-12 text-fg">By month</h3>
-          <ol className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(2.75rem,1fr))] items-end gap-1.5">
+          <h3 className="label mt-14 text-fg">By month</h3>
+          <ol className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(2.5rem,1fr))] items-end gap-1.5">
             {summary.months.map((m, i) => (
               <li key={m.month} className="flex flex-col items-center gap-1.5">
                 <span className="label tabular-nums">{m.count}</span>
                 <span aria-hidden className="flex h-20 w-full items-end">
-                  <span className="w-full rounded-t-[2px] bg-accent/70" style={{ height: `${Math.max(2, (m.count / peak) * 100)}%` }} />
+                  <span className="w-full rounded-t-[2px] bg-volt/80" style={{ height: `${Math.max(2, (m.count / peak) * 100)}%` }} />
                 </span>
                 <span className="label">
                   <span aria-hidden>
@@ -80,7 +74,7 @@ export default async function GitHubActivity() {
         </>
       ) : (
         <p className="border-t border-line pt-6 text-lg">
-          Contribution data couldn&apos;t be loaded just now.{" "}
+          GitHub isn&apos;t answering right now, which is ironic for a section called Receipts.{" "}
           <a href={profileUrl} target="_blank" rel="noopener" className="link">
             See my activity on GitHub<span aria-hidden> ↗</span>
           </a>
@@ -95,7 +89,7 @@ export default async function GitHubActivity() {
               <li key={r.name} className={`border-b border-line ${i % 2 === 0 ? "sm:border-r sm:pr-8" : "sm:pl-8"}`}>
                 <a href={r.url} target="_blank" rel="noopener" className="group block py-6">
                   <p className="flex items-baseline justify-between gap-4">
-                    <span className="text-lg font-medium group-hover:text-accent">{r.name}</span>
+                    <span className="text-lg font-medium group-hover:text-volt">{r.name}</span>
                     <span className="label shrink-0">{pushed(r.pushedAt)}</span>
                   </p>
                   {r.description && <p className="mt-1 line-clamp-2 text-muted">{r.description}</p>}
